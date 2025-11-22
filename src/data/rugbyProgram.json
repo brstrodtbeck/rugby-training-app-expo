@@ -1,0 +1,322 @@
+{
+  "macrocycle": {
+    "mesocycles": [
+      {
+        "id": "m1",
+        "title": "Foundation",
+        "phase": "Nov–Dec",
+        "goal": "Build muscle, aerobic base, correct imbalances, prep for heavier loads later.",
+        "frequency": "5 training days + 1 conditioning day + 1 rest day",
+        "microcycle": [
+          {
+            "id": "m1-week0-day-1",
+            "day": 1,
+            "title": "Strength + VO₂ Max",
+            "exercises": [
+              { "name": "Squat", "sets": 4, "reps": 8, "intensity": "70% 1RM", "rest": 90, "trackSets": true },
+              { "name": "Bench Press", "sets": 4, "reps": 8, "intensity": "70% 1RM", "rest": 90, "trackSets": true },
+              { "name": "Pull-Ups", "sets": 4, "reps": 8, "rest": 90, "trackSets": false },
+              { "name": "Bulgarian Split Squat", "sets": 3, "reps": 10, "rest": 60, "trackSets": true },
+              { "name": "VO₂ Max Intervals", "sets": 4, "reps": "4 min @ 90–95% HRmax", "rest": "3 min jog", "trackSets": false }
+            ]
+          },
+          {
+            "id": "m1-week0-day-2",
+            "day": 2,
+            "title": "Speed/Agility + Accessory",
+            "exercises": [
+              { "name": "Sprint", "sets": 6, "reps": "30m", "rest": "walk back", "trackSets": false },
+              { "name": "Agility Ladder", "sets": 1, "reps": "3 min continuous", "rest": 60, "trackSets": false },
+              { "name": "Shuttle 5-10-5", "sets": 6, "reps": 1, "rest": 60, "trackSets": false },
+              { "name": "Overhead Press", "sets": 3, "reps": 10, "intensity": "65% 1RM", "rest": 90, "trackSets": true },
+              { "name": "Barbell Row", "sets": 3, "reps": 10, "rest": 90, "trackSets": true },
+              { "name": "Hanging Leg Raises", "sets": 3, "reps": 12, "rest": 60, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m1-week0-day-3",
+            "day": 3,
+            "title": "Recovery",
+            "exercises": [
+              { "name": "Light Jog/Bike", "sets": 1, "reps": "20 min @ 60% HRmax", "rest": 0, "trackSets": false },
+              { "name": "Yoga Flow", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
+              { "name": "Foam Rolling", "sets": 1, "reps": "10 min", "rest": 0, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m1-week0-day-4",
+            "day": 4,
+            "title": "Olympic Lifts + Tempo Runs",
+            "exercises": [
+              { "name": "Power Clean", "sets": 5, "reps": 3, "intensity": "70–75% 1RM", "rest": 120, "trackSets": true },
+              { "name": "Front Squat", "sets": 4, "reps": 6, "intensity": "75% 1RM", "rest": 120, "trackSets": true },
+              { "name": "Push Press", "sets": 4, "reps": 6, "intensity": "75% 1RM", "rest": 120, "trackSets": true },
+              { "name": "Romanian Deadlift", "sets": 3, "reps": 10, "rest": 90, "trackSets": true },
+              { "name": "Tempo Runs", "sets": 10, "reps": "100m @ 70%", "rest": 30, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m1-week0-day-5",
+            "day": 5,
+            "title": "Conditioning Circuits + Plyometrics",
+            "exercises": [
+              { "name": "Sled Push", "sets": 3, "reps": "20m", "rest": 60, "trackSets": false },
+              { "name": "Box Jumps", "sets": 3, "reps": 10, "rest": 60, "trackSets": false },
+              { "name": "Medicine Ball Slams", "sets": 3, "reps": 12, "rest": 60, "trackSets": false },
+              { "name": "Farmer’s Carry", "sets": 3, "reps": "20m", "rest": 60, "trackSets": false },
+              { "name": "Depth Jumps", "sets": 3, "reps": 8, "rest": 90, "trackSets": false },
+              { "name": "Broad Jumps", "sets": 3, "reps": 8, "rest": 90, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m1-week0-day-6",
+            "day": 6,
+            "title": "Maximal Aerobic Speed / Hill Sprints",
+            "exercises": [
+              { "name": "MAS Intervals", "sets": 10, "reps": "15s sprint / 15s rest", "rest": 15, "trackSets": false },
+              { "name": "Hill Sprints", "sets": 6, "reps": "20m", "rest": 60, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m1-week0-day-7",
+            "day": 7,
+            "title": "Rest",
+            "exercises": [
+              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
+              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "m2",
+        "title": "Strength & Power",
+        "phase": "Jan–Feb",
+        "goal": "Max strength, explosive lifts, anaerobic conditioning.",
+        "frequency": "5 training days + 1 conditioning day + 1 rest day",
+        "microcycle": [
+          {
+            "id": "m2-week0-day-1",
+            "day": 1,
+            "title": "Heavy Strength",
+            "exercises": [
+              { "name": "Back Squat", "sets": 5, "reps": 5, "intensity": "80% 1RM", "rest": 120, "trackSets": true },
+              { "name": "Bench Press", "sets": 5, "reps": 5, "intensity": "80% 1RM", "rest": 120, "trackSets": true },
+              { "name": "Deadlift", "sets": 4, "reps": 5, "intensity": "80% 1RM", "rest": 150, "trackSets": true },
+              { "name": "Pull-Ups", "sets": 4, "reps": 10, "rest": 90, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m2-week0-day-2",
+            "day": 2,
+            "title": "Olympic Lifts + Plyometrics",
+            "exercises": [
+              { "name": "Power Clean", "sets": 6, "reps": 3, "intensity": "75–80% 1RM", "rest": 120, "trackSets": true },
+              { "name": "Snatch", "sets": 5, "reps": 3, "intensity": "70% 1RM", "rest": 120, "trackSets": true },
+              { "name": "Push Jerk", "sets": 4, "reps": 5, "intensity": "75% 1RM", "rest": 120, "trackSets": true },
+              { "name": "Box Jumps", "sets": 4, "reps": 8, "rest": 90, "trackSets": false },
+              { "name": "Depth Jumps", "sets": 4, "reps": 6, "rest": 90, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m2-week0-day-3",
+            "day": 3,
+            "title": "Recovery",
+            "exercises": [
+              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
+              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m2-week0-day-4",
+            "day": 4,
+            "title": "Strongman Conditioning (Forwards) / Speed (Backs)",
+            "exercises": [
+              { "name": "Forwards Circuit", "sets": 3, "reps": "sled push, tire flip, carries", "rest": 90, "trackSets": false },
+              { "name": "Backs Sprint Mechanics", "sets": 8, "reps": "40m sprint", "rest": "walk back", "trackSets": false },
+              { "name": "Agility Cone Drills", "sets": 6, "reps": 1, "rest": 60, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m2-week0-day-5",
+            "day": 5,
+            "title": "VO₂ Max Intervals",
+            "exercises": [
+              { "name": "VO₂ Max Intervals", "sets": 4, "reps": "4 min @ 90–95% HRmax", "rest": "3 min jog", "trackSets": false }
+            ]
+          },
+          {
+            "id": "m2-week0-day-6",
+            "day": 6,
+            "title": "Anaerobic Conditioning",
+            "exercises": [
+              { "name": "Shuttle Runs", "sets": 10, "reps": "40m", "rest": 30, "trackSets": false },
+              { "name": "Hill Sprints", "sets": 8, "reps": "20m", "rest": 60, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m2-week0-day-7",
+            "day": 7,
+            "title": "Rest",
+            "exercises": [
+              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
+              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "m3",
+        "title": "Speed & Conditioning",
+        "phase": "Mar",
+        "goal": "Sprint mechanics, agility, VO₂ max peak.",
+        "frequency": "4–5 training days + 1 conditioning day + 1 rest day",
+        "microcycle": [
+          {
+            "id": "m3-week0-day-1",
+            "day": 1,
+            "title": "Sprint + Strength Maintenance",
+            "exercises": [
+              { "name": "Sprints", "sets": 10, "reps": "40m", "rest": "walk back", "trackSets": false },
+              { "name": "Squat", "sets": 3, "reps": 5, "intensity": "80% 1RM", "rest": 120, "trackSets": true },
+              { "name": "Bench Press", "sets": 3, "reps": 5, "intensity": "80% 1RM", "rest": 120, "trackSets": true }
+            ]
+          },
+          {
+            "id": "m3-week0-day-2",
+            "day": 2,
+            "title": "Agility + Plyometrics",
+            "exercises": [
+              { "name": "Cone Drills", "sets": 10, "reps": "zig-zag, 5-10-5", "rest": 60, "trackSets": false },
+              { "name": "Ladder Drills", "sets": 1, "reps": "5 min continuous", "rest": 60, "trackSets": false },
+              { "name": "Depth Jumps", "sets": 3, "reps": 8, "rest": 90, "trackSets": false },
+              { "name": "Broad Jumps", "sets": 3, "reps": 8, "rest": 90, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m3-week0-day-3",
+            "day": 3,
+            "title": "Recovery",
+            "exercises": [
+              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
+              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m3-week0-day-4",
+            "day": 4,
+            "title": "VO₂ Max Intervals",
+            "exercises": [
+              { "name": "VO₂ Max Intervals", "sets": 4, "reps": "4 min @ 90–95% HRmax", "rest": "2 min jog", "trackSets": false },
+              { "name": "MAS Intervals", "sets": 12, "reps": "20s sprint / 20s rest", "rest": 20, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m3-week0-day-5",
+            "day": 5,
+            "title": "Conditioning Circuits",
+            "exercises": [
+              { "name": "Sled Push", "sets": 4, "reps": "20m", "rest": 60, "trackSets": false },
+              { "name": "Medicine Ball Throws", "sets": 4, "reps": 10, "rest": 60, "trackSets": false },
+              { "name": "Farmer’s Carry", "sets": 4, "reps": "30m", "rest": 60, "trackSets": false },
+              { "name": "Burpees", "sets": 4, "reps": 12, "rest": 60, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m3-week0-day-6",
+            "day": 6,
+            "title": "Hill Sprints / Game Conditioning",
+            "exercises": [
+              { "name": "Hill Sprints", "sets": 10, "reps": "20m", "rest": 60, "trackSets": false },
+              { "name": "Rugby Shuttle", "sets": 10, "reps": "goal line to 22m and back", "rest": 60, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m3-week0-day-7",
+            "day": 7,
+            "title": "Rest",
+            "exercises": [
+              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
+              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "m4",
+        "title": "Season Prep",
+        "phase": "Apr",
+        "goal": "Maintain strength/power, sharpen conditioning, taper for matches.",
+        "frequency": "3–4 training days + 1 conditioning day + 2 rest days",
+        "microcycle": [
+          {
+            "id": "m4-week0-day-1",
+            "day": 1,
+            "title": "Strength Maintenance",
+            "exercises": [
+              { "name": "Squat", "sets": 3, "reps": 3, "intensity": "85% 1RM", "rest": 120, "trackSets": true },
+              { "name": "Bench Press", "sets": 3, "reps": 3, "intensity": "85% 1RM", "rest": 120, "trackSets": true },
+              { "name": "Deadlift", "sets": 3, "reps": 3, "intensity": "85% 1RM", "rest": 150, "trackSets": true }
+            ]
+          },
+          {
+            "id": "m4-week0-day-2",
+            "day": 2,
+            "title": "Speed & Agility",
+            "exercises": [
+              { "name": "Sprints", "sets": 6, "reps": "30m", "rest": "walk back", "trackSets": false },
+              { "name": "Cone Drills", "sets": 8, "reps": "zig-zag, 5-10-5", "rest": 60, "trackSets": false },
+              { "name": "Ladder Drills", "sets": 1, "reps": "3 min continuous", "rest": 60, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m4-week0-day-3",
+            "day": 3,
+            "title": "Recovery",
+            "exercises": [
+              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
+              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m4-week0-day-4",
+            "day": 4,
+            "title": "VO₂ Max Intervals",
+            "exercises": [
+              { "name": "VO₂ Max Intervals", "sets": 3, "reps": "4 min @ 90–95% HRmax", "rest": "2 min jog", "trackSets": false },
+              { "name": "MAS Intervals", "sets": 8, "reps": "15s sprint / 15s rest", "rest": 15, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m4-week0-day-5",
+            "day": 5,
+            "title": "Conditioning Circuits",
+            "exercises": [
+              { "name": "Sled Push", "sets": 3, "reps": "20m", "rest": 60, "trackSets": false },
+              { "name": "Box Jumps", "sets": 3, "reps": 8, "rest": 60, "trackSets": false },
+              { "name": "Medicine Ball Slams", "sets": 3, "reps": 10, "rest": 60, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m4-week0-day-6",
+            "day": 6,
+            "title": "Rest",
+            "exercises": [
+              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
+              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            ]
+          },
+          {
+            "id": "m4-week0-day-7",
+            "day": 7,
+            "title": "Rest",
+            "exercises": [
+              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
+              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
