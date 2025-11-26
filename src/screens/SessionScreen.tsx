@@ -9,10 +9,14 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Progress from 'react-native-progress';
-import rugbyData from '../data/rugbyProgram.json';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { RugbyProgram, TrainingSession, Mesocycle, MicrocycleDay } from '../types';
+import { calculateSuggestedWeight } from '../utils/loadCalculator';
+
+import rugbyDataRaw from '../data/rugbyProgram.json';
+const rugbyData: RugbyProgram = rugbyDataRaw as RugbyProgram;
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Session'>;
 
@@ -20,18 +24,18 @@ export default function SessionScreen({ route, navigation }: Props) {
   const { sessionId } = route.params;
 
   // Flatten all days across mesocycles
-  const allDays = rugbyData.macrocycle.mesocycles.flatMap((meso: any) =>
-    (meso.microcycle || []).map((day: any) => ({
-      ...day,
-      mesoId: meso.id,
-    }))
+  const allDays: TrainingSession[] = rugbyData.macrocycle.mesocycles.flatMap(
+    (meso: Mesocycle) =>
+      (meso.microcycle || []).map((day: MicrocycleDay) => ({
+        ...day,
+        mesoId: meso.id,
+      }))
   );
 
-  // State for 1RMs
-  const [oneRMMap, setOneRMMap] = useState<Record<string, number>>({});
-
   // Match by id directly (e.g. "m1-week0-day-1")
-  const session = allDays.find((d: any) => d.id === sessionId);
+  const session: TrainingSession | undefined = allDays.find(
+    (d: TrainingSession) => d.id === sessionId
+  );
 
   const [completed, setCompleted] = useState<number[]>([]);
   const [restTimers, setRestTimers] = useState<{ [key: number]: number }>({});
@@ -54,6 +58,9 @@ export default function SessionScreen({ route, navigation }: Props) {
     loadCompleted();
   }, [sessionId]);
 
+  // State for 1RMs
+  const [oneRMMap, setOneRMMap] = useState<Record<string, number>>({});
+
   // Preload existing 1RMs for this session’s exercises
   useEffect(() => {
     const loadExisting1RMs = async () => {
@@ -70,7 +77,6 @@ export default function SessionScreen({ route, navigation }: Props) {
             }
           }
         }
-
         setOneRMMap(map);
       } catch (error) {
         console.error('Error loading 1RMs:', error);
@@ -82,12 +88,11 @@ export default function SessionScreen({ route, navigation }: Props) {
     }
   }, [sessionId, session]);
 
-  // Debug logs
-  useEffect(() => {
-    console.log('✅ Loaded rugbyData:', rugbyData);
-    console.log('✅ Session ID:', sessionId);
-    console.log('✅ Matched session:', session);
-  }, [sessionId, session]);
+  // States for session summary logging
+  const [effort, setEffort] = useState<number>(5);     // RPE scale 1–10
+  const [duration, setDuration] = useState<number>(60); // minutes
+  const [fatigue, setFatigue] = useState<number>(3);   // 1–5 scale
+  const [notes, setNotes] = useState<string>('');      // optional notes
 
   const toggleComplete = async (index: number) => {
     const updated = completed.includes(index)
@@ -143,10 +148,10 @@ export default function SessionScreen({ route, navigation }: Props) {
     await AsyncStorage.setItem(`setLogs:${sessionId}`, JSON.stringify(next));
   };
 
-  const markSessionComplete = async () => {
+  async function finishSession() {
     try {
-      if (!sessionId) {
-        console.error('❌ Cannot finish session: sessionId is undefined');
+      if (!session) {
+        console.error('❌ Cannot finish session: session is undefined');
         return;
       }
 
@@ -154,22 +159,36 @@ export default function SessionScreen({ route, navigation }: Props) {
       const existing = await AsyncStorage.getItem('completedSessions');
       const parsed = existing ? JSON.parse(existing) : [];
 
-      const updated = [...parsed, { id: sessionId, date: new Date().toISOString() }];
-      await AsyncStorage.setItem('completedSessions', JSON.stringify(updated));
+      const newSession = {
+        id: sessionId,
+        title: session.title, // ✅ ensure workout name is saved
+        date: new Date().toISOString().split('T')[0],
+        load: effort * duration,
+        fatigue,
+        notes,
+      };
 
-      // Clear per-session completion markers
-      await AsyncStorage.removeItem(`completed:${sessionId}`);
+      parsed.push(newSession);
+      await AsyncStorage.setItem('completedSessions', JSON.stringify(parsed));
 
       // Clean up timers
       intervalsRef.current.forEach((id) => clearInterval(id));
       intervalsRef.current.clear();
       setRestTimers({});
 
-      navigation.navigate('SessionSummary', { sessionId, completed });
+      // Navigate to summary
+      navigation.navigate('SessionSummary', { 
+        sessionId, 
+        completed, 
+        session: {
+          ...session,
+          title: session.title // ✅ pass workout name
+        }
+      });
     } catch (error) {
       console.error('Error finishing session:', error);
     }
-  };
+  }
 
   if (!session) {
     return (
@@ -182,12 +201,27 @@ export default function SessionScreen({ route, navigation }: Props) {
   const progress =
     session.exercises?.length ? completed.length / session.exercises.length : 0;
 
-  // Helper: calculate suggested weight
   const suggestedWeight = (exerciseName: string, percent: number) => {
     const oneRM = oneRMMap[exerciseName];
     return oneRM ? Math.round(oneRM * percent) : null;
   };
-
+  // Helper: decide if an exercise is a weight-lift
+  const isWeightLift = (exerciseName: string) => {
+    const lifts = [
+      'squat',
+      'bench',
+      'press',
+      'deadlift',
+      'clean',
+      'snatch',
+      'row',
+      'curl',
+      'pull',
+      'push',
+    ];
+    return lifts.some(lift => exerciseName.toLowerCase().includes(lift));
+  };
+  
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>{session.title}</Text>
@@ -204,7 +238,7 @@ export default function SessionScreen({ route, navigation }: Props) {
       </View>
 
       <FlatList
-        data={session.exercises}
+        data={session?.exercises || []}
         keyExtractor={(_, index) => index.toString()}
         renderItem={({ item, index }) => (
           <View style={styles.card}>
@@ -217,13 +251,15 @@ export default function SessionScreen({ route, navigation }: Props) {
             >
               <Text style={styles.exercise}>{item.name}</Text>
               <Text style={styles.detail}>Sets: {item.sets}</Text>
-              <Text style={styles.detail}>Reps: {item.reps}</Text>
+              <Text style={styles.detail}>Reps: {String(item.reps)}</Text>
               <Text style={styles.detail}>Rest: {item.rest} sec</Text>
 
-              {/* New suggested weight line */}
-              <Text style={styles.detail}>
-                Suggested: {suggestedWeight(item.name, 0.7) ?? '—'} lbs (70% 1RM)
-              </Text>
+              {/* ✅ Only show suggested weight for lifting exercises */}
+              {isWeightLift(item.name) && (
+                <Text style={styles.detail}>
+                  Suggested: {calculateSuggestedWeight(item.name, oneRMMap, item.sets, Number(item.reps)) ?? '—'} lbs
+                </Text>
+              )}
 
               <Text style={styles.status}>
                 {completed.includes(index) ? '✅ Completed' : 'Tap to mark done'}
@@ -231,7 +267,8 @@ export default function SessionScreen({ route, navigation }: Props) {
             </TouchableOpacity>
 
             {item.trackSets &&
-              [...Array(item.sets)].map((_, setIndex) => (
+              Number.isInteger(Number(item.sets)) &&
+              [...Array(Number(item.sets))].map((_, setIndex) => (
                 <View key={setIndex} style={styles.setRow}>
                   <Text style={styles.setLabel}>Set {setIndex + 1}</Text>
                   <TextInput
@@ -239,19 +276,23 @@ export default function SessionScreen({ route, navigation }: Props) {
                     placeholder="Weight (lbs)"
                     keyboardType="numeric"
                     value={setLogs[index]?.[setIndex]?.weight || ''}
-                    onChangeText={(text) => updateSetLog(index, setIndex, 'weight', text)}
+                    onChangeText={(text) =>
+                      updateSetLog(index, setIndex, 'weight', text)
+                    }
                   />
                   <TextInput
                     style={styles.input}
                     placeholder="Reps"
                     keyboardType="numeric"
                     value={setLogs[index]?.[setIndex]?.reps || ''}
-                    onChangeText={(text) => updateSetLog(index, setIndex, 'reps', text)}
+                    onChangeText={(text) =>
+                      updateSetLog(index, setIndex, 'reps', text)
+                    }
                   />
                 </View>
               ))}
 
-                        {restTimers[index] !== undefined ? (
+            {restTimers[index] !== undefined ? (
               <Text style={styles.timer}>⏱ Rest: {restTimers[index]}s remaining</Text>
             ) : (
               <TouchableOpacity
@@ -264,82 +305,83 @@ export default function SessionScreen({ route, navigation }: Props) {
           </View>
         )}
         ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-      />
+        />
 
-      {/* Modal access to 1RM calculator with session-aware callback */}
-      <TouchableOpacity
-        style={styles.oneRMButton}
-        onPress={() =>
-          navigation.navigate('My1RMs' as any, {
-            onUpdate1RM: (exerciseName: string, newValue: number) => {
-              setOneRMMap((prev) => ({ ...prev, [exerciseName]: newValue }));
-            },
-          })
+        {/* Modal access to 1RM calculator with session-aware callback */}
+        <TouchableOpacity
+          style={styles.oneRMButton}
+          onPress={() =>
+            navigation.navigate('My1RMs' as any, {
+              onUpdate1RM: (exerciseName: string, newValue: number) => {
+                setOneRMMap((prev) => ({ ...prev, [exerciseName]: newValue }));
+              },
+            })
+          }
+        >
+          <Text style={styles.oneRMText}>💪 Open 1RM Calculator</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.finishButton} onPress={finishSession}>
+          <Text style={styles.finishText}>🏁 Finish Session</Text>
+        </TouchableOpacity>
+        </SafeAreaView>
+        );
         }
-      >
-        <Text style={styles.oneRMText}>💪 Open 1RM Calculator</Text>
-      </TouchableOpacity>
 
-      <TouchableOpacity style={styles.finishButton} onPress={markSessionComplete}>
-        <Text style={styles.finishText}>🏁 Finish Session</Text>
-      </TouchableOpacity>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-  header: { fontSize: 22, fontWeight: '600', marginBottom: 16 },
-  card: { padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#ddd' },
-  exerciseBlock: {},
-  completedCard: {
-    backgroundColor: '#fff',
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#0a84ff', // highlight color for completed
-  },
-  detail: { marginTop: 2, color: '#333' },
-  exercise: { fontSize: 16, fontWeight: '600' },
-  status: { marginTop: 6, color: '#555' },
-  setRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginTop: 8,
-  },
-  setLabel: { width: 64, fontWeight: '500' },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 6,
-    padding: 8,
-    flex: 1,
-  },
-  timer: { marginTop: 8, color: '#333' },
-  restButton: {
-    marginTop: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    backgroundColor: '#0a84ff',
-    borderRadius: 6,
-    alignSelf: 'flex-start',
-  },
-  restText: { color: '#fff', fontWeight: '600' },
-  oneRMButton: {
-    marginTop: 16,
-    paddingVertical: 12,
-    backgroundColor: '#0a84ff',
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  oneRMText: { color: '#fff', fontWeight: '700' },
-  finishButton: {
-    marginTop: 16,
-    paddingVertical: 12,
-    backgroundColor: '#28a745',
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  finishText: { color: '#fff', fontWeight: '700' },
-});
+        // ✅ styles defined after the component, at module level
+        const styles = StyleSheet.create({
+          container: { flex: 1, padding: 20, backgroundColor: '#fff' },
+          header: { fontSize: 22, fontWeight: '600', marginBottom: 16 },
+          card: { padding: 12, borderRadius: 8, borderWidth: 1, borderColor: '#ddd' },
+          exerciseBlock: {},
+          completedCard: {
+            backgroundColor: '#fff',
+            padding: 12,
+            borderRadius: 8,
+            borderWidth: 1,
+            borderColor: '#0a84ff',
+          },
+          detail: { marginTop: 2, color: '#333' },
+          exercise: { fontSize: 16, fontWeight: '600' },
+          status: { marginTop: 6, color: '#555' },
+          setRow: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 8,
+            marginTop: 8,
+          },
+          setLabel: { width: 64, fontWeight: '500' },
+          input: {
+            borderWidth: 1,
+            borderColor: '#ddd',
+            borderRadius: 6,
+            padding: 8,
+            flex: 1,
+          },
+          timer: { marginTop: 8, color: '#333' },
+          restButton: {
+            marginTop: 8,
+            paddingVertical: 8,
+            paddingHorizontal: 12,
+            backgroundColor: '#0a84ff',
+            borderRadius: 6,
+            alignSelf: 'flex-start',
+          },
+          restText: { color: '#fff', fontWeight: '600' },
+          oneRMButton: {
+            marginTop: 16,
+            paddingVertical: 12,
+            backgroundColor: '#0a84ff',
+            borderRadius: 8,
+            alignItems: 'center',
+          },
+          oneRMText: { color: '#fff', fontWeight: '700' },
+          finishButton: {
+            marginTop: 16,
+            paddingVertical: 12,
+            backgroundColor: '#28a745',
+            borderRadius: 8,
+            alignItems: 'center',
+          },
+          finishText: { color: '#fff', fontWeight: '700' },
+        });

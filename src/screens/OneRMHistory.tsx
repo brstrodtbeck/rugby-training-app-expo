@@ -3,19 +3,16 @@ import { View, Text, FlatList, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LineChart } from 'react-native-gifted-charts';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
-type Props = NativeStackScreenProps<RootStackParamList, '1RMHistory'>;
-type HistoryRouteProp = RouteProp<RootStackParamList, '1RMHistory'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'OneRMHistory'>;
 
 interface HistoryEntry {
   value: number;
   date: string;
 }
 
-export default function OneRMHistory(_: Props) {
-  const route = useRoute<HistoryRouteProp>();
+export default function OneRMHistory({ route }: Props) {
   const { exerciseName } = route.params;
   const [history, setHistory] = useState<HistoryEntry[]>([]);
 
@@ -70,7 +67,7 @@ export default function OneRMHistory(_: Props) {
       )}
 
       <FlatList
-        data={[...history].reverse()} // latest first
+        data={[...history].reverse()}
         keyExtractor={(_, i) => i.toString()}
         renderItem={({ item }) => (
           <View style={styles.row}>

@@ -1,15 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, Platform, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  Platform,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Calendar } from 'react-native-calendars';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import ChartComponent from '../components/ChartComponent';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
-// ---- Date-only helpers (no timezones) ----
 function formatYMD(date: Date): string {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -19,7 +27,7 @@ function formatYMD(date: Date): string {
 
 function parseYMD(ymd: string): Date {
   const [y, m, d] = ymd.split('-').map(Number);
-  return new Date(y, m - 1, d); // local date at midnight
+  return new Date(y, m - 1, d);
 }
 
 function addDaysYMD(ymd: string, days: number): string {
@@ -32,7 +40,6 @@ function daysBetweenYMD(startYMD: string, endYMD: string): number {
   const start = parseYMD(startYMD);
   const end = parseYMD(endYMD);
   const msPerDay = 1000 * 60 * 60 * 24;
-  // Round to handle DST transitions robustly
   return Math.round((end.getTime() - start.getTime()) / msPerDay);
 }
 
@@ -42,7 +49,6 @@ export default function HomeScreen({ navigation }: Props) {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showPicker, setShowPicker] = useState(false);
 
-  // Load startDate (stored as YYYY-MM-DD)
   useEffect(() => {
     const loadStartDate = async () => {
       const stored = await AsyncStorage.getItem('startDateYMD');
@@ -53,7 +59,6 @@ export default function HomeScreen({ navigation }: Props) {
     loadStartDate();
   }, []);
 
-  // Load completed sessions whenever screen is focused, cleaning invalid entries
   useEffect(() => {
     const loadCompletedSessions = async () => {
       try {
@@ -77,8 +82,7 @@ export default function HomeScreen({ navigation }: Props) {
     return unsubscribe;
   }, [navigation]);
 
-  // Convert sessionId to calendar date (YYYY-MM-DD) using date-only math
-  function getDateFromSessionId(sessionId?: string, startYMD?: string): string {
+  const getDateFromSessionId = (sessionId?: string, startYMD?: string | null): string => {
     if (!sessionId || !startYMD) return '';
     const match = sessionId.match(/week(\d+)-day-(\d+)/);
     if (!match) return '';
@@ -86,9 +90,8 @@ export default function HomeScreen({ navigation }: Props) {
     const day = parseInt(match[2], 10);
     const offsetDays = week * 7 + (day - 1);
     return addDaysYMD(startYMD, offsetDays);
-  }
+  };
 
-  // Build markedDates for calendar
   const getMarkedDates = () => {
     const marks: Record<string, any> = {};
     if (startDateYMD) {
@@ -116,39 +119,30 @@ export default function HomeScreen({ navigation }: Props) {
     return marks;
   };
 
-  // Handle day press → compute sessionId based on date-only offset
   const handleDayPress = (day: { dateString: string }) => {
     setSelectedDate(day.dateString);
-
-    if (!startDateYMD) {
-      console.warn('Start date not set — cannot calculate session ID');
-      return;
-    }
+    if (!startDateYMD) return;
 
     const offsetDays = daysBetweenYMD(startDateYMD, day.dateString);
-    const mesoId = 'm1'; // hardcoded for now
+    const mesoId = 'm1';
     const week = Math.floor(offsetDays / 7);
     const dayNumber = (offsetDays % 7) + 1;
     const sessionId = `${mesoId}-week${week}-day-${dayNumber}`;
 
-    console.log('➡️ Navigating to session:', sessionId, 'offsetDays:', offsetDays);
     navigation.navigate('Session', { sessionId });
   };
 
-  // Handle start date change (picker)
   const handleDateChange = async (_event: any, date?: Date) => {
     if (date) {
-      setShowPicker(Platform.OS === 'ios'); // keep open on iOS
+      setShowPicker(Platform.OS === 'ios');
       const ymd = formatYMD(date);
       setStartDateYMD(ymd);
       await AsyncStorage.setItem('startDateYMD', ymd);
-      console.log('📅 Start date set (YMD):', ymd);
     } else {
       setShowPicker(false);
     }
   };
 
-  // Reset completed sessions with confirmation
   const resetCompletedSessions = async () => {
     Alert.alert('Reset progress', 'Clear all completed sessions?', [
       { text: 'Cancel', style: 'cancel' },
@@ -158,7 +152,6 @@ export default function HomeScreen({ navigation }: Props) {
         onPress: async () => {
           await AsyncStorage.removeItem('completedSessions');
           setCompletedSessions([]);
-          console.log('🔄 Completed sessions reset');
         },
       },
     ]);
@@ -166,55 +159,72 @@ export default function HomeScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>🏉 Rugby Training Program</Text>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.header}>🏉 Rugby Training Program</Text>
 
-      {startDateYMD && (
-        <Text style={styles.startDate}>
-          Current start date: {parseYMD(startDateYMD).toDateString()}
-        </Text>
-      )}
+        {startDateYMD && (
+          <Text style={styles.startDate}>
+            Current start date: {parseYMD(startDateYMD).toDateString()}
+          </Text>
+        )}
 
-      <View style={styles.legend}>
-        <Text style={styles.legendItem}>🟢 Green = Completed session</Text>
-        <Text style={styles.legendItem}>🔵 Blue = Selected day</Text>
-      </View>
+        <View style={styles.legend}>
+          <Text style={styles.legendItem}>🟢 Green = Completed session</Text>
+          <Text style={styles.legendItem}>🔵 Blue = Selected day</Text>
+        </View>
 
-      <Calendar
-        markedDates={getMarkedDates()}
-        markingType="custom"
-        onDayPress={handleDayPress}
-      />
-
-      <View style={{ marginTop: 20 }}>
-        <Button title="Pick Start Date" onPress={() => setShowPicker(true)} />
-      </View>
-
-      {showPicker && (
-        <DateTimePicker
-          value={startDateYMD ? parseYMD(startDateYMD) : new Date()}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
+        <Calendar
+          markedDates={getMarkedDates()}
+          markingType="custom"
+          onDayPress={handleDayPress}
         />
-      )}
 
-      <View style={{ marginTop: 20 }}>
-        <Button title="Reset Completed Sessions" color="red" onPress={resetCompletedSessions} />
-      </View>
-      <View style={{ marginTop: 20 }}>
-        <Button
-          title="Go to My 1RMs"
-          onPress={() => navigation.navigate('My1RMs')}
-        />
-      </View>
+        <TouchableOpacity style={styles.navButton} onPress={() => setShowPicker(true)}>
+          <Text style={styles.navText}>📅 Pick Start Date</Text>
+        </TouchableOpacity>
+
+        {showPicker && (
+          <DateTimePicker
+            value={startDateYMD ? parseYMD(startDateYMD) : new Date()}
+            mode="date"
+            display="default"
+            onChange={handleDateChange}
+          />
+        )}
+
+        <TouchableOpacity style={[styles.navButton, { backgroundColor: '#dc3545' }]} onPress={resetCompletedSessions}>
+          <Text style={styles.navText}>🗑️ Reset Completed Sessions</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('My1RMs')}>
+          <Text style={styles.navText}>📈 Go to My 1RMs</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.navButton, { backgroundColor: '#007bff' }]} onPress={() => navigation.navigate('OneRMInput')}>
+          <Text style={styles.navText}>⚡ Set Your 1RMs</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: '#fff' },
+  scrollContent: { padding: 20, paddingBottom: 40 },
   header: { fontSize: 22, fontWeight: '600', marginBottom: 8 },
   startDate: { fontSize: 16, marginBottom: 12, color: '#333' },
   legend: { marginBottom: 8 },
   legendItem: { fontSize: 14, color: '#555' },
+  navButton: {
+    marginTop: 20,
+    paddingVertical: 12,
+    backgroundColor: '#28a745',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  navText: {
+    color: '#fff',
+    fontWeight: '700',
+    fontSize: 16,
+  },
 });
