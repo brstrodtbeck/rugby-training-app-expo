@@ -256,7 +256,23 @@ export default function HomeScreen({ navigation }: Props) {
     if (!meso || !meso.weeks || !Array.isArray(meso.weeks)) return '';
     const programWeek = meso.weeks[parsed.weekIndex]; // This is the 1-indexed program week
     if (!programWeek) return '';
-    const offsetDays = (programWeek - 1) * 7 + (parsed.dayNumber - 1);
+    
+    // Special handling for Hypertrophy Month (3-day per week: Mon-Wed-Fri pattern)
+    let offsetDays: number;
+    if (selectedProgramId === 'hypertrophy') {
+      // Map program day (1,2,3) back to offset within week cycle (0,2,4)
+      const dayOffsetMap: Record<number, number> = {
+        1: 0, // Day 1 = start date (offset 0)
+        2: 2, // Day 2 = +2 days
+        3: 4, // Day 3 = +4 days
+      };
+      const daysInCycle = dayOffsetMap[parsed.dayNumber] ?? 0;
+      offsetDays = (programWeek - 1) * 7 + daysInCycle;
+    } else {
+      // Standard 7-day week calculation
+      offsetDays = (programWeek - 1) * 7 + (parsed.dayNumber - 1);
+    }
+    
     return addDaysYMD(startYMD, offsetDays);
   }
 
@@ -314,8 +330,31 @@ export default function HomeScreen({ navigation }: Props) {
       
       if (offsetDays < 0) return null; // Before program start
       
-      const programWeek = Math.floor(offsetDays / 7) + 1;
-      const dayNumber = (offsetDays % 7) + 1;
+      // Special handling for Hypertrophy Month (3-day per week: Mon-Wed-Fri pattern)
+      let programWeek: number;
+      let dayNumber: number;
+      
+      if (selectedProgramId === 'hypertrophy') {
+        // For 3-day programs: Day 1 = start date, Day 2 = +2 days, Day 3 = +4 days, then repeat weekly
+        const daysInCycle = offsetDays % 7;
+        programWeek = Math.floor(offsetDays / 7) + 1;
+        
+        // Map to program days: 0,2,4 → 1,2,3; others are rest days
+        if (daysInCycle === 0) {
+          dayNumber = 1; // Start date (Day 1)
+        } else if (daysInCycle === 2) {
+          dayNumber = 2; // +2 days (Day 2)
+        } else if (daysInCycle === 4) {
+          dayNumber = 3; // +4 days (Day 3)
+        } else {
+          // Rest day - no session
+          return null;
+        }
+      } else {
+        // Standard 7-day week calculation for other programs
+        programWeek = Math.floor(offsetDays / 7) + 1;
+        dayNumber = (offsetDays % 7) + 1;
+      }
       
       // Get total weeks - use program info or macrocycle
       const totalWeeks = currentProgram.weeks || programData.macrocycle?.lengthWeeks || (programData as any).macrocycle?.lengthWeeks || 4;
@@ -399,9 +438,34 @@ export default function HomeScreen({ navigation }: Props) {
       return;
     }
 
-    // Calculate program week (1-indexed) and day within week (1-7)
-    const programWeek = Math.floor(offsetDays / 7) + 1;
-    const dayNumber = (offsetDays % 7) + 1;
+    // Calculate program week (1-indexed) and day within week
+    let programWeek: number;
+    let dayNumber: number;
+    
+    // Special handling for Hypertrophy Month (3-day per week: Mon-Wed-Fri pattern)
+    if (selectedProgramId === 'hypertrophy') {
+      // For 3-day programs: Day 1 = start date, Day 2 = +2 days, Day 3 = +4 days, then repeat weekly
+      const daysInCycle = offsetDays % 7;
+      programWeek = Math.floor(offsetDays / 7) + 1;
+      
+      // Map to program days: 0,2,4 → 1,2,3; others are rest days
+      if (daysInCycle === 0) {
+        dayNumber = 1; // Start date (Day 1)
+      } else if (daysInCycle === 2) {
+        dayNumber = 2; // +2 days (Day 2)
+      } else if (daysInCycle === 4) {
+        dayNumber = 3; // +4 days (Day 3)
+      } else {
+        // Rest day - show recovery options
+        setShowRecoveryModal(true);
+        setRecoveryModalDate(day.dateString);
+        return;
+      }
+    } else {
+      // Standard 7-day week calculation for other programs
+      programWeek = Math.floor(offsetDays / 7) + 1;
+      dayNumber = (offsetDays % 7) + 1;
+    }
 
     // Check if we're within the program length
     const totalWeeks = programData.macrocycle?.lengthWeeks || (programData as any).macrocycle?.lengthWeeks || 4;
@@ -863,8 +927,32 @@ export default function HomeScreen({ navigation }: Props) {
     const offsetDays = daysBetweenYMD(startDateYMD, dateYMD) - programOffset;
     if (offsetDays < 0) return null;
     
-    const programWeek = Math.floor(offsetDays / 7) + 1;
-    const dayNumber = (offsetDays % 7) + 1;
+    // Special handling for Hypertrophy Month (3-day per week: Mon-Wed-Fri pattern)
+    let programWeek: number;
+    let dayNumber: number;
+    
+    if (selectedProgramId === 'hypertrophy') {
+      // For 3-day programs: Day 1 = start date, Day 2 = +2 days, Day 3 = +4 days, then repeat weekly
+      const daysInCycle = offsetDays % 7;
+      programWeek = Math.floor(offsetDays / 7) + 1;
+      
+      // Map to program days: 0,2,4 → 1,2,3; others are rest days
+      if (daysInCycle === 0) {
+        dayNumber = 1; // Start date (Day 1)
+      } else if (daysInCycle === 2) {
+        dayNumber = 2; // +2 days (Day 2)
+      } else if (daysInCycle === 4) {
+        dayNumber = 3; // +4 days (Day 3)
+      } else {
+        // Rest day - no session
+        return null;
+      }
+    } else {
+      // Standard 7-day week calculation for other programs
+      programWeek = Math.floor(offsetDays / 7) + 1;
+      dayNumber = (offsetDays % 7) + 1;
+    }
+    
     const totalWeeks = currentProgram.weeks || programData.macrocycle?.lengthWeeks || (programData as any).macrocycle?.lengthWeeks || 4;
     if (programWeek > totalWeeks) return null;
     
