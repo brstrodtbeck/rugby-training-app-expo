@@ -1,0 +1,244 @@
+{
+  "id": "program_test_progression",
+  "title": "Test Block – Progression Validation",
+  "description": "28-day test program to validate Rule of 3, readiness safeguards, and deload logic",
+  "macrocycle": {
+    "lengthWeeks": 4,
+    "mesocycles": [
+      {
+        "id": "test",
+        "title": "Test Mesocycle",
+        "weeks": [1, 2, 3, 4],
+        "phaseFocus": "Validate progression logic across all exercise types",
+        "progression": {
+          "week1": { "intensity": "75% TM", "volume": "Normal" },
+          "week2": { "intensity": "75% TM", "volume": "Normal" },
+          "week3": { "intensity": "60% TM", "volume": "Deload (-40% sets)" },
+          "week4": { "intensity": "75% TM", "volume": "Normal" }
+        },
+        "microcycle": [
+          {
+            "day": 1,
+            "title": "Full Body Test",
+            "durationMinutes": 60,
+            "blocks": [
+              {
+                "name": "Block A – 1RM Exercise",
+                "blockType": "block",
+                "exercises": [
+                  {
+                    "name": "Back Squat (Test)",
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "sets": 5,
+                    "reps": 5,
+                    "rest": 180,
+                    "intensity": "75% TM",
+                    "targetRPE": 7,
+                    "notes": "1RM tracked exercise - uses hybrid progression logic",
+                    "instruction": "Validate: TM updates on completed sessions, deload reduces intensity",
+                    "definition": "Primary test for hybrid 1RM progression system"
+                  }
+                ]
+              },
+              {
+                "name": "Block B – Volume Exercise (Rule of 3)",
+                "blockType": "block",
+                "exercises": [
+                  {
+                    "name": "Dumbbell Row (Test)",
+                    "trackingMode": "volume",
+                    "exerciseCategory": "assistance",
+                    "sets": 3,
+                    "reps": 10,
+                    "rest": 90,
+                    "targetRPE": 7,
+                    "minIncrement": 2.5,
+                    "notes": "Rule of 3 progression - 3 consecutive successes or +3 extra reps",
+                    "instruction": "Validate: consecutiveSuccesses tracking, extraReps fallback, readiness safeguard",
+                    "definition": "Primary test for Rule of 3 volume progression"
+                  }
+                ]
+              },
+              {
+                "name": "Block C – Cardio/Mobility (No Progression)",
+                "blockType": "block",
+                "exercises": [
+                  {
+                    "name": "VO₂ Max Intervals (Test)",
+                    "trackingMode": "time",
+                    "sets": 4,
+                    "duration": "4 min",
+                    "rest": 180,
+                    "intensity": "90-95% HRmax",
+                    "notes": "4 min @ 90-95% HRmax, 3 min jog recovery",
+                    "instruction": "Validate: History link present, no progression logic applied",
+                    "definition": "Primary test for cardio tracking without progression"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "title": "Recovery / Light",
+            "durationMinutes": 30,
+            "blocks": [
+              {
+                "name": "Mobility & Recovery",
+                "exercises": [
+                  {
+                    "name": "Foam Rolling (Test)",
+                    "trackingMode": "time",
+                    "sets": 1,
+                    "duration": "10 min",
+                    "instruction": "Full body foam rolling protocol",
+                    "definition": "Recovery exercise - history only"
+                  },
+                  {
+                    "name": "Mobility Flow (Test)",
+                    "trackingMode": "time",
+                    "sets": 2,
+                    "duration": "8 min",
+                    "instruction": "Hip, thoracic, and shoulder mobility drills",
+                    "definition": "Mobility exercise - history only"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "title": "Full Body Test (Repeat)",
+            "durationMinutes": 60,
+            "blocks": [
+              {
+                "name": "Block A – 1RM Exercise",
+                "blockType": "block",
+                "exercises": [
+                  {
+                    "name": "Back Squat (Test)",
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "sets": 5,
+                    "reps": 5,
+                    "rest": 180,
+                    "intensity": "75% TM",
+                    "targetRPE": 7,
+                    "notes": "Session 2 of the week",
+                    "instruction": "Continue validating 1RM progression"
+                  }
+                ]
+              },
+              {
+                "name": "Block B – Volume Exercise",
+                "blockType": "block",
+                "exercises": [
+                  {
+                    "name": "Dumbbell Row (Test)",
+                    "trackingMode": "volume",
+                    "exerciseCategory": "assistance",
+                    "sets": 3,
+                    "reps": 10,
+                    "rest": 90,
+                    "targetRPE": 7,
+                    "minIncrement": 2.5,
+                    "notes": "Session 2 - check streak count"
+                  }
+                ]
+              },
+              {
+                "name": "Block C – Cardio",
+                "blockType": "block",
+                "exercises": [
+                  {
+                    "name": "VO₂ Max Intervals (Test)",
+                    "trackingMode": "time",
+                    "sets": 4,
+                    "duration": "4 min",
+                    "rest": 180,
+                    "intensity": "90-95% HRmax",
+                    "notes": "4 min @ 90-95% HRmax, 3 min jog recovery"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "title": "Optional Session",
+            "durationMinutes": 45,
+            "blocks": [
+              {
+                "name": "Additional Volume",
+                "exercises": [
+                  {
+                    "name": "Dumbbell Row (Test)",
+                    "trackingMode": "volume",
+                    "exerciseCategory": "assistance",
+                    "sets": 3,
+                    "reps": 10,
+                    "rest": 90,
+                    "targetRPE": 7,
+                    "minIncrement": 2.5,
+                    "notes": "Optional session - extra streak opportunity"
+                  }
+                ]
+              },
+              {
+                "name": "Light Cardio",
+                "exercises": [
+                  {
+                    "name": "Zone 2 Cardio (Test)",
+                    "trackingMode": "time",
+                    "sets": 1,
+                    "duration": "30 min",
+                    "intensity": "Zone 2 (60-70% HRmax)",
+                    "notes": "Easy aerobic work"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "testScenarios": {
+    "week1": {
+      "description": "Normal Performance - Building Streaks",
+      "expectations": [
+        "Back Squat: Normal 1RM hybrid progression",
+        "Dumbbell Row: consecutiveSuccesses increases each session",
+        "VO₂ Max: History tracked, no progression logic"
+      ]
+    },
+    "week2": {
+      "description": "+3 Reps Fallback & Low Readiness Test",
+      "expectations": [
+        "Session 5: Dumbbell Row triggers +3 reps fallback → weight increase",
+        "Session 6: Low readiness (4) but good performance → NO reduction",
+        "Readiness safeguard NOT triggered (requires 2 consecutive)"
+      ]
+    },
+    "week3": {
+      "description": "Deload/Taper Week - Suppressed Progression",
+      "isDeload": true,
+      "expectations": [
+        "All exercises: Reduced volume (60% TM for squat, 85% for row)",
+        "consecutiveSuccesses stays at 0 (suppressed)",
+        "Progression logic disabled during deload"
+      ]
+    },
+    "week4": {
+      "description": "Consecutive Low Readiness + Missed Reps → Reduction",
+      "expectations": [
+        "Sessions 13-14: readiness < 4 AND missed reps",
+        "After session 14: readinessMA3 triggers reduction",
+        "Dumbbell Row: -5% weight reduction applied",
+        "Sessions 15-16: Recovery at reduced loads"
+      ]
+    }
+  }
+}
+

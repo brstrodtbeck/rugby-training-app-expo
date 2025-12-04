@@ -1142,12 +1142,18 @@ export default function SessionScreen({ route, navigation }: Props) {
                             ) : (
                               <>
                                 {hasAdjustment && adjustedExercise.adjustedSets !== exercise.sets ? (
-                                  <View style={styles.adjustedRow}>
-                                    <Text style={styles.groupedExerciseDetails}>Sets: </Text>
-                                    <Text style={styles.originalValue}>{exercise.sets}</Text>
-                                    <Text style={styles.adjustedArrow}> → </Text>
-                                    <Text style={[styles.adjustedValue, { color: getReadinessColor(readinessScore || 5) }]}>
-                                      {adjustedExercise.adjustedSets}
+                                  <View>
+                                    <View style={styles.adjustedRow}>
+                                      <Text style={styles.groupedExerciseDetails}>Sets: </Text>
+                                      <Text style={styles.originalValue}>{exercise.sets}</Text>
+                                      <Text style={styles.adjustedArrow}> → </Text>
+                                      <Text style={[styles.adjustedValue, { color: getReadinessColor(readinessScore || 5) }]}>
+                                        {adjustedExercise.adjustedSets}
+                                      </Text>
+                                    </View>
+                                    <Text style={styles.groupedExerciseDetails}>
+                                      Reps: {formatRepsDisplay(exercise.reps)}
+                                      {exercise.rest && !isCircuit ? ` • Rest ${exercise.rest}s` : ''}
                                     </Text>
                                   </View>
                                 ) : (

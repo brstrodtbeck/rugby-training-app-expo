@@ -1,0 +1,284 @@
+{
+  "recoveryWorkouts": [
+    {
+      "id": "active_recovery_light",
+      "title": "Light Active Recovery",
+      "durationMinutes": 30,
+      "description": "Gentle movement to promote blood flow and recovery",
+      "intensity": "Very Low",
+      "blocks": [
+        {
+          "name": "Warm-Up",
+          "exercises": [
+            {
+              "name": "Easy Walk or Light Jog",
+              "sets": 1,
+              "duration": "5 min",
+              "trackingMode": "time",
+              "intensity": "Conversational pace",
+              "instruction": "Very easy movement to warm up. Should feel effortless and restorative.",
+              "notes": "Keep heart rate below 120 bpm"
+            }
+          ]
+        },
+        {
+          "name": "Zone 2 Cardio",
+          "exercises": [
+            {
+              "name": "Light Cardio (Bike/Walk/Swim)",
+              "sets": 1,
+              "duration": "15-20 min",
+              "trackingMode": "time",
+              "intensity": "60-70% max HR",
+              "instruction": "Maintain a pace where you can hold a conversation easily. This promotes blood flow without adding stress.",
+              "notes": "Zone 2 pace - should feel comfortable"
+            }
+          ]
+        },
+        {
+          "name": "Mobility & Stretching",
+          "exercises": [
+            {
+              "name": "Full Body Mobility Flow",
+              "sets": 1,
+              "duration": "10-15 min",
+              "trackingMode": "time",
+              "intensity": "Low",
+              "instruction": "Gentle mobility work focusing on areas of tightness. Use slow, controlled movements with deep breathing.",
+              "notes": "Focus on hips, shoulders, and thoracic spine",
+              "isFlowGroup": true,
+              "flowGroupType": "mobility"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "yoga_flow_recovery",
+      "title": "Yoga Flow Recovery",
+      "durationMinutes": 40,
+      "description": "Restorative yoga sequence for deep recovery and flexibility",
+      "intensity": "Very Low",
+      "blocks": [
+        {
+          "name": "Yoga Flow",
+          "exercises": [
+            {
+              "name": "Restorative Yoga Flow",
+              "sets": 1,
+              "duration": "30-35 min",
+              "trackingMode": "time",
+              "intensity": "Very Low",
+              "instruction": "Move through sun salutations, downward dog, pigeon pose, and warrior sequences with controlled breathing. Focus on breath-to-movement synchronization.",
+              "goal": "Improve flexibility, promote recovery, and enhance mind-body connection",
+              "trainerNotes": "Focus on breath-to-movement synchronization. Never force a stretch—find your edge and breathe into it. This is recovery work, not a competition.",
+              "isFlowGroup": true,
+              "flowGroupType": "yoga",
+              "flowSteps": [
+                {
+                  "name": "Sun Salutations",
+                  "duration": "5 min",
+                  "reps": "5 rounds",
+                  "instruction": "Flow through 5 rounds of sun salutations to warm up the body"
+                },
+                {
+                  "name": "Downward Dog → Pigeon Pose",
+                  "duration": "2 min",
+                  "reps": "1 min each side",
+                  "instruction": "Hold downward dog for 1 min, then transition to pigeon pose on each side for 1 min"
+                },
+                {
+                  "name": "Warrior Sequence",
+                  "duration": "3 min",
+                  "reps": "30s each pose",
+                  "instruction": "Warrior I → Warrior II → Reverse Warrior, hold each for 30 seconds"
+                },
+                {
+                  "name": "Cat-Cow",
+                  "duration": "2 min",
+                  "reps": "10 reps",
+                  "instruction": "Slow, controlled cat-cow movements for spinal mobility"
+                },
+                {
+                  "name": "Child's Pose",
+                  "duration": "2 min",
+                  "instruction": "Rest in child's pose, focusing on deep breathing and relaxation"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Cool-Down",
+          "exercises": [
+            {
+              "name": "Breathing Reset",
+              "sets": 1,
+              "duration": "5 min",
+              "trackingMode": "time",
+              "instruction": "Lie on back, 4-count inhale through nose, 6-count exhale through mouth. Focus on complete relaxation.",
+              "notes": "Deep breathing for recovery"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mobility_focus",
+      "title": "Mobility & Flexibility Focus",
+      "durationMinutes": 35,
+      "description": "Targeted mobility work to address tightness and improve range of motion",
+      "intensity": "Low",
+      "blocks": [
+        {
+          "name": "Warm-Up",
+          "exercises": [
+            {
+              "name": "Light Movement",
+              "sets": 1,
+              "duration": "5 min",
+              "trackingMode": "time",
+              "instruction": "Easy walk or light movement to warm up tissues",
+              "notes": "Very easy pace"
+            }
+          ]
+        },
+        {
+          "name": "Mobility Drills",
+          "exercises": [
+            {
+              "name": "Hip Mobility Circuit",
+              "sets": 1,
+              "duration": "10 min",
+              "trackingMode": "time",
+              "instruction": "Hip circles (10 each direction), 90/90 hip switches (10 reps), leg swings (10 each), hip flexor stretches (60s each)",
+              "notes": "Focus on hip mobility"
+            },
+            {
+              "name": "Thoracic & Shoulder Mobility",
+              "sets": 1,
+              "duration": "10 min",
+              "trackingMode": "time",
+              "instruction": "Thoracic rotations (10 each side), shoulder dislocates (10 reps), arm circles (10 each direction), doorway chest stretch (60s)",
+              "notes": "Improve upper body mobility"
+            },
+            {
+              "name": "Full Body Stretch",
+              "sets": 1,
+              "duration": "10 min",
+              "trackingMode": "time",
+              "instruction": "Hamstring stretch (60s each), quad stretch (60s each), piriformis/glute stretch (60s each), lat/shoulder stretch (60s)",
+              "notes": "Static stretching for flexibility"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "foam_rolling_recovery",
+      "title": "Foam Rolling & Recovery",
+      "durationMinutes": 25,
+      "description": "Self-myofascial release and light movement for recovery",
+      "intensity": "Very Low",
+      "blocks": [
+        {
+          "name": "Foam Rolling",
+          "exercises": [
+            {
+              "name": "Foam Rolling Sequence",
+              "sets": 1,
+              "duration": "15 min",
+              "trackingMode": "time",
+              "instruction": "Roll quads (1 min each side), IT band (1 min each side), glutes (1 min), lats (1 min), thoracic spine (1 min). Focus on areas of tightness.",
+              "notes": "Self-myofascial release",
+              "isFlowGroup": true,
+              "flowGroupType": "foam_rolling"
+            }
+          ]
+        },
+        {
+          "name": "Light Movement",
+          "exercises": [
+            {
+              "name": "Easy Walk",
+              "sets": 1,
+              "duration": "10 min",
+              "trackingMode": "time",
+              "instruction": "Light walk to promote blood flow after rolling",
+              "notes": "Very easy pace"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "breathwork_meditation",
+      "title": "Breathwork & Meditation",
+      "durationMinutes": 20,
+      "description": "Recovery through breathing exercises and mental restoration",
+      "intensity": "Very Low",
+      "blocks": [
+        {
+          "name": "Breathing Exercises",
+          "exercises": [
+            {
+              "name": "Box Breathing",
+              "sets": 1,
+              "duration": "5 min",
+              "trackingMode": "time",
+              "instruction": "4-count inhale, 4-count hold, 4-count exhale, 4-count hold. Repeat for 5 minutes.",
+              "notes": "Calming breathing pattern"
+            },
+            {
+              "name": "Deep Breathing Reset",
+              "sets": 1,
+              "duration": "10 min",
+              "trackingMode": "time",
+              "instruction": "Lie on back, 4-count inhale through nose, 6-count exhale through mouth. Focus on complete relaxation and letting go of tension.",
+              "notes": "Deep relaxation breathing"
+            },
+            {
+              "name": "Guided Meditation",
+              "sets": 1,
+              "duration": "5 min",
+              "trackingMode": "time",
+              "instruction": "Body scan meditation: focus attention on each body part, releasing tension as you go. Start from toes and work up to head.",
+              "notes": "Mental recovery and stress reduction"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pool_water_recovery",
+      "title": "Pool/Water Recovery",
+      "durationMinutes": 30,
+      "description": "Low-impact water-based recovery session",
+      "intensity": "Very Low",
+      "blocks": [
+        {
+          "name": "Water Movement",
+          "exercises": [
+            {
+              "name": "Light Swim or Pool Work",
+              "sets": 1,
+              "duration": "20 min",
+              "trackingMode": "time",
+              "instruction": "If pool available: light swimming, water walking, or gentle pool exercises. Great for joint decompression and low-impact movement.",
+              "notes": "Water-based recovery if available"
+            },
+            {
+              "name": "Light Land Movement",
+              "sets": 1,
+              "duration": "10 min",
+              "trackingMode": "time",
+              "instruction": "If no pool: light walk or easy bike at conversational pace",
+              "notes": "Alternative if pool unavailable"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

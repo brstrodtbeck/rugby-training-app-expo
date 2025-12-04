@@ -1,0 +1,1185 @@
+{
+  "id": "program_foundation_strength_power_conditioning",
+  "title": "20-Week Foundation → Strength → Power → Conditioning → Peak",
+  "description": "Rugby-specific comprehensive training program with progressive overload across 5 mesocycles",
+  "trainingMaxNote": "Use 95% of true 1RM for TM calculations",
+  "version": "2.1",
+  "schema": {
+    "exerciseFields": {
+      "required": ["name", "trackingMode"],
+      "trackingModes": {
+        "time": ["duration"],
+        "volume": ["sets", "reps"],
+        "1RM": ["sets", "reps", "intensity"],
+        "distance": ["sets", "reps"]
+      }
+    }
+  },
+  "standardTemplates": {
+    "warmUp": {
+      "name": "Standard Warm-Up",
+      "duration": "10-15 min",
+      "description": "Prepare body for training with progressive activation",
+      "steps": [
+        {"name": "Light Cardio", "duration": "5 min", "cue": "Easy jog, bike, or row to elevate heart rate and body temperature"},
+        {"name": "Dynamic Mobility Drills", "duration": "5 min", "exercises": ["Leg Swings (10 each direction)", "Hip Circles (10 each)", "Arm Circles (10 each direction)", "Thoracic Rotations (10 each side)", "Ankle Rocks (10 each)"]},
+        {"name": "Activation", "duration": "2-3 min", "cue": "Glute bridges (10), band pull-aparts (15), bodyweight squats (10)"}
+      ]
+    },
+    "coolDown": {
+      "name": "Standard Cool-Down",
+      "duration": "15-20 min",
+      "description": "Promote recovery and flexibility after training",
+      "steps": [
+        {"name": "Easy Cardio", "duration": "5 min", "cue": "Walk, light bike, or easy row to bring heart rate down gradually"},
+        {"name": "Static Stretching", "duration": "10 min", "exercises": [
+          {"name": "Hamstring Stretch", "duration": "60s each side", "cue": "Seated or standing, hinge at hips, keep back flat"},
+          {"name": "Quad Stretch", "duration": "60s each side", "cue": "Standing or side-lying, pull heel to glute"},
+          {"name": "Hip Flexor Stretch", "duration": "60s each side", "cue": "Half-kneeling, squeeze glute, lean forward slightly"},
+          {"name": "Chest/Shoulder Stretch", "duration": "60s", "cue": "Doorway or corner stretch, arm at 90 degrees"}
+        ]},
+        {"name": "Breathing Reset", "duration": "2 min", "cue": "Lie on back, 4-count inhale through nose, 6-count exhale through mouth, relax completely"}
+      ],
+      "optionalAddOn": {"name": "Foam Rolling", "duration": "5 min", "cue": "Target areas worked during session"}
+    },
+    "activeRecovery": {
+      "name": "Active Recovery Day",
+      "duration": "30-40 min",
+      "description": "Light movement to promote blood flow and recovery",
+      "steps": [
+        {"name": "Light Cardio Warm-Up", "duration": "5 min", "cue": "Very easy pace, conversational"},
+        {"name": "Zone 2 Cardio", "duration": "10-15 min", "cue": "60-70% max HR, can hold conversation easily"},
+        {"name": "Cooldown", "duration": "5 min", "cue": "Gradually reduce intensity"},
+        {"name": "Mobility Work", "duration": "10-15 min", "cue": "Focus on tight areas from recent training"}
+      ]
+    }
+  },
+  "macrocycle": {
+    "lengthWeeks": 20,
+    "mesocycles": [
+      {
+        "id": "m1",
+        "title": "Foundation",
+        "weeks": [1, 2, 3, 4],
+        "phaseFocus": "Base strength, aerobic capacity, mobility",
+        "progression": {
+          "week1": { "intensity": "70% TM", "volume": "Full" },
+          "week2": { "intensity": "72.5% TM", "volume": "Full" },
+          "week3": { "intensity": "75% TM", "volume": "Full" },
+          "week4": { "intensity": "70% TM", "volume": "Deload (-30% sets)" }
+        },
+        "microcycle": [
+          {
+            "day": 1,
+            "title": "Lower Body Strength Foundation",
+            "durationMinutes": 70,
+            "blocks": [
+              {
+                "name": "Warm-up",
+                "exercises": [
+                  {
+                    "name": "Light Cardio",
+                    "sets": 1,
+                    "duration": "5 min",
+                    "intensity": "Easy",
+                    "trackingMode": "time",
+                    "notes": "Bike or row at easy pace",
+                    "instruction": "Choose bike, rower, or light jog. Maintain conversational pace to elevate heart rate gradually.",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Mobility Flow",
+                    "sets": 1,
+                    "duration": "8-10 min",
+                    "trackingMode": "time",
+                    "notes": "Deep squat hold, 90/90 hip switches",
+                    "instruction": "Cycle through hip openers, thoracic rotations, and ankle mobility drills with smooth transitions.",
+                    "definition": "Pre-workout mobility sequence to prepare joints and tissues for training",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": [],
+                    "isFlowGroup": true,
+                    "flowGroupType": "mobility",
+                    "warmUpGroup": {
+                      "name": "Warm-Up",
+                      "duration": "2 min",
+                      "description": "Light movement to increase circulation before mobility work",
+                      "exercises": [
+                        {"name": "Marching in Place", "duration": "1 min", "description": "Gentle march with arm swing to elevate heart rate"},
+                        {"name": "Arm Swings", "duration": "30s", "description": "Cross body arm swings to loosen shoulders"},
+                        {"name": "Ankle Rolls", "duration": "30s", "reps": "10 each direction", "description": "Circle ankles to prepare joints"}
+                      ]
+                    },
+                    "exercisesGroup": {
+                      "name": "Mobility Drills",
+                      "duration": "5 min",
+                      "exercises": [
+                        {"name": "Hip Circles", "duration": "30s", "reps": "10 each direction", "cue": "Stand tall, draw large circles with knee", "description": "Mobilize hip joints through full range of motion"},
+                        {"name": "Leg Swings (Front-Back)", "duration": "30s", "reps": "10 each leg", "cue": "Hold wall for balance, controlled swing", "description": "Dynamic hamstring and hip flexor preparation"},
+                        {"name": "Leg Swings (Side-Side)", "duration": "30s", "reps": "10 each leg", "cue": "Cross midline, open hip", "description": "Adductor and abductor activation"},
+                        {"name": "Deep Squat Hold", "duration": "60s", "cue": "Heels down, chest up, push knees out with elbows", "description": "Hip and ankle mobility in functional position"},
+                        {"name": "90/90 Hip Switches", "duration": "60s", "reps": "5 each side", "cue": "Keep chest tall, switch smoothly", "description": "Internal and external hip rotation mobility"},
+                        {"name": "Thoracic Rotations", "duration": "60s", "reps": "5 each side", "cue": "Hand behind head, rotate through mid-back", "description": "Upper back mobility for improved posture"}
+                      ]
+                    },
+                    "coolDownGroup": {
+                      "name": "Cool-Down",
+                      "duration": "2 min",
+                      "description": "Gentle stretching and breathing to transition",
+                      "exercises": [
+                        {"name": "Standing Forward Fold", "duration": "45s", "cue": "Let head hang, bend knees if needed", "description": "Release lower back and hamstrings"},
+                        {"name": "Deep Breathing", "duration": "1 min", "cue": "4-count inhale, 6-count exhale", "description": "Activate parasympathetic system"}
+                      ]
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "Main - Squat Pattern",
+                "groupType": "superset",
+                "restBetweenRounds": 120,
+                "exercises": [
+                  {
+                    "name": "Back Squat",
+                    "groupId": "day1-squat-superset-ex1",
+                    "sets": 5,
+                    "reps": 5,
+                    "intensity": "70% TM",
+                    "rest": 150,
+                    "tempo": "3-0-X",
+                    "trackingMode": "1RM",
+                    "notes": "Brace before descent, knees track over toes, full depth, explosive concentric.",
+                    "substitutions": ["Front Squat", "Goblet Squat"]
+                  },
+                  {
+                    "name": "Dead Bug",
+                    "groupId": "day1-squat-superset-ex2",
+                    "sets": 3,
+                    "reps": "10 per side",
+                    "rest": 45,
+                    "trackingMode": "volume",
+                    "notes": "Low back flat; opposite arm/leg extend; slow control.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Secondary - Hinge Pattern",
+                "exercises": [
+                  {
+                    "name": "Romanian Deadlift",
+                    "sets": 4,
+                    "reps": 8,
+                    "intensity": "RPE 7",
+                    "rest": 120,
+                    "tempo": "3-1-1",
+                    "trackingMode": "volume",
+                    "notes": "Soft knees, hinge at hips, bar close; stretch hamstrings, neutral spine.",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Side Plank with Reach",
+                    "duration": "30s per side",
+                    "sets": 3,
+                    "rest": 45,
+                    "trackingMode": "time",
+                    "notes": "Hips stacked, reach under and open; ribs down.",
+                    "instruction": "Anti-lateral flexion core exercise with rotational component",
+                    "definition": "Targets obliques and quadratus lumborum while challenging shoulder stability",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": [],
+                    "formCues": [
+                      "Stack hips directly over each other - no sagging or piking",
+                      "Elbow directly under shoulder, forearm perpendicular to body",
+                      "Top arm reaches under body then opens to ceiling",
+                      "Keep ribs pulled down, avoid flaring",
+                      "Breathe steadily throughout - exhale on reach under",
+                      "Maintain straight line from head to heels"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Accessory - Unilateral",
+                "exercises": [
+                  {
+                    "name": "Bulgarian Split Squat",
+                    "sets": 3,
+                    "reps": "8 per leg",
+                    "intensity": "RPE 7",
+                    "rest": 90,
+                    "trackingMode": "volume",
+                    "notes": "Upright torso, knee over midfoot, full foot pressure.",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Suitcase Carry",
+                    "sets": 3,
+                    "reps": "30m per side",
+                    "intensity": "RPE 7",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "Tall posture, ribs stacked; don't let weight pull you sideways.",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "title": "Zone 2 Cardio + Loaded Mobility",
+            "durationMinutes": 75,
+            "blocks": [
+              {
+                "name": "Warm-Up",
+                "isCollapsible": true,
+                "duration": "8-10 min",
+                "exercises": [
+                  {
+                    "name": "Light Cardio",
+                    "duration": "3-5 min",
+                    "trackingMode": "time",
+                    "instruction": "Easy jog, bike, or row to elevate heart rate",
+                    "definition": "Raises core temperature and prepares cardiovascular system"
+                  },
+                  {
+                    "name": "Dynamic Mobility",
+                    "duration": "3-4 min",
+                    "trackingMode": "time",
+                    "instruction": "Leg swings (10 each), arm circles (10 each direction), hip circles (10 each)",
+                    "definition": "Prepares joints and muscles for movement through full range of motion"
+                  },
+                  {
+                    "name": "Activation",
+                    "duration": "2 min",
+                    "trackingMode": "time",
+                    "instruction": "Glute bridges (10), bodyweight squats (10)",
+                    "definition": "Activates key muscle groups before main work"
+                  }
+                ]
+              },
+              {
+                "name": "Cardio",
+                "exercises": [
+                  {
+                    "name": "Zone 2 Cardio",
+                    "sets": 1,
+                    "duration": "40-50 min",
+                    "intensity": "120-140 bpm",
+                    "trackingMode": "time",
+                    "notes": "Conversational pace; nasal breathing preferred first 20 min.",
+                    "instruction": "Maintain steady-state effort where you can hold a conversation. Use bike, run, row, or swim.",
+                    "definition": "Zone 2 training builds aerobic base and improves fat oxidation without accumulating fatigue.",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Loaded Mobility",
+                "exercises": [
+                  {
+                    "name": "Goblet Cossack Squat",
+                    "sets": 2,
+                    "reps": "8 per side",
+                    "intensity": "Light DB",
+                    "rest": 45,
+                    "trackingMode": "volume",
+                    "notes": "Stay tall, sink into hips, keep heel down.",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Deep Squat Hold + Reach",
+                    "sets": 2,
+                    "duration": "1 min",
+                    "rest": 30,
+                    "trackingMode": "time",
+                    "notes": "Sit deep, knees over toes; reach to open thoracic.",
+                    "instruction": "Descend into a deep squat, keeping heels down. Alternate reaching one arm to the ceiling while rotating through the thoracic spine.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "KB Arm Bar",
+                    "sets": 2,
+                    "reps": "5 per side",
+                    "rest": 45,
+                    "trackingMode": "volume",
+                    "notes": "Slow roll, shoulder packed; breathe.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Cool-Down",
+                "isCollapsible": true,
+                "duration": "12-15 min",
+                "exercises": [
+                  {
+                    "name": "Light Cardio",
+                    "duration": "3-5 min",
+                    "trackingMode": "time",
+                    "instruction": "Easy walk or very light bike to gradually lower heart rate",
+                    "definition": "Facilitates blood flow and lactate clearance"
+                  },
+                  {
+                    "name": "Static Stretching",
+                    "duration": "6-8 min",
+                    "trackingMode": "time",
+                    "instruction": "Hamstrings (30s each), quads (30s each), hip flexors (30s each), chest/shoulders (30s each)",
+                    "definition": "Targets primary muscle groups used during session",
+                    "expandableDetails": [
+                      "Hamstring stretch: Seated or standing, hinge at hips, keep back flat",
+                      "Quad stretch: Standing or side-lying, pull heel to glute",
+                      "Hip flexor stretch: Half-kneeling, squeeze glute, lean forward slightly",
+                      "Chest/shoulder stretch: Doorway stretch or corner stretch, arm at 90°"
+                    ]
+                  },
+                  {
+                    "name": "Breathing Reset",
+                    "duration": "2-3 min",
+                    "trackingMode": "time",
+                    "instruction": "Lie supine, 4-count inhale through nose, 6-count exhale through mouth",
+                    "definition": "Activates parasympathetic nervous system for recovery"
+                  }
+                ],
+                "optionalRecovery": {
+                  "name": "Foam Rolling",
+                  "duration": "5 min",
+                  "description": "Optional self-myofascial release",
+                  "areas": ["Quads (1 min each)", "Glutes (1 min)", "Lats (1 min each)", "Thoracic spine (1 min)"]
+                }
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "title": "Upper Body Strength + Arms",
+            "durationMinutes": 70,
+            "blocks": [
+              {
+                "name": "Warm-up",
+                "exercises": [
+                  {
+                    "name": "Band Pulls",
+                    "sets": 2,
+                    "reps": 15,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Wall Slides",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Main - Push/Pull",
+                "exercises": [
+                  {
+                    "name": "Bench Press",
+                    "sets": 5,
+                    "reps": 5,
+                    "intensity": "70% TM",
+                    "rest": 150,
+                    "tempo": "2-1-X",
+                    "trackingMode": "1RM",
+                    "notes": "Scaps retracted, feet planted; bar path to lower chest, full lockout.",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Bent-over Row",
+                    "sets": 4,
+                    "reps": 8,
+                    "intensity": "RPE 7",
+                    "rest": 120,
+                    "trackingMode": "volume",
+                    "notes": "Hinge, neutral spine; pull to lower ribs, avoid shrugging.",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Accessory - Shoulders & Back",
+                "exercises": [
+                  {
+                    "name": "DB Shoulder Press",
+                    "sets": 3,
+                    "reps": 10,
+                    "intensity": "RPE 7",
+                    "rest": 90,
+                    "trackingMode": "volume",
+                    "notes": "Ribs down; press overhead to full lockout without lumbar extension.",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Pull-ups or Lat Pulldown",
+                    "sets": 3,
+                    "reps": "8-10",
+                    "intensity": "RPE 7-8",
+                    "rest": 90,
+                    "trackingMode": "volume",
+                    "notes": "Full hang to chin over bar; controlled tempo.",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Arm Density Finisher",
+                "groupType": "superset",
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "Alternating DB Curls",
+                    "groupId": "day3-arms-superset-ex1",
+                    "sets": 3,
+                    "reps": "12 per arm",
+                    "rest": 60,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Overhead Triceps Extension",
+                    "groupId": "day3-arms-superset-ex2",
+                    "sets": 3,
+                    "reps": 12,
+                    "rest": 60,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 4,
+            "title": "Lower Body Strength + Power (Intro)",
+            "durationMinutes": 70,
+            "blocks": [
+              {
+                "name": "Contrast Block A",
+                "groupType": "superset",
+                "restBetweenRounds": 150,
+                "exercises": [
+                  {
+                    "name": "Back Squat",
+                    "groupId": "day4-contrastA-ex1",
+                    "sets": 4,
+                    "reps": 5,
+                    "intensity": "72.5% TM",
+                    "rest": 150,
+                    "trackingMode": "1RM",
+                    "notes": "Brace, knees track; drive explosively.",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Squat Jumps",
+                    "groupId": "day4-contrastA-ex2",
+                    "sets": 4,
+                    "reps": 6,
+                    "rest": 75,
+                    "trackingMode": "volume",
+                    "notes": "Quarter squat load, jump straight up, land softly, reset.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Contrast Block B",
+                "groupType": "superset",
+                "restBetweenRounds": 120,
+                "exercises": [
+                  {
+                    "name": "Romanian Deadlift",
+                    "groupId": "day4-contrastB-ex1",
+                    "sets": 4,
+                    "reps": 8,
+                    "intensity": "RPE 7",
+                    "rest": 120,
+                    "trackingMode": "volume",
+                    "notes": "Hinge; hamstring stretch; neutral spine.",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Broad Jumps",
+                    "groupId": "day4-contrastB-ex2",
+                    "sets": 4,
+                    "reps": 5,
+                    "rest": 90,
+                    "trackingMode": "volume",
+                    "notes": "Countermovement, drive hips; stick landing knees over toes.",
+                    "instruction": "Explosive horizontal jump focusing on hip drive and soft landing mechanics",
+                    "definition": "Plyometric exercise developing horizontal power transfer for athletic performance",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": [],
+                    "executionCues": [
+                      "Setup: Feet hip-width, arms back, hinge at hips",
+                      "Load: Quick countermovement, arms swing back",
+                      "Explode: Drive arms forward and up, extend hips fully, push through balls of feet",
+                      "Flight: Reach forward with arms, bring knees up",
+                      "Land: Absorb through ankles-knees-hips, stick the landing 2 seconds",
+                      "Reset: Walk back to start, full recovery between reps"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Carry & Core",
+                "groupType": "superset",
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "Farmer's Carry",
+                    "groupId": "day4-carrycore-ex1",
+                    "sets": 3,
+                    "reps": "40m",
+                    "intensity": "Heavy",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "Tall, ribs stacked; smooth walk.",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Dead Bug",
+                    "groupId": "day4-carrycore-ex2",
+                    "sets": 2,
+                    "reps": "10 per side",
+                    "rest": 45,
+                    "trackingMode": "volume",
+                    "notes": "Low back flat; slow control.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 5,
+            "title": "Conditioning + Mobility Blend",
+            "durationMinutes": 70,
+            "blocks": [
+              {
+                "name": "Warm-Up",
+                "isCollapsible": true,
+                "duration": "8-10 min",
+                "exercises": [
+                  {
+                    "name": "Light Cardio",
+                    "duration": "3-5 min",
+                    "trackingMode": "time",
+                    "instruction": "Easy jog, jumping jacks, or jump rope to raise heart rate",
+                    "definition": "Prepares cardiovascular system for conditioning work"
+                  },
+                  {
+                    "name": "Dynamic Mobility",
+                    "duration": "3-4 min",
+                    "trackingMode": "time",
+                    "instruction": "High knees (30s), butt kicks (30s), leg swings (10 each), arm circles (10 each direction)",
+                    "definition": "Activates muscles and lubricates joints for circuit work"
+                  },
+                  {
+                    "name": "Activation",
+                    "duration": "2 min",
+                    "trackingMode": "time",
+                    "instruction": "Bodyweight squats (10), push-up hold (20s), glute bridges (10)",
+                    "definition": "Primes movement patterns used in conditioning circuit"
+                  }
+                ]
+              },
+              {
+                "name": "Conditioning Circuit",
+                "groupType": "circuit",
+                "rounds": 3,
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "Row or Bike",
+                    "groupId": "day5-circuit-ex1",
+                    "duration": "2 min",
+                    "rest": 30,
+                    "trackingMode": "time",
+                    "notes": "Sustainable pace; nasal breathing if comfortable.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Push-ups",
+                    "groupId": "day5-circuit-ex2",
+                    "sets": 1,
+                    "reps": 12,
+                    "rest": 30,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Jump Rope or Skater Hops",
+                    "groupId": "day5-circuit-ex3",
+                    "duration": "1 min",
+                    "rest": 30,
+                    "trackingMode": "time",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Bodyweight Squats",
+                    "groupId": "day5-circuit-ex4",
+                    "sets": 1,
+                    "reps": 15,
+                    "rest": 30,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Plank Hold",
+                    "groupId": "day5-circuit-ex5",
+                    "duration": "30s",
+                    "rest": 30,
+                    "trackingMode": "time",
+                    "notes": "Focus on full-body tension and proper alignment",
+                    "instruction": "Isometric core exercise for anti-extension strength",
+                    "definition": "Foundation core stability exercise targeting entire anterior chain",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": [],
+                    "formCues": [
+                      "Elbows directly under shoulders, forearms parallel",
+                      "Pull ribs down toward pelvis - flatten lower back",
+                      "Squeeze glutes hard throughout",
+                      "Push floor away, protract shoulder blades slightly",
+                      "Tuck chin, long neck - ears over shoulders",
+                      "Breathe into sides of ribcage, maintain tension",
+                      "Think: 'Long spine, tight core, squeeze everything'"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Mobility",
+                "exercises": [
+                  {
+                    "name": "Cat-Cow",
+                    "sets": 2,
+                    "duration": "1 min",
+                    "trackingMode": "time",
+                    "notes": "",
+                    "instruction": "On all fours, alternate between arching your back (cow) and rounding it (cat). Move slowly with breath.",
+                    "definition": "Spinal mobility drill that warms up the entire vertebral column and engages core stabilizers.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Banded Shoulder Openers",
+                    "sets": 2,
+                    "reps": 15,
+                    "rest": 30,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Cool-Down",
+                "isCollapsible": true,
+                "duration": "10-12 min",
+                "exercises": [
+                  {
+                    "name": "Light Movement",
+                    "duration": "3 min",
+                    "trackingMode": "time",
+                    "instruction": "Easy walk to gradually lower heart rate",
+                    "definition": "Facilitates recovery and blood flow redistribution"
+                  },
+                  {
+                    "name": "Static Stretching",
+                    "duration": "5-7 min",
+                    "trackingMode": "time",
+                    "instruction": "Target areas worked: hip flexors, hamstrings, chest, shoulders (30s each)",
+                    "definition": "Maintains flexibility in muscles used during conditioning"
+                  },
+                  {
+                    "name": "Breathing Reset",
+                    "duration": "2 min",
+                    "trackingMode": "time",
+                    "instruction": "Supine position, 4-count inhale, 6-count exhale",
+                    "definition": "Promotes parasympathetic activation for recovery"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 6,
+            "title": "Long Zone 2 + Extended Mobility",
+            "durationMinutes": 100,
+            "blocks": [
+              {
+                "name": "Warm-Up",
+                "isCollapsible": true,
+                "duration": "5 min",
+                "exercises": [
+                  {
+                    "name": "Light Cardio Ramp",
+                    "duration": "5 min",
+                    "trackingMode": "time",
+                    "instruction": "Begin very easy and gradually increase to Zone 2 pace over 5 minutes",
+                    "definition": "Progressive warm-up integrated into cardio session"
+                  }
+                ]
+              },
+              {
+                "name": "Cardio",
+                "exercises": [
+                  {
+                    "name": "Zone 2 Cardio",
+                    "sets": 1,
+                    "duration": "50-60 min",
+                    "intensity": "120-140 bpm",
+                    "trackingMode": "time",
+                    "notes": "Conversational pace throughout.",
+                    "instruction": "Steady-state cardio at 60-70% max heart rate. Should be able to hold a conversation throughout.",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Mobility",
+                "exercises": [
+                  {
+                    "name": "Mobility Flow",
+                    "sets": 1,
+                    "duration": "25-30 min",
+                    "trackingMode": "time",
+                    "notes": "Deep squat hold, 90/90, cat-cow, thoracic rotations, banded openers.",
+                    "instruction": "Cycle through hip, thoracic, and shoulder mobility drills. Hold each position 30-60s, breathing deeply.",
+                    "definition": "Comprehensive mobility session addressing all major movement patterns",
+                    "intensity": "Low",
+                    "goal": "Restore range of motion, address movement restrictions, and promote tissue recovery through targeted mobility work",
+                    "tempo": "",
+                    "substitutions": [],
+                    "isFlowGroup": true,
+                    "flowGroupType": "mobility",
+                    "trainerNotes": "Mobility work is about quality, not intensity. Breathe deeply into each position. If you feel sharp pain, back off. Mild discomfort is okay, but never force a stretch. Spend extra time on areas that feel restricted.",
+                    "flowSteps": [
+                      {
+                        "name": "Cat-Cow",
+                        "duration": "3 min",
+                        "reps": "15 cycles",
+                        "cue": "Initiate from pelvis, articulate through entire spine",
+                        "detailedInstructions": [
+                          "Start on hands and knees—wrists under shoulders, knees under hips",
+                          "COW (Inhale): Tilt pelvis forward, drop belly, lift chest and tailbone",
+                          "CAT (Exhale): Tuck pelvis under, round spine toward ceiling, tuck chin",
+                          "Move slowly—feel each vertebra articulate individually",
+                          "Initiate movement from pelvis, let it ripple through spine",
+                          "Continue for 15 full cycles, syncing breath with movement"
+                        ]
+                      },
+                      {
+                        "name": "Deep Squat Hold with Reach",
+                        "duration": "3 min",
+                        "reps": "2 rounds × 90s",
+                        "cue": "Heels down, reach one arm up rotating through thoracic",
+                        "detailedInstructions": [
+                          "Descend into deep squat with heels flat (elevate heels on plate if needed)",
+                          "Push knees out with elbows, keep chest tall",
+                          "Reach one arm to ceiling, rotating through thoracic spine",
+                          "Follow hand with eyes, breathe into the rotation",
+                          "Hold each side for 30s, then switch",
+                          "Complete 2 full rounds (90s total each side)"
+                        ]
+                      },
+                      {
+                        "name": "90/90 Hip Switches",
+                        "duration": "4 min",
+                        "reps": "10 each side",
+                        "cue": "Keep chest tall, pause 2s each position",
+                        "detailedInstructions": [
+                          "Sit with both legs bent at 90°—front shin parallel to front, back shin perpendicular",
+                          "Front leg is in external rotation, back leg in internal rotation",
+                          "Keep chest tall and upright throughout",
+                          "Smoothly switch sides by lifting knees and rotating",
+                          "Pause 2 seconds in each position, feeling the stretch",
+                          "Complete 10 switches to each side"
+                        ]
+                      },
+                      {
+                        "name": "Thoracic Rotations (Quadruped)",
+                        "duration": "3 min",
+                        "reps": "10 each side",
+                        "cue": "Hand behind head, elbow to sky, exhale into rotation",
+                        "detailedInstructions": [
+                          "Start in quadruped position (hands and knees)",
+                          "Place one hand behind your head",
+                          "Rotate elbow down toward opposite arm (close)",
+                          "Then rotate elbow up toward ceiling (open)",
+                          "Exhale as you rotate up, feeling mid-back work",
+                          "Keep hips stable—only thoracic spine moves",
+                          "Complete 10 reps per side"
+                        ]
+                      },
+                      {
+                        "name": "Shoulder Dislocates",
+                        "duration": "3 min",
+                        "reps": "15 slow reps",
+                        "cue": "Wide grip, control through full arc",
+                        "detailedInstructions": [
+                          "Hold band or PVC pipe with very wide grip",
+                          "Arms straight, band at hip level in front",
+                          "Slowly arc the band overhead and behind your back",
+                          "Control the movement—don't force through sticky spots",
+                          "Reverse direction to return to start",
+                          "Widen grip if you can't complete full arc pain-free",
+                          "15 slow, controlled reps"
+                        ]
+                      },
+                      {
+                        "name": "Pigeon Pose",
+                        "duration": "4 min",
+                        "reps": "2 min each side",
+                        "cue": "Square hips, fold forward, breathe into stretch",
+                        "detailedInstructions": [
+                          "From hands and knees, bring one knee forward behind wrist",
+                          "Extend back leg straight behind you",
+                          "Square hips to front—use block under hip if needed",
+                          "Walk hands forward, folding chest toward floor",
+                          "Relax into the stretch, breathe deeply into hip",
+                          "Hold 2 minutes per side"
+                        ]
+                      },
+                      {
+                        "name": "Banded Shoulder Openers",
+                        "duration": "3 min",
+                        "reps": "10 each direction",
+                        "cue": "Light band, pull apart with external rotation",
+                        "detailedInstructions": [
+                          "Hold light resistance band with hands shoulder-width",
+                          "Pull band apart while externally rotating shoulders",
+                          "Squeeze shoulder blades together at end range",
+                          "Control return to start position",
+                          "10 reps pulling apart, then 10 reps with band behind head"
+                        ]
+                      },
+                      {
+                        "name": "Hip Flexor Stretch (Couch Stretch)",
+                        "duration": "4 min",
+                        "reps": "2 min each side",
+                        "cue": "Back knee against wall, squeeze glute, upright torso",
+                        "detailedInstructions": [
+                          "Kneel with back foot against wall (or couch) behind you",
+                          "Front foot flat on floor, knee over ankle",
+                          "Squeeze glute of back leg to increase hip flexor stretch",
+                          "Keep torso upright—don't lean forward",
+                          "You should feel deep stretch in front of hip and quad",
+                          "Hold 2 minutes per side, breathing deeply"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 7,
+            "title": "Active Recovery + Mobility",
+            "durationMinutes": 50,
+            "blocks": [
+              {
+                "name": "Recovery",
+                "exercises": [
+                  {
+                    "name": "Recovery Cardio",
+                    "sets": 1,
+                    "duration": "20-30 min",
+                    "intensity": "Easy",
+                    "trackingMode": "time",
+                    "notes": "Easy walk/hike/bike.",
+                    "instruction": "Very light movement to promote blood flow and recovery. Keep heart rate below 120 bpm.",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Restorative Mobility Flow",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "Light, restorative sequence.",
+                    "instruction": "Gentle mobility work focusing on areas of tightness. Use slow, controlled movements with deep breathing.",
+                    "definition": "Restorative mobility session for recovery and flexibility maintenance",
+                    "intensity": "Very Low",
+                    "goal": "Promote deep relaxation, release accumulated tension, and restore the body through gentle, supported positions",
+                    "tempo": "",
+                    "substitutions": [],
+                    "isFlowGroup": true,
+                    "flowGroupType": "restorative",
+                    "trainerNotes": "This is pure recovery work. No effort, no pushing. Let gravity do the work. Use props (pillows, blocks) liberally. If your mind is racing, focus entirely on your breath. This is your time to decompress.",
+                    "flowSteps": [
+                      {
+                        "name": "Cat-Cow",
+                        "duration": "2 min",
+                        "reps": "10 slow cycles",
+                        "cue": "Move slowly, sync with breath",
+                        "detailedInstructions": [
+                          "Start on hands and knees, find a comfortable neutral spine",
+                          "SLOW COW (Inhale 4 counts): Gently drop belly, lift gaze",
+                          "SLOW CAT (Exhale 6 counts): Round spine, tuck chin",
+                          "Move at half the speed you think you should",
+                          "This is about creating space, not stretching hard",
+                          "10 ultra-slow cycles"
+                        ]
+                      },
+                      {
+                        "name": "Child's Pose",
+                        "duration": "2 min",
+                        "cue": "Full surrender, let body sink into floor",
+                        "detailedInstructions": [
+                          "Knees wide apart, big toes touching",
+                          "Sit hips back toward heels",
+                          "Walk arms forward, rest forehead on floor (or stacked hands)",
+                          "Let shoulders completely relax away from ears",
+                          "Breathe into your lower back",
+                          "This is complete rest—let go of all holding"
+                        ]
+                      },
+                      {
+                        "name": "Thread the Needle",
+                        "duration": "3 min",
+                        "reps": "90s each side",
+                        "cue": "Gentle twist, follow hand with eyes",
+                        "detailedInstructions": [
+                          "From all fours, slide right arm under body",
+                          "Right shoulder and ear rest on floor",
+                          "Left hand can stay in place or walk forward",
+                          "Feel gentle twist through mid-back",
+                          "Keep hips squared over knees",
+                          "Breathe into the space between shoulder blades",
+                          "90 seconds each side"
+                        ]
+                      },
+                      {
+                        "name": "Supine Figure-4 Stretch",
+                        "duration": "3 min",
+                        "reps": "90s each side",
+                        "cue": "Pull gently, keep low back flat",
+                        "detailedInstructions": [
+                          "Lie on back, both knees bent",
+                          "Cross right ankle over left knee (figure-4)",
+                          "Reach through and interlace hands behind left thigh",
+                          "Gently pull left thigh toward chest",
+                          "Keep head and shoulders relaxed on floor",
+                          "Breathe into the outer hip stretch",
+                          "90 seconds each side"
+                        ]
+                      },
+                      {
+                        "name": "Supine Twist",
+                        "duration": "3 min",
+                        "reps": "90s each side",
+                        "cue": "Let knees fall, opposite shoulder stays down",
+                        "detailedInstructions": [
+                          "Lie on back, hug knees to chest",
+                          "Let both knees fall to the right",
+                          "Extend left arm out to side",
+                          "Turn head to look left (if comfortable)",
+                          "Keep left shoulder pressing toward floor",
+                          "Let gravity pull the knees down—don't force",
+                          "90 seconds each side"
+                        ]
+                      },
+                      {
+                        "name": "Happy Baby",
+                        "duration": "2 min",
+                        "cue": "Grab feet, gently rock side to side",
+                        "detailedInstructions": [
+                          "Lie on back, draw knees toward armpits",
+                          "Reach and grab outside edges of feet",
+                          "Keep ankles over knees, feet flexed",
+                          "Gently rock side to side",
+                          "Let lower back round into floor",
+                          "Playful, relaxed energy"
+                        ]
+                      },
+                      {
+                        "name": "Legs Up Wall",
+                        "duration": "3 min",
+                        "cue": "Hips close to wall, arms relaxed, breathe slowly",
+                        "detailedInstructions": [
+                          "Sit with one hip against wall, swing legs up as you lie back",
+                          "Scoot hips as close to wall as comfortable",
+                          "Legs can be together or in a V-shape",
+                          "Arms out to sides, palms up",
+                          "Close eyes, breathe slowly and deeply",
+                          "This inverted position promotes venous return and relaxation"
+                        ]
+                      },
+                      {
+                        "name": "Corpse Pose (Savasana)",
+                        "duration": "2 min",
+                        "cue": "Complete stillness, full body relaxation",
+                        "detailedInstructions": [
+                          "Lie flat on back, legs extended, feet fall open naturally",
+                          "Arms at sides, palms facing up",
+                          "Let body become heavy, melting into the floor",
+                          "Scan from feet to head, releasing any held tension",
+                          "Breathe naturally—don't control it",
+                          "This is integration time—let the practice settle in"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "weeklyAdjustments": {
+          "week2": {
+            "day1": {
+              "exercises": {
+                "Back Squat": { "intensity": "72.5% TM" }
+              }
+            },
+            "day3": {
+              "exercises": {
+                "Bench Press": { "intensity": "72.5% TM" }
+              }
+            },
+            "day4": {
+              "exercises": {
+                "Back Squat": { "intensity": "75% TM" }
+              }
+            }
+          },
+          "week3": {
+            "day1": {
+              "exercises": {
+                "Back Squat": { "intensity": "75% TM" }
+              }
+            },
+            "day3": {
+              "exercises": {
+                "Bench Press": { "intensity": "75% TM" }
+              }
+            },
+            "day4": {
+              "exercises": {
+                "Back Squat": { "intensity": "77.5% TM" }
+              }
+            }
+          },
+          "week4": {
+            "deload": true,
+            "setReduction": 0.3,
+            "day1": {
+              "exercises": {
+                "Back Squat": { "intensity": "70% TM", "sets": 3 },
+                "Romanian Deadlift": { "sets": 3 },
+                "Bulgarian Split Squat": { "sets": 2 }
+              }
+            },
+            "day3": {
+              "exercises": {
+                "Bench Press": { "intensity": "70% TM", "sets": 3 },
+                "Bent-over Row": { "sets": 3 },
+                "DB Shoulder Press": { "sets": 2 },
+                "Pull-ups or Lat Pulldown": { "sets": 2 }
+              }
+            },
+            "day4": {
+              "exercises": {
+                "Back Squat": { "intensity": "70% TM", "sets": 3 },
+                "Romanian Deadlift": { "sets": 3 },
+                "Squat Jumps": { "sets": 2 },
+                "Broad Jumps": { "sets": 2 }
+              }
+            },
+            "day5": {
+              "blocks": {
+                "Conditioning Circuit": { "rounds": 2 }
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "appImplementation": {
+    "autoCalcLoads": "For exercises with percentTM: weight = percentTM × TM, round to nearest 2.5 lb",
+    "rpeGuardrails": "If user logs RPE >8 on RPE 6-7 day, suggest reducing load by 2.5-5%",
+    "qualityChecks": {
+      "plyo": "If knee/back discomfort flagged, swap to low-impact alternatives",
+      "substitutions": {
+        "backSquat": ["Front Squat", "Goblet Squat"],
+        "rdl": ["KB RDL", "Single-leg RDL"],
+        "benchPress": ["DB Bench", "Push-ups"],
+        "pullups": ["Lat Pulldown"],
+        "trapBarDL": ["Conventional DL"]
+      }
+    },
+    "tempoFormats": "Use '3-0-X' (eccentric-pause-concentric). Default assistance tempo: '2-0-1'",
+    "restDefaults": {
+      "heavyCompounds": 150,
+      "primaryAssistance": 120,
+      "isolation": 60,
+      "plyometrics": 75,
+      "circuits": 30
+    },
+    "trackingModes": {
+      "time": "Use duration field",
+      "volume": "Use sets and reps fields",
+      "1RM": "Calculate from TM percentage",
+      "distance": "Use reps as distance measurement"
+    }
+  }
+}

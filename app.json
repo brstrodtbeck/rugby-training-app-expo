@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "rugby-training-app-expo",
-    "slug": "rugby-training-app-expo",
+    "name": "Progressive Overlord",
+    "slug": "progressive-overlord",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -10,21 +10,46 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#E0E0E0"
     },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.progressiveoverlord.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSHealthShareUsageDescription": "This app tracks your workout progress and training metrics.",
+        "NSHealthUpdateUsageDescription": "This app saves your workout data and training progress.",
+        "NSCameraUsageDescription": "This app may use the camera for exercise form analysis.",
+        "NSPhotoLibraryUsageDescription": "This app may access photos to save workout progress images."
+      },
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#E0E0E0"
       },
+      "package": "com.progressiveoverlord.app",
+      "versionCode": 1,
+      "permissions": [
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED"
+      ],
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e7473b32-6477-4df9-b016-3227b603b30b"
+      }
     }
   }
 }

@@ -1,0 +1,2583 @@
+{
+  "programName": "Hypertrophy Month",
+  "programDescription": "A 4-week hypertrophy and strength program designed to build muscle, improve athletic power, and enhance movement quality. Features progressive overload with compound lifts at 60-75% max, explosive plyometrics, and comprehensive mobility work. 3 days per week: Lower Body Monday, Upper Body Wednesday, Power Friday.",
+  "durationWeeks": 4,
+  "daysPerWeek": 3,
+  "targetAudience": "Intermediate to advanced athletes seeking muscle growth and athletic performance",
+  "equipment": [
+    "Barbell",
+    "Dumbbells",
+    "Kettlebells",
+    "Resistance Bands",
+    "Mini Bands",
+    "Medicine Ball",
+    "Physio Ball",
+    "Sliders",
+    "Cable Machine",
+    "GHD Machine",
+    "Plyo Box",
+    "Sled",
+    "Rope"
+  ],
+  "standardTemplates": {
+    "warmUp": {
+      "name": "Hypertrophy Warm-Up",
+      "duration": "10-12 min",
+      "description": "Prepare muscles and joints for high-volume training",
+      "steps": [
+        {
+          "name": "Light Cardio",
+          "duration": "5 min",
+          "cue": "Bike, row, or light jog - get blood flowing to muscles"
+        },
+        {
+          "name": "Dynamic Mobility",
+          "duration": "4 min",
+          "exercises": [
+            "Hip Circles (10 each)",
+            "Leg Swings (10 each)",
+            "Arm Circles (10 each direction)",
+            "Thoracic Rotations (8 each)",
+            "Bodyweight Squats (10)"
+          ]
+        },
+        {
+          "name": "Activation",
+          "duration": "2-3 min",
+          "cue": "Band pull-aparts (15), glute bridges (10), bodyweight squats (10)"
+        }
+      ]
+    },
+    "coolDown": {
+      "name": "Hypertrophy Cool-Down",
+      "duration": "12-15 min",
+      "description": "Promote recovery and maintain flexibility after volume work",
+      "steps": [
+        {
+          "name": "Light Movement",
+          "duration": "3 min",
+          "cue": "Easy walk or bike to flush muscles"
+        },
+        {
+          "name": "Static Stretching",
+          "duration": "8-10 min",
+          "exercises": [
+            {
+              "name": "Hip Flexors",
+              "duration": "60s each",
+              "cue": "Half-kneeling, squeeze glute, lean forward slightly"
+            },
+            {
+              "name": "Hamstrings",
+              "duration": "60s each",
+              "cue": "Seated or standing, hinge at hips"
+            },
+            {
+              "name": "Quads",
+              "duration": "60s each",
+              "cue": "Standing or side-lying, pull heel to glute"
+            },
+            {
+              "name": "Chest/Shoulders",
+              "duration": "60s",
+              "cue": "Doorway stretch or corner stretch"
+            },
+            {
+              "name": "Lats",
+              "duration": "60s each",
+              "cue": "Kneeling lat stretch or hang from bar"
+            }
+          ]
+        },
+        {
+          "name": "Breathing Reset",
+          "duration": "2 min",
+          "cue": "Lie on back, 4-count inhale, 6-count exhale, let muscles relax completely"
+        }
+      ],
+      "optionalAddOn": {
+        "name": "Foam Rolling",
+        "duration": "5-8 min",
+        "cue": "Target muscles worked in session - slow rolling, pause on tender spots"
+      }
+    },
+    "activeRecovery": {
+      "name": "Active Recovery Day",
+      "duration": "30-40 min",
+      "description": "Light movement to promote muscle recovery between training days",
+      "steps": [
+        {
+          "name": "Light Cardio",
+          "duration": "15-20 min",
+          "cue": "Easy walk, bike, or swim - keep HR in Zone 1-2"
+        },
+        {
+          "name": "Full Body Foam Rolling",
+          "duration": "8-10 min",
+          "cue": "Quads, hamstrings, glutes, lats, thoracic spine",
+          "goal": "Release myofascial tension and improve tissue quality",
+          "detailedSteps": [
+            {
+              "area": "Quads",
+              "duration": "1 min each",
+              "technique": "Face down, roll hip to knee, rotate leg in/out"
+            },
+            {
+              "area": "Hamstrings",
+              "duration": "1 min each",
+              "technique": "Sit on roller, stack legs for more pressure"
+            },
+            {
+              "area": "Glutes",
+              "duration": "1 min each",
+              "technique": "Cross ankle over knee, lean into tight side"
+            },
+            {
+              "area": "Lats",
+              "duration": "1 min each",
+              "technique": "Side-lying, arm overhead, roll armpit to mid-rib"
+            },
+            {
+              "area": "Thoracic Spine",
+              "duration": "2 min",
+              "technique": "Hands behind head, extend over roller at tight spots"
+            }
+          ]
+        },
+        {
+          "name": "Mobility Flow",
+          "duration": "8-10 min",
+          "cue": "Cat-cow, 90/90 hip switches, thoracic rotations, shoulder dislocates",
+          "goal": "Restore range of motion and maintain movement quality",
+          "detailedSteps": [
+            {
+              "name": "Cat-Cow",
+              "duration": "2 min",
+              "reps": "10 cycles",
+              "technique": "Sync breath with movement, slow and controlled"
+            },
+            {
+              "name": "90/90 Hip Switches",
+              "duration": "2 min",
+              "reps": "8 each",
+              "technique": "Keep chest tall, pause 2s each position"
+            },
+            {
+              "name": "Thoracic Rotations",
+              "duration": "2 min",
+              "reps": "10 each",
+              "technique": "Quadruped position, hand behind head, rotate to ceiling"
+            },
+            {
+              "name": "Shoulder Dislocates",
+              "duration": "2 min",
+              "reps": "10",
+              "technique": "Wide grip on band, control through full arc"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "macrocycle": {
+    "lengthWeeks": 4,
+    "mesocycles": [
+      {
+        "id": "week1",
+        "title": "Week 1 - Foundation",
+        "weeks": [
+          1
+        ],
+        "phaseFocus": "Progressive hypertrophy with compound movements at 60-75% 1RM, 1-3 min rest between main lifts",
+        "progression": "linear",
+        "microcycle": [
+          {
+            "day": 1,
+            "title": "Lower Body Power & Strength",
+            "focus": "Glutes, Hips, Squats, Deadlifts, Plyometrics",
+            "durationMinutes": 90,
+            "blocks": [
+              {
+                "name": "Warm-Up",
+                "isCollapsible": true,
+                "duration": "8-10 min",
+                "exercises": [
+                  {
+                    "name": "Light Cardio",
+                    "duration": "4 min",
+                    "trackingMode": "time",
+                    "instruction": "Bike, row, or light jog to elevate heart rate and body temperature",
+                    "definition": "Prepares cardiovascular system and increases tissue pliability"
+                  },
+                  {
+                    "name": "Dynamic Mobility",
+                    "duration": "3 min",
+                    "trackingMode": "time",
+                    "instruction": "Leg swings (10 each direction), hip circles (10 each), walking lunges (5 each), ankle rocks (10 each)",
+                    "definition": "Prepares lower body joints for loaded movements"
+                  },
+                  {
+                    "name": "Activation",
+                    "duration": "2 min",
+                    "trackingMode": "time",
+                    "instruction": "Glute bridges (10), banded lateral walks (10 each), bodyweight squats (10)",
+                    "definition": "Activates glutes and lower body muscles before training"
+                  }
+                ]
+              },
+              {
+                "name": "Glute Activation",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "3-Way Glute Circuit",
+                    "sets": 2,
+                    "reps": "10 each direction",
+                    "trackingMode": "volume",
+                    "instruction": "Perform lateral walks, monster walks, and kickbacks with mini band above knees",
+                    "definition": "Comprehensive glute activation targeting all three gluteal muscles through multiple movement planes",
+                    "notes": "Keep tension on band throughout all movements"
+                  },
+                  {
+                    "name": "Single Leg Glute Bridge",
+                    "sets": 2,
+                    "reps": "6 each",
+                    "trackingMode": "volume",
+                    "instruction": "Drive through heel, squeeze glute at top for 2 seconds",
+                    "definition": "Unilateral hip extension exercise isolating each glute for activation and stability"
+                  }
+                ]
+              },
+              {
+                "name": "Core Circuit",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "Opposing SL/SA Plank Hold",
+                    "sets": 2,
+                    "duration": "20 sec each",
+                    "trackingMode": "time",
+                    "instruction": "Extend opposite arm and leg while maintaining neutral spine",
+                    "definition": "Anti-rotation core exercise challenging stability through contralateral limb movement"
+                  },
+                  {
+                    "name": "Single Leg V-Up",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Touch opposite hand to elevated foot, alternate sides",
+                    "definition": "Dynamic core flexion targeting rectus abdominis with rotational component"
+                  },
+                  {
+                    "name": "Mountain Climber",
+                    "sets": 2,
+                    "reps": 30,
+                    "trackingMode": "volume",
+                    "instruction": "Maintain plank position, drive knees explosively",
+                    "definition": "High-intensity core stability exercise with hip flexor engagement"
+                  }
+                ]
+              },
+              {
+                "name": "Main Lift Block A",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Back Squat",
+                    "sets": 3,
+                    "reps": 12,
+                    "intensity": "60-75% 1RM",
+                    "rest": 90,
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "Control descent for 2-3 seconds, drive explosively through heels",
+                    "definition": "Primary lower body compound movement targeting quads, glutes, and core stability"
+                  },
+                  {
+                    "name": "DB Lunge Jumps",
+                    "sets": 3,
+                    "reps": "6 each",
+                    "trackingMode": "volume",
+                    "instruction": "Explode from lunge position, switch legs in air, land soft",
+                    "definition": "Plyometric lunge variation developing single-leg power and coordination"
+                  },
+                  {
+                    "name": "Piriformis Stretch",
+                    "sets": 3,
+                    "duration": "20-30 sec each",
+                    "trackingMode": "time",
+                    "instruction": "Figure-4 position, gentle pressure on knee",
+                    "definition": "Deep hip rotator stretch preventing tightness and improving hip mobility",
+                    "detailedInstructions": [
+                      "Lie on back with both knees bent, feet flat",
+                      "Cross one ankle over opposite knee (figure-4 position)",
+                      "Thread hands through and interlace behind supporting thigh",
+                      "Gently pull supporting leg toward chest",
+                      "Keep head relaxed on floor, breathe deeply",
+                      "To increase stretch: push crossed knee away from body"
+                    ],
+                    "trainerNotes": "This stretch targets the piriformis and deep hip external rotators. If you feel nerve symptoms (tingling/numbness), ease off immediately."
+                  }
+                ]
+              },
+              {
+                "name": "Main Lift Block B",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Stagger Stance Deadlift",
+                    "sets": 3,
+                    "reps": "6 each",
+                    "intensity": "60-75% 1RM",
+                    "rest": 90,
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "Slight stagger with back foot on toe, hinge at hips maintaining neutral spine",
+                    "definition": "Semi-unilateral hip hinge targeting posterior chain with added stability challenge"
+                  },
+                  {
+                    "name": "Hip Flexor Stretch",
+                    "sets": 3,
+                    "duration": "20-30 sec each",
+                    "trackingMode": "time",
+                    "instruction": "Half-kneeling position, squeeze glute of back leg, lean forward slightly",
+                    "definition": "Essential stretch for hip flexor length and pelvic positioning",
+                    "detailedInstructions": [
+                      "Kneel on back knee (use pad for comfort)",
+                      "Front foot flat, knee over ankle at 90°",
+                      "Tuck pelvis under (posterior tilt) to flatten low back",
+                      "Squeeze glute of back leg hard",
+                      "Lean forward slightly while maintaining pelvic tuck",
+                      "You should feel stretch in front of back hip, not low back"
+                    ],
+                    "trainerNotes": "The key is squeezing the glute—this puts the hip flexor on stretch. Without the glute squeeze, you're just arching your back."
+                  }
+                ]
+              },
+              {
+                "name": "Accessory Block",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 75,
+                "exercises": [
+                  {
+                    "name": "Barbell Hip Thrust",
+                    "sets": 3,
+                    "reps": 12,
+                    "intensity": "60-75% 1RM",
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "Drive through heels, squeeze glutes at top for 2 seconds",
+                    "definition": "Primary glute hypertrophy movement with maximal hip extension loading"
+                  },
+                  {
+                    "name": "Lunge Heavy DB Holds",
+                    "sets": 3,
+                    "duration": "10 sec each",
+                    "trackingMode": "time",
+                    "instruction": "Hold bottom of lunge with heavy dumbbells, maintain upright torso",
+                    "definition": "Isometric strength builder for quads, glutes, and grip under load"
+                  }
+                ]
+              },
+              {
+                "name": "Power Finisher",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "Kick Stance DB Thruster",
+                    "sets": 2,
+                    "reps": "6 each",
+                    "trackingMode": "volume",
+                    "instruction": "Staggered stance squat to press, alternate lead leg each set",
+                    "definition": "Full-body power movement combining lower body drive with overhead press"
+                  },
+                  {
+                    "name": "SL Lateral Hurdle Hop + Rotation Box Jump",
+                    "sets": 2,
+                    "reps": "3 each",
+                    "trackingMode": "volume",
+                    "instruction": "Lateral hop over hurdle, immediately rotate and jump onto box",
+                    "definition": "Multi-planar plyometric developing lateral power and rotational athleticism"
+                  },
+                  {
+                    "name": "Banded SL Knee Drive",
+                    "sets": 2,
+                    "reps": "20 each",
+                    "trackingMode": "volume",
+                    "instruction": "Band around foot, drive knee up explosively against resistance",
+                    "definition": "Hip flexor power exercise mimicking sprint mechanics"
+                  }
+                ]
+              },
+              {
+                "name": "Cool-Down",
+                "isCollapsible": true,
+                "duration": "12-15 min",
+                "exercises": [
+                  {
+                    "name": "Light Movement",
+                    "duration": "3 min",
+                    "trackingMode": "time",
+                    "instruction": "Easy walk to gradually lower heart rate after power work",
+                    "definition": "Facilitates nervous system recovery after explosive training"
+                  },
+                  {
+                    "name": "Static Stretching",
+                    "duration": "7 min",
+                    "trackingMode": "time",
+                    "instruction": "Hip flexors (30s each), hamstrings (30s each), quads (30s each), glutes/piriformis (30s each), calves (30s each)",
+                    "definition": "Targets all major lower body muscles used during session",
+                    "expandableDetails": [
+                      "Hip flexor stretch: Half-kneeling, squeeze glute, lean forward",
+                      "Hamstring stretch: Seated or standing, hinge at hips",
+                      "Quad stretch: Standing or side-lying, pull heel to glute",
+                      "Piriformis stretch: Figure-4 position, pull knee toward chest",
+                      "Calf stretch: Wall stretch, heel down, lean forward"
+                    ]
+                  },
+                  {
+                    "name": "Breathing Reset",
+                    "duration": "2-3 min",
+                    "trackingMode": "time",
+                    "instruction": "Lie supine, 4-count inhale through nose, 6-count exhale through mouth",
+                    "definition": "Activates parasympathetic nervous system to initiate recovery"
+                  }
+                ],
+                "optionalRecovery": {
+                  "name": "Foam Rolling",
+                  "duration": "5 min",
+                  "description": "Optional self-myofascial release for worked muscles",
+                  "areas": [
+                    "Quads (1 min each)",
+                    "Glutes (1 min)",
+                    "IT Band (1 min each)"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "title": "Upper Body Hypertrophy",
+            "focus": "Chest, Shoulders, Back, Pressing Power",
+            "durationMinutes": 85,
+            "blocks": [
+              {
+                "name": "Warm-Up",
+                "isCollapsible": true,
+                "duration": "8-10 min",
+                "exercises": [
+                  {
+                    "name": "Light Cardio",
+                    "duration": "4 min",
+                    "trackingMode": "time",
+                    "instruction": "Row, bike, or arm ergometer to elevate heart rate",
+                    "definition": "Prepares cardiovascular system and warms upper body tissues"
+                  },
+                  {
+                    "name": "Dynamic Shoulder Mobility",
+                    "duration": "3 min",
+                    "trackingMode": "time",
+                    "instruction": "Arm circles (10 each direction), shoulder dislocates (10), thoracic rotations (10 each)",
+                    "definition": "Prepares shoulder complex for pressing and pulling movements"
+                  },
+                  {
+                    "name": "Activation",
+                    "duration": "2 min",
+                    "trackingMode": "time",
+                    "instruction": "Band pull-aparts (15), push-ups (10)",
+                    "definition": "Activates pushing and pulling muscles before training"
+                  }
+                ]
+              },
+              {
+                "name": "Shoulder Mobility/Stability",
+                "groupType": "circuit",
+                "rounds": 1,
+                "exercises": [
+                  {
+                    "name": "Banded Tall Plank Step-Up",
+                    "sets": 1,
+                    "reps": 20,
+                    "trackingMode": "volume",
+                    "instruction": "Mini band around wrists, step hands up and down from elevated surface",
+                    "definition": "Shoulder stability drill activating serratus anterior and rotator cuff"
+                  },
+                  {
+                    "name": "Banded Tall Plank In/Out Step",
+                    "sets": 1,
+                    "reps": 20,
+                    "trackingMode": "volume",
+                    "instruction": "Mini band around wrists, step hands in and out while maintaining plank",
+                    "definition": "Dynamic shoulder stabilization with scapular control emphasis"
+                  }
+                ]
+              },
+              {
+                "name": "Core",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "DB Sit Up + Press",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Sit up holding dumbbell at chest, press overhead at top",
+                    "definition": "Core flexion combined with overhead pressing for integrated strength"
+                  },
+                  {
+                    "name": "Feet Elevated Stir the Pot",
+                    "sets": 2,
+                    "reps": "6 each direction",
+                    "trackingMode": "volume",
+                    "instruction": "Forearms on physio ball, feet elevated, make circles with elbows",
+                    "definition": "Advanced anti-extension core exercise with rotational stability demand"
+                  }
+                ]
+              },
+              {
+                "name": "Main Press Block",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Bench Press",
+                    "sets": 3,
+                    "reps": 12,
+                    "intensity": "60-75% 1RM",
+                    "rest": 90,
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "Control descent 2-3 seconds, drive explosively, maintain arch",
+                    "definition": "Primary horizontal push for chest, anterior deltoid, and tricep development"
+                  },
+                  {
+                    "name": "Chest Stretch",
+                    "sets": 3,
+                    "duration": "20-30 sec",
+                    "trackingMode": "time",
+                    "instruction": "Doorway or corner stretch, arm at 90 degrees",
+                    "definition": "Pec major and minor lengthening to maintain shoulder health"
+                  },
+                  {
+                    "name": "Plate Pinch Press",
+                    "sets": 3,
+                    "reps": 6,
+                    "trackingMode": "volume",
+                    "instruction": "Pinch two plates together, press from chest, squeeze throughout",
+                    "definition": "Chest activation drill emphasizing pec contraction through constant tension"
+                  }
+                ]
+              },
+              {
+                "name": "Power Press Block",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 75,
+                "exercises": [
+                  {
+                    "name": "Slider Forward Plyo Push-Up",
+                    "sets": 3,
+                    "reps": 6,
+                    "trackingMode": "volume",
+                    "instruction": "Hands on sliders, slide forward into push-up, explode back to start",
+                    "definition": "Explosive push-up variation developing horizontal pressing power"
+                  },
+                  {
+                    "name": "SA Alternating Band Press",
+                    "sets": 3,
+                    "reps": 20,
+                    "trackingMode": "volume",
+                    "instruction": "Alternate arms with continuous tension, control the negative",
+                    "definition": "Unilateral pressing with accommodating resistance for chest pump"
+                  }
+                ]
+              },
+              {
+                "name": "Pull & Press Complex",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 75,
+                "exercises": [
+                  {
+                    "name": "SA DB Upright Row + Press",
+                    "sets": 3,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Upright row to shoulder, press overhead, control down",
+                    "definition": "Compound shoulder movement targeting lateral deltoid and overhead pressing"
+                  },
+                  {
+                    "name": "SA Alternating Band Row",
+                    "sets": 3,
+                    "reps": 20,
+                    "trackingMode": "volume",
+                    "instruction": "Alternate arms, squeeze shoulder blade back each rep",
+                    "definition": "High-rep pulling for back thickness and shoulder balance"
+                  },
+                  {
+                    "name": "Physio Ball Lat Stretch",
+                    "sets": 3,
+                    "duration": "20-30 sec",
+                    "trackingMode": "time",
+                    "instruction": "Kneel beside ball, drape arm over, sink hips to stretch lat",
+                    "definition": "Latissimus dorsi lengthening for shoulder mobility and recovery"
+                  }
+                ]
+              },
+              {
+                "name": "Shoulder Finisher",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 45,
+                "exercises": [
+                  {
+                    "name": "Controlled Front Raise with Band Tension",
+                    "sets": 2,
+                    "reps": 6,
+                    "trackingMode": "volume",
+                    "instruction": "Hold band tension outward throughout, slow controlled raises",
+                    "definition": "Anterior deltoid isolation with constant lateral tension"
+                  },
+                  {
+                    "name": "SA Bottom-Up KB Incline Press",
+                    "sets": 2,
+                    "reps": "6 each",
+                    "trackingMode": "volume",
+                    "instruction": "Hold KB upside down, press from incline position, control descent",
+                    "definition": "Shoulder stability press requiring grip strength and rotator cuff activation"
+                  }
+                ]
+              },
+              {
+                "name": "Back & Press Burnout",
+                "groupType": "superset",
+                "rounds": 2,
+                "restBetweenRounds": 45,
+                "exercises": [
+                  {
+                    "name": "Back Extension SA Row",
+                    "sets": 2,
+                    "reps": "6 each",
+                    "trackingMode": "volume",
+                    "instruction": "Hold back extension position, row dumbbell to hip",
+                    "definition": "Posterior chain isometric with unilateral pulling for back development"
+                  },
+                  {
+                    "name": "Plate Floor Press AMRAP",
+                    "sets": 2,
+                    "duration": "60 sec",
+                    "trackingMode": "maxReps",
+                    "instruction": "Floor press with plate, maximum reps in 1 minute",
+                    "definition": "Metabolic chest finisher for muscular endurance and pump"
+                  }
+                ]
+              },
+              {
+                "name": "Cool-Down",
+                "isCollapsible": true,
+                "duration": "12 min",
+                "exercises": [
+                  {
+                    "name": "Light Movement",
+                    "duration": "3 min",
+                    "trackingMode": "time",
+                    "instruction": "Easy walk or light bike to lower heart rate",
+                    "definition": "Facilitates recovery after upper body hypertrophy work"
+                  },
+                  {
+                    "name": "Static Stretching",
+                    "duration": "6 min",
+                    "trackingMode": "time",
+                    "instruction": "Chest stretch (30s each side), lat stretch (30s each), triceps stretch (30s each), shoulder stretch (30s each)",
+                    "definition": "Targets pushing and pulling muscles used during session"
+                  },
+                  {
+                    "name": "Breathing Reset",
+                    "duration": "2 min",
+                    "trackingMode": "time",
+                    "instruction": "Supine, 4-count inhale, 6-count exhale",
+                    "definition": "Activates parasympathetic system for recovery"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "title": "Power & Posterior Chain",
+            "focus": "Hip Thrust, RDL, Olympic Lifts, Plyometrics",
+            "durationMinutes": 90,
+            "blocks": [
+              {
+                "name": "Warm-Up",
+                "isCollapsible": true,
+                "duration": "10 min",
+                "exercises": [
+                  {
+                    "name": "Light Cardio",
+                    "duration": "4 min",
+                    "trackingMode": "time",
+                    "instruction": "Easy jog, bike, or row to elevate heart rate",
+                    "definition": "Prepares cardiovascular system for power work"
+                  },
+                  {
+                    "name": "Dynamic Mobility",
+                    "duration": "3 min",
+                    "trackingMode": "time",
+                    "instruction": "Hip circles (10 each), leg swings (10 each), thoracic rotations (10 each)",
+                    "definition": "Prepares hips and spine for Olympic lifts and hip hinges"
+                  },
+                  {
+                    "name": "Olympic Prep",
+                    "duration": "3 min",
+                    "trackingMode": "time",
+                    "instruction": "Empty bar: RDL × 5, high pull × 5, front squat × 5, push press × 5",
+                    "definition": "Movement-specific preparation for power exercises"
+                  }
+                ]
+              },
+              {
+                "name": "Glute/Hip Activation",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "Banded Good Morning",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Band around neck and under feet, hinge at hips with flat back",
+                    "definition": "Light hip hinge pattern activation for hamstrings and glutes"
+                  },
+                  {
+                    "name": "Bench Seated Clamshell",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Sit on bench edge, open knees against mini band resistance",
+                    "definition": "Glute medius activation in hip flexion for external rotation strength"
+                  },
+                  {
+                    "name": "Toe Touch Squat + Hamstring Stretch",
+                    "sets": 2,
+                    "reps": 5,
+                    "trackingMode": "volume",
+                    "instruction": "Touch toes, grab toes and drop into deep squat, stand and repeat",
+                    "definition": "Dynamic mobility drill improving squat depth and hamstring flexibility"
+                  }
+                ]
+              },
+              {
+                "name": "Core",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "GHD Med Ball Rotation Throws",
+                    "sets": 2,
+                    "reps": 20,
+                    "trackingMode": "volume",
+                    "instruction": "Secure in GHD, rotate and throw ball to partner or wall, alternate sides",
+                    "definition": "Explosive rotational power development from stable hip position"
+                  },
+                  {
+                    "name": "Banded Supine Mountain Climber",
+                    "sets": 2,
+                    "reps": 20,
+                    "trackingMode": "volume",
+                    "instruction": "On back with band around feet, drive knees to chest alternating",
+                    "definition": "Hip flexor strength and core stability in supine position"
+                  }
+                ]
+              },
+              {
+                "name": "Main Lift Block A",
+                "groupType": "superset",
+                "rounds": 4,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Barbell Hip Thrust",
+                    "sets": 4,
+                    "reps": 12,
+                    "intensity": "60-75% 1RM",
+                    "rest": 90,
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "Pause 2 seconds at top, squeeze glutes maximally",
+                    "definition": "Primary glute builder for hip extension strength and power"
+                  },
+                  {
+                    "name": "Landmine SL RDL",
+                    "sets": 4,
+                    "reps": "6 each",
+                    "trackingMode": "volume",
+                    "instruction": "Hold landmine, hinge on one leg, reach bar forward",
+                    "definition": "Unilateral hip hinge with arc path for hamstring and glute development"
+                  }
+                ]
+              },
+              {
+                "name": "Accessory Block",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "SL Reverse Hyper",
+                    "sets": 3,
+                    "reps": "8 each",
+                    "trackingMode": "volume",
+                    "instruction": "One leg at a time, control the swing, squeeze at top",
+                    "definition": "Isolated hip extension targeting glutes and hamstrings unilaterally"
+                  },
+                  {
+                    "name": "Tri-planar Hamstring Stretch",
+                    "sets": 3,
+                    "duration": "20-30 sec each",
+                    "trackingMode": "time",
+                    "instruction": "Stretch hamstring with leg straight, internal, and external rotation",
+                    "definition": "Comprehensive hamstring flexibility addressing all muscle fiber angles"
+                  },
+                  {
+                    "name": "SL Side Step Up + Press",
+                    "sets": 3,
+                    "reps": "8 each",
+                    "trackingMode": "volume",
+                    "instruction": "Lateral step up, press dumbbell overhead at top",
+                    "definition": "Frontal plane lower body power with overhead stability challenge"
+                  }
+                ]
+              },
+              {
+                "name": "Olympic Power",
+                "groupType": "superset",
+                "rounds": 2,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Hang Clean",
+                    "sets": 2,
+                    "reps": 12,
+                    "intensity": "60-70%",
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "Start at hang position, explosive hip drive, catch in front squat",
+                    "definition": "Olympic lift variation developing total body power and coordination"
+                  },
+                  {
+                    "name": "Lunge Jump + Forward Bound",
+                    "sets": 2,
+                    "reps": "3 each",
+                    "trackingMode": "volume",
+                    "instruction": "Lunge jump immediately into forward bound, repeat sequence",
+                    "definition": "Complex plyometric combining vertical and horizontal power"
+                  }
+                ]
+              },
+              {
+                "name": "Core & Plyo Finisher",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 45,
+                "exercises": [
+                  {
+                    "name": "Tall Plank Slider Crunch",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Feet on sliders, pull knees to chest while maintaining plank",
+                    "definition": "Dynamic core flexion with anti-extension stability demand"
+                  },
+                  {
+                    "name": "Straight Leg Raise",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Lying on back, raise straight legs to 90 degrees, control down",
+                    "definition": "Lower abdominal and hip flexor strengthening movement"
+                  },
+                  {
+                    "name": "Lateral Rapid Hurdle Jump",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Quick lateral jumps over low hurdles, minimize ground contact",
+                    "definition": "Reactive lateral power development for athletic performance"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "week2",
+        "title": "Week 2 - Progression",
+        "weeks": [
+          2
+        ],
+        "phaseFocus": "Progress loading while introducing new movement patterns",
+        "progression": "linear",
+        "microcycle": [
+          {
+            "day": 1,
+            "title": "Dynamic Lower Body",
+            "focus": "Single-Leg Strength, Lunges, Hip Mobility",
+            "durationMinutes": 75,
+            "blocks": [
+              {
+                "name": "Dynamic Glutes/Hips",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "Lunge + Twist",
+                    "sets": 2,
+                    "reps": "6 each",
+                    "trackingMode": "volume",
+                    "instruction": "Forward lunge with torso rotation toward front leg",
+                    "definition": "Dynamic hip opener combining hip flexor stretch with thoracic rotation"
+                  },
+                  {
+                    "name": "Lateral Lunge/Cossack",
+                    "sets": 2,
+                    "reps": "6 each",
+                    "trackingMode": "volume",
+                    "instruction": "Deep lateral lunge, sit into hip, keep chest up",
+                    "definition": "Adductor and hip mobility drill in frontal plane"
+                  },
+                  {
+                    "name": "Half Kneeling Adductor Hip Hinge",
+                    "sets": 2,
+                    "reps": "6 each",
+                    "trackingMode": "volume",
+                    "instruction": "Half kneeling with one leg out, hinge toward extended leg",
+                    "definition": "Targeted adductor stretch with hip hinge pattern"
+                  },
+                  {
+                    "name": "Weighted Power Walk",
+                    "sets": 2,
+                    "reps": "20 yards",
+                    "trackingMode": "distance",
+                    "instruction": "Hold heavy weights, walk with powerful hip drive",
+                    "definition": "Loaded carry variation for hip extension and core stability"
+                  }
+                ]
+              },
+              {
+                "name": "Core",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "Supine Physio Ball Hip Circles",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Feet on ball, make circles with hips while maintaining bridge",
+                    "definition": "Core stability with hip mobility in unstable position"
+                  },
+                  {
+                    "name": "GH Sit Up",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "notes": "Weight option available",
+                    "instruction": "Secure feet in GHD, full sit up with control",
+                    "definition": "Advanced hip flexion movement with optional loading"
+                  }
+                ]
+              },
+              {
+                "name": "Main Complex A",
+                "groupType": "circuit",
+                "rounds": 4,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "SL KB RDL + Row",
+                    "sets": 4,
+                    "reps": "6 each",
+                    "trackingMode": "volume",
+                    "exerciseCategory": "compound",
+                    "instruction": "Single leg RDL, row at bottom, return to standing",
+                    "definition": "Unilateral posterior chain with pulling integration"
+                  },
+                  {
+                    "name": "Lateral Lunge + Knee Drive",
+                    "sets": 4,
+                    "reps": "6 each",
+                    "trackingMode": "volume",
+                    "instruction": "Lateral lunge, explode up driving knee high",
+                    "definition": "Frontal plane power with balance challenge"
+                  },
+                  {
+                    "name": "KB Goblet Step Up + Knee Drive",
+                    "sets": 4,
+                    "reps": "8 each",
+                    "trackingMode": "volume",
+                    "instruction": "Hold KB at chest, step up, drive opposite knee high",
+                    "definition": "Loaded step pattern with hip flexion power"
+                  }
+                ]
+              },
+              {
+                "name": "Main Complex B",
+                "groupType": "circuit",
+                "rounds": 4,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "BB Walking Lunge",
+                    "sets": 4,
+                    "reps": "6 each",
+                    "intensity": "60-75% 1RM",
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "Barbell on back, controlled walking lunges",
+                    "definition": "Loaded unilateral leg builder for quad and glute development"
+                  },
+                  {
+                    "name": "Split Squat Rapid Lunge Jump",
+                    "sets": 4,
+                    "reps": "8 each",
+                    "trackingMode": "volume",
+                    "instruction": "Explosive jumping lunges with minimal ground contact",
+                    "definition": "Plyometric lunge for single-leg reactive power"
+                  },
+                  {
+                    "name": "Hip Flexor Stretch",
+                    "sets": 4,
+                    "duration": "15 sec each",
+                    "trackingMode": "time",
+                    "instruction": "Half kneeling stretch between sets",
+                    "definition": "Active recovery maintaining hip mobility"
+                  }
+                ]
+              },
+              {
+                "name": "Balance & Power Finisher",
+                "groupType": "circuit",
+                "rounds": 3,
+                "restBetweenRounds": 45,
+                "exercises": [
+                  {
+                    "name": "SL Line Speed Hop",
+                    "sets": 3,
+                    "duration": "20 sec each",
+                    "trackingMode": "time",
+                    "instruction": "Quick hops forward-back and side-to-side on one leg",
+                    "definition": "Single leg reactive agility and balance drill"
+                  },
+                  {
+                    "name": "SL Balance Med Ball Chest Pass",
+                    "sets": 3,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Stand on one leg, chest pass med ball to partner/wall",
+                    "definition": "Balance and upper body power integration"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "title": "Upper Body Volume",
+            "focus": "Pressing Variations, Pulling Balance, Shoulder Stability",
+            "durationMinutes": 70,
+            "blocks": [
+              {
+                "name": "Shoulder Mobility/Stability",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "Prone T & I's",
+                    "sets": 2,
+                    "reps": "20 each",
+                    "trackingMode": "volume",
+                    "instruction": "Lying face down, raise arms in T then I positions",
+                    "definition": "Lower trap and posterior shoulder activation"
+                  },
+                  {
+                    "name": "Cow's Face Stretch (Broom Stick)",
+                    "sets": 2,
+                    "duration": "30 sec each",
+                    "trackingMode": "time",
+                    "instruction": "Hold stick behind back, one arm over shoulder, one under",
+                    "definition": "Internal and external rotation stretch for shoulder mobility"
+                  },
+                  {
+                    "name": "Unilateral Chest Openers",
+                    "sets": 2,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Lying on side, rotate top arm open stretching chest",
+                    "definition": "Thoracic rotation with pec stretch for posture"
+                  }
+                ]
+              },
+              {
+                "name": "Core & Shoulder",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "Side Plank Band Row",
+                    "sets": 2,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Hold side plank, row band with top arm",
+                    "definition": "Anti-lateral flexion core with pulling pattern",
+                    "formCues": [
+                      "Stack hips directly over each other",
+                      "Elbow under shoulder, forearm perpendicular",
+                      "Row to hip, squeeze shoulder blade back",
+                      "Keep hips elevated throughout - no sagging",
+                      "Breathe steadily, exhale on row"
+                    ]
+                  },
+                  {
+                    "name": "Tall Plank SA Lateral Raise Hold",
+                    "sets": 2,
+                    "duration": "20 sec each",
+                    "trackingMode": "time",
+                    "instruction": "Hold plank, raise one arm to side and hold",
+                    "definition": "Shoulder stability with anti-rotation core demand",
+                    "formCues": [
+                      "Start in perfect tall plank - hands under shoulders",
+                      "Squeeze glutes and brace core before lifting arm",
+                      "Raise arm to shoulder height, thumb up",
+                      "Fight rotation - keep hips square to floor",
+                      "Breathe steadily, maintain tension throughout"
+                    ]
+                  },
+                  {
+                    "name": "Med Ball Suitcase Crunch",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Hold med ball at side, crunch oblique toward ball",
+                    "definition": "Loaded oblique crunch for lateral core strength"
+                  }
+                ]
+              },
+              {
+                "name": "Main Press Block",
+                "groupType": "circuit",
+                "rounds": 4,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "SA DB Bench Press",
+                    "sets": 4,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "exerciseCategory": "compound",
+                    "instruction": "One arm at a time, fight rotation with core",
+                    "definition": "Unilateral pressing with anti-rotation stability demand"
+                  },
+                  {
+                    "name": "SA Front Raise DB",
+                    "sets": 4,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Controlled raise to shoulder height, no momentum",
+                    "definition": "Anterior deltoid isolation for shoulder development"
+                  },
+                  {
+                    "name": "Alternating Cable/Band Row",
+                    "sets": 4,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Alternate arms, squeeze shoulder blade each rep",
+                    "definition": "Balanced pulling for back thickness"
+                  }
+                ]
+              },
+              {
+                "name": "Incline Press Block",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Incline BB Press",
+                    "sets": 3,
+                    "reps": 10,
+                    "intensity": "60-75% 1RM",
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "30-45 degree incline, control descent, drive explosively",
+                    "definition": "Upper chest and anterior deltoid focused pressing"
+                  },
+                  {
+                    "name": "Inverted Alt. Med Ball Push-Up",
+                    "sets": 3,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "One hand on med ball, alternate after each rep",
+                    "definition": "Unstable push-up variation for chest and stability"
+                  },
+                  {
+                    "name": "Chest Stretch",
+                    "sets": 3,
+                    "duration": "30 sec each",
+                    "trackingMode": "time",
+                    "instruction": "Doorway stretch at multiple arm angles",
+                    "definition": "Comprehensive pec stretching for shoulder health"
+                  }
+                ]
+              },
+              {
+                "name": "Pull & Tricep Finisher",
+                "groupType": "circuit",
+                "rounds": 3,
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "Towel Grip Pull-Ups",
+                    "sets": 3,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "notes": "Rock climbing grips also work great",
+                    "instruction": "Grip towel draped over bar, pull up with neutral grip",
+                    "definition": "Grip-intensive pulling for forearm and lat development"
+                  },
+                  {
+                    "name": "Tall Plank Lateral Resisted Walk",
+                    "sets": 3,
+                    "reps": "3 each direction",
+                    "trackingMode": "volume",
+                    "instruction": "Band around wrists, walk hands laterally in plank",
+                    "definition": "Shoulder stability with scapular control"
+                  },
+                  {
+                    "name": "3-Way Tricep Circuit",
+                    "sets": 3,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Skull crush + Pullover + Close Press, no rest between",
+                    "definition": "Complete tricep development hitting all three heads"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "title": "Explosive Power Day",
+            "focus": "Olympic Lifts, Plyometrics, Power Development",
+            "durationMinutes": 75,
+            "blocks": [
+              {
+                "name": "Glute Activation",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "SL ISO Holds (Hip Flexors & Glutes)",
+                    "sets": 2,
+                    "duration": "30 sec",
+                    "trackingMode": "time",
+                    "instruction": "Hold single leg positions activating hip flexors and glutes alternately",
+                    "definition": "Isometric activation for hip stability"
+                  },
+                  {
+                    "name": "Supine Banded Adductor",
+                    "sets": 2,
+                    "reps": "15 each",
+                    "trackingMode": "volume",
+                    "instruction": "Lying on back, press leg out against band resistance",
+                    "definition": "Adductor strengthening in open chain position"
+                  },
+                  {
+                    "name": "SL Mini Box Speed Step Up",
+                    "sets": 2,
+                    "reps": "15 each",
+                    "trackingMode": "volume",
+                    "instruction": "Quick step ups on low box, drive knee high",
+                    "definition": "Hip flexor power and single leg stability drill"
+                  }
+                ]
+              },
+              {
+                "name": "Core",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "DB SA SL V-Up",
+                    "sets": 2,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Hold dumbbell, single arm and leg V-up pattern",
+                    "definition": "Loaded unilateral core movement for oblique and rectus"
+                  },
+                  {
+                    "name": "Rapid Banded Good Morning",
+                    "sets": 2,
+                    "reps": 20,
+                    "trackingMode": "volume",
+                    "instruction": "Fast tempo hip hinges with band resistance",
+                    "definition": "Speed-strength for posterior chain activation"
+                  },
+                  {
+                    "name": "Mini-Rep Split Squat",
+                    "sets": 2,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Small range pulsing reps in bottom of split squat",
+                    "definition": "Time under tension for quad burn and stability"
+                  }
+                ]
+              },
+              {
+                "name": "Power Complex A",
+                "groupType": "circuit",
+                "rounds": 4,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Snatch Grip Rapid High Pull",
+                    "sets": 4,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "exerciseCategory": "compound",
+                    "instruction": "Wide grip, explosive hip extension pulling bar high",
+                    "definition": "Upper back and trap power with explosive hip drive"
+                  },
+                  {
+                    "name": "Banded KB Swings",
+                    "sets": 4,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Add band for accommodating resistance at top",
+                    "definition": "Enhanced hip power with increased lockout demand"
+                  },
+                  {
+                    "name": "Piriformis Stretch",
+                    "sets": 4,
+                    "duration": "30 sec each",
+                    "trackingMode": "time",
+                    "instruction": "Figure-4 stretch between rounds",
+                    "definition": "Hip external rotator recovery"
+                  }
+                ]
+              },
+              {
+                "name": "Olympic & Plyo Block",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 120,
+                "exercises": [
+                  {
+                    "name": "Power Clean",
+                    "sets": 3,
+                    "reps": 6,
+                    "intensity": "60-70%",
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "From floor, explosive triple extension to catch",
+                    "definition": "Full Olympic lift for total body power development"
+                  },
+                  {
+                    "name": "SA DB Shoulder Shrugs",
+                    "sets": 3,
+                    "reps": "12 each",
+                    "trackingMode": "volume",
+                    "instruction": "Heavy shrugs one arm at a time, pause at top",
+                    "definition": "Upper trap development with anti-lateral flexion"
+                  },
+                  {
+                    "name": "Seated Box Jump",
+                    "sets": 3,
+                    "reps": 6,
+                    "trackingMode": "volume",
+                    "instruction": "Start seated, explode to standing jump onto box",
+                    "definition": "Concentric-only power eliminating stretch reflex",
+                    "executionCues": [
+                      "Sit on bench/box with feet flat, slight forward lean",
+                      "No countermovement - start from dead stop",
+                      "Explode using pure hip drive and arm swing",
+                      "Land softly on box with full foot contact",
+                      "Stand completely, step down, reset"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Conditioning Finisher",
+                "groupType": "circuit",
+                "rounds": 3,
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "Prone Banded Hamstring Curl",
+                    "sets": 3,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Face down, curl heels to glutes against band",
+                    "definition": "Isolated hamstring knee flexion"
+                  },
+                  {
+                    "name": "Sled Pulls",
+                    "sets": 3,
+                    "reps": "30 yards",
+                    "trackingMode": "distance",
+                    "instruction": "Pull sled backward or with handles",
+                    "definition": "Loaded conditioning for posterior chain endurance"
+                  },
+                  {
+                    "name": "Alt DB Neutral Grip Military Press",
+                    "sets": 3,
+                    "duration": "30 sec",
+                    "trackingMode": "time",
+                    "instruction": "Alternating presses for time with controlled tempo",
+                    "definition": "Shoulder endurance and stability under fatigue"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "week3",
+        "title": "Week 3 - Intensification",
+        "weeks": [
+          3
+        ],
+        "phaseFocus": "Increase intensity on main lifts while maintaining movement quality",
+        "progression": "linear",
+        "microcycle": [
+          {
+            "day": 1,
+            "title": "Squat Focus",
+            "focus": "Squat Variations, Hamstring Development, Plyometrics",
+            "durationMinutes": 75,
+            "blocks": [
+              {
+                "name": "Glute Activation",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "Quadruped Kick Back",
+                    "sets": 2,
+                    "reps": "5 each",
+                    "trackingMode": "volume",
+                    "instruction": "On all fours, extend leg back and up squeezing glute",
+                    "definition": "Isolated glute max activation in hip extension"
+                  },
+                  {
+                    "name": "Hip Circles",
+                    "sets": 2,
+                    "reps": "5 each direction",
+                    "trackingMode": "volume",
+                    "instruction": "Large controlled circles with knee bent",
+                    "definition": "Hip joint mobility through full range of motion"
+                  },
+                  {
+                    "name": "Hip Up",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Bridge up, squeeze glutes at top",
+                    "definition": "Basic glute bridge for activation"
+                  },
+                  {
+                    "name": "Mini Cone Rapid Lateral Hop",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Quick side-to-side hops over low cone",
+                    "definition": "Reactive lateral agility warm-up"
+                  }
+                ]
+              },
+              {
+                "name": "Core",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "Sprinter Sit Up",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Sit up driving opposite knee and elbow together",
+                    "definition": "Dynamic core with hip flexor integration"
+                  },
+                  {
+                    "name": "Side Crunch",
+                    "sets": 2,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Lying on side, crunch oblique",
+                    "definition": "Lateral core isolation"
+                  },
+                  {
+                    "name": "Mountain Climber Sliders",
+                    "sets": 2,
+                    "duration": "30 sec",
+                    "trackingMode": "time",
+                    "instruction": "Feet on sliders, drive knees to chest alternating",
+                    "definition": "Core stability with reduced friction for speed"
+                  }
+                ]
+              },
+              {
+                "name": "Hamstring Block",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "Slider Ham Curl",
+                    "sets": 3,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Bridge position, curl heels toward glutes on sliders",
+                    "definition": "Hamstring curl in hip extension for complete development"
+                  },
+                  {
+                    "name": "Wall Sit",
+                    "sets": 3,
+                    "duration": "60 sec",
+                    "trackingMode": "time",
+                    "instruction": "Back against wall, thighs parallel to floor",
+                    "definition": "Isometric quad endurance"
+                  },
+                  {
+                    "name": "Glute Ham Raise",
+                    "sets": 3,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Control eccentric, assist concentric if needed",
+                    "definition": "Premier hamstring exercise through knee flexion"
+                  }
+                ]
+              },
+              {
+                "name": "Main Squat Block",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 120,
+                "exercises": [
+                  {
+                    "name": "Back Squat",
+                    "sets": 3,
+                    "reps": "12, 12, 10, 10",
+                    "intensity": "60-75% 1RM",
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "Pyramid down reps while maintaining or increasing weight",
+                    "definition": "Primary lower body compound for quad and glute development"
+                  },
+                  {
+                    "name": "Band Dynamic Hamstring Stretch",
+                    "sets": 3,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Use band to assist active hamstring stretch",
+                    "definition": "Dynamic flexibility between heavy sets"
+                  },
+                  {
+                    "name": "Speed Box Jumps",
+                    "sets": 3,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Quick reactive jumps, minimize ground contact",
+                    "definition": "Reactive power development post-activation",
+                    "executionCues": [
+                      "Use lower box than max height jumps",
+                      "Quick countermovement, minimal pause at bottom",
+                      "Focus on fast ground contact, not max height",
+                      "Step down quickly, immediately reset",
+                      "Maintain rhythm throughout set"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Lunge & Power Finisher",
+                "groupType": "circuit",
+                "rounds": 3,
+                "restBetweenRounds": 75,
+                "exercises": [
+                  {
+                    "name": "BB Walking Overhead Lunge",
+                    "sets": 3,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "exerciseCategory": "compound",
+                    "instruction": "Hold barbell overhead while walking lunges",
+                    "definition": "Full body stability challenge with lower body strength"
+                  },
+                  {
+                    "name": "KB Lateral Lunge Hold",
+                    "sets": 3,
+                    "duration": "20 sec each",
+                    "trackingMode": "time",
+                    "instruction": "Hold bottom of lateral lunge with KB at chest",
+                    "definition": "Isometric adductor and hip strength"
+                  },
+                  {
+                    "name": "Low Hurdle Lateral High Knee",
+                    "sets": 3,
+                    "reps": "2 each direction",
+                    "trackingMode": "volume",
+                    "instruction": "Lateral high knees over low hurdles",
+                    "definition": "Lateral agility and hip flexor power"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "title": "Pressing Power",
+            "focus": "Incline Press Focus, Pulling Balance, Core Rotation",
+            "durationMinutes": 70,
+            "blocks": [
+              {
+                "name": "Shoulder Mobility/Stability",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "Band Face Pulls",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Pull band to face, externally rotate at end",
+                    "definition": "Rear delt and external rotator activation"
+                  },
+                  {
+                    "name": "Band Pull-Aparts",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Arms straight, pull band apart to chest level",
+                    "definition": "Scapular retraction and rear delt activation"
+                  },
+                  {
+                    "name": "Light DB Shoulder Rotation",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Side-lying internal/external rotation with light DB",
+                    "definition": "Rotator cuff warm-up and activation"
+                  },
+                  {
+                    "name": "4-Way Shoulder Circuit",
+                    "sets": 2,
+                    "reps": "5 each direction",
+                    "trackingMode": "volume",
+                    "instruction": "Front raise, lateral raise, rear fly, overhead press",
+                    "definition": "Complete shoulder warm-up through all planes"
+                  }
+                ]
+              },
+              {
+                "name": "Core",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "True Russian Med Ball Twist",
+                    "sets": 2,
+                    "reps": 20,
+                    "trackingMode": "volume",
+                    "instruction": "Feet up, rotate med ball side to side touching floor",
+                    "definition": "Rotational core power with anti-extension"
+                  },
+                  {
+                    "name": "GH Side Crunch",
+                    "sets": 2,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Side position in GHD, side crunch motion",
+                    "definition": "Loaded oblique work through full range"
+                  }
+                ]
+              },
+              {
+                "name": "Main Incline Block",
+                "groupType": "superset",
+                "rounds": 4,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Incline Bench Press",
+                    "sets": 4,
+                    "reps": "12, 12, 10, 10",
+                    "intensity": "60-75% 1RM",
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "Pyramid reps down while progressing weight",
+                    "definition": "Upper chest focused pressing with progressive overload"
+                  },
+                  {
+                    "name": "Band Lat Stretch",
+                    "sets": 4,
+                    "duration": "20 sec",
+                    "trackingMode": "time",
+                    "instruction": "Hold band overhead, lean to stretch lats",
+                    "definition": "Active recovery maintaining lat mobility"
+                  },
+                  {
+                    "name": "DB Lateral Raise",
+                    "sets": 4,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Controlled raises to shoulder height, no swing",
+                    "definition": "Medial deltoid isolation for shoulder width"
+                  }
+                ]
+              },
+              {
+                "name": "Pull & Press Complex",
+                "groupType": "circuit",
+                "rounds": 3,
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "Supine Row Hold",
+                    "sets": 3,
+                    "duration": "20 sec",
+                    "trackingMode": "time",
+                    "instruction": "Hold top of inverted row, squeeze shoulder blades",
+                    "definition": "Isometric pulling for back development and posture"
+                  },
+                  {
+                    "name": "Band Resisted Plate Front Raise",
+                    "sets": 3,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Band adds resistance at top of front raise",
+                    "definition": "Anterior deltoid with accommodating resistance"
+                  },
+                  {
+                    "name": "Alt DB Upright Row",
+                    "sets": 3,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Alternate arms, lead with elbows",
+                    "definition": "Shoulder and trap development alternating sides"
+                  }
+                ]
+              },
+              {
+                "name": "Chest & Conditioning Finisher",
+                "groupType": "circuit",
+                "rounds": 3,
+                "restBetweenRounds": 45,
+                "exercises": [
+                  {
+                    "name": "Rotating DB Bench Press",
+                    "sets": 3,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Rotate DBs from neutral to pronated during press",
+                    "definition": "Variable grip pressing for complete chest activation"
+                  },
+                  {
+                    "name": "DB Push Up + Lateral Raise",
+                    "sets": 3,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Push up on DBs, at top raise one arm to side",
+                    "definition": "Compound push with shoulder stability challenge"
+                  },
+                  {
+                    "name": "Rope Slams",
+                    "sets": 3,
+                    "duration": "30 sec",
+                    "trackingMode": "time",
+                    "instruction": "Alternating or double rope slams with max effort",
+                    "definition": "Upper body power endurance and conditioning"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "title": "Deadlift & Power",
+            "focus": "Deadlift Variations, Explosive Movements, Conditioning",
+            "durationMinutes": 75,
+            "blocks": [
+              {
+                "name": "Warm Up/Activation",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "SL RDL Med Ball Reach",
+                    "sets": 2,
+                    "reps": "6 each",
+                    "trackingMode": "volume",
+                    "instruction": "Single leg RDL reaching med ball forward",
+                    "definition": "Posterior chain activation with balance challenge"
+                  },
+                  {
+                    "name": "Med Ball Lunge + Side Slam",
+                    "sets": 2,
+                    "reps": 20,
+                    "trackingMode": "volume",
+                    "instruction": "Lunge, slam ball to side of front leg, alternate",
+                    "definition": "Dynamic warm-up with rotational power"
+                  }
+                ]
+              },
+              {
+                "name": "Core",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "Ab Roll Out",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Extend fully, maintain neutral spine, pull back with abs",
+                    "definition": "Anti-extension core strength for spinal stability"
+                  },
+                  {
+                    "name": "V-Up",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "notes": "Weight option available",
+                    "instruction": "Touch hands to toes at top, control descent",
+                    "definition": "Complete core flexion targeting rectus abdominis"
+                  }
+                ]
+              },
+              {
+                "name": "Main Deadlift Block",
+                "groupType": "circuit",
+                "rounds": 4,
+                "restBetweenRounds": 120,
+                "exercises": [
+                  {
+                    "name": "Deadlift to RDL",
+                    "sets": 4,
+                    "reps": 10,
+                    "intensity": "60-75% 1RM",
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "Full deadlift up, RDL down without touching floor, repeat",
+                    "definition": "Extended time under tension deadlift variation for posterior chain"
+                  },
+                  {
+                    "name": "Band Knee Drive",
+                    "sets": 4,
+                    "reps": "20 each",
+                    "trackingMode": "volume",
+                    "instruction": "Band around foot, explosive knee drives",
+                    "definition": "Hip flexor power between heavy pulls"
+                  },
+                  {
+                    "name": "Rapid Lateral Step Up",
+                    "sets": 4,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Quick lateral step ups alternating lead leg",
+                    "definition": "Frontal plane conditioning and hip power"
+                  }
+                ]
+              },
+              {
+                "name": "Power Conditioning Block",
+                "groupType": "circuit",
+                "rounds": 4,
+                "restBetweenRounds": 120,
+                "notes": "Complete as fast as possible each round",
+                "exercises": [
+                  {
+                    "name": "Heavy Sled Drive",
+                    "sets": 4,
+                    "reps": "20 yards",
+                    "trackingMode": "distance",
+                    "instruction": "Drive sled with max effort for distance",
+                    "definition": "Horizontal power and conditioning"
+                  },
+                  {
+                    "name": "Med Ball Burpee Box Jump",
+                    "sets": 4,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Burpee holding med ball, jump onto box at top",
+                    "definition": "Full body explosive conditioning movement"
+                  }
+                ]
+              },
+              {
+                "name": "Olympic & Plyo Finisher",
+                "groupType": "circuit",
+                "rounds": 3,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Power Clean + Press",
+                    "sets": 3,
+                    "reps": 6,
+                    "intensity": "60-70%",
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "instruction": "Clean the bar, immediately press overhead",
+                    "definition": "Full body power complex from floor to overhead"
+                  },
+                  {
+                    "name": "Depth Jump",
+                    "sets": 3,
+                    "reps": "4 each",
+                    "trackingMode": "volume",
+                    "instruction": "Step off box, land and immediately jump max height",
+                    "definition": "Reactive strength using stretch-shortening cycle",
+                    "executionCues": [
+                      "Step off (don't jump) from 12-18 inch box",
+                      "Land with both feet, absorb through ankles-knees-hips",
+                      "Ground contact <0.2 seconds - 'hot floor' mentality",
+                      "Immediately explode into max vertical jump",
+                      "Use aggressive arm swing to assist",
+                      "Land softly, full reset between reps"
+                    ]
+                  },
+                  {
+                    "name": "Physio Ball Ham Curls",
+                    "sets": 3,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Bridge on ball, curl heels toward glutes",
+                    "definition": "Hamstring work with instability challenge"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "week4",
+        "title": "Week 4 - Peak",
+        "weeks": [
+          4
+        ],
+        "phaseFocus": "Peak performance with advanced variations and complex movements",
+        "progression": "linear",
+        "microcycle": [
+          {
+            "day": 1,
+            "title": "Advanced Lower Body",
+            "focus": "Complex Squat Patterns, Single-Leg Power, Plyometrics",
+            "durationMinutes": 75,
+            "blocks": [
+              {
+                "name": "Glute/Hip Mobility",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "Table Top Reach",
+                    "sets": 2,
+                    "reps": "5 each",
+                    "trackingMode": "volume",
+                    "instruction": "Bridge up to table top, reach opposite arm back",
+                    "definition": "Hip extension with thoracic rotation mobility"
+                  },
+                  {
+                    "name": "90/90 Switch + Hip Extension",
+                    "sets": 2,
+                    "reps": "5 each",
+                    "trackingMode": "volume",
+                    "instruction": "90/90 position, switch sides, add hip extension",
+                    "definition": "Complete hip mobility through multiple planes"
+                  },
+                  {
+                    "name": "SL Balance 3-Cone Touch",
+                    "sets": 2,
+                    "reps": "2 each",
+                    "trackingMode": "volume",
+                    "notes": "Balance pad option for added challenge",
+                    "instruction": "Stand on one leg, touch 3 cones in different positions",
+                    "definition": "Single leg stability with reaching patterns"
+                  }
+                ]
+              },
+              {
+                "name": "Core",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "Bird Dog",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Extend opposite arm and leg, maintain neutral spine",
+                    "definition": "Anti-rotation and extension core stability"
+                  },
+                  {
+                    "name": "MB Lunge Hold Rotational Wall Throw",
+                    "sets": 2,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Hold lunge, rotate and throw ball into wall",
+                    "definition": "Rotational power from stable lower body base"
+                  },
+                  {
+                    "name": "Tall Plank Lateral Weight Slide",
+                    "sets": 2,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Plank position, slide weight side to side",
+                    "definition": "Anti-rotation core with added load challenge"
+                  }
+                ]
+              },
+              {
+                "name": "Squat Complex",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "1 1/4 Squat",
+                    "sets": 3,
+                    "reps": 10,
+                    "intensity": "60-70% 1RM",
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "Full squat, come up 1/4, back down, then full up",
+                    "definition": "Extended time under tension squat for quad development"
+                  },
+                  {
+                    "name": "Piriformis Stretch",
+                    "sets": 3,
+                    "duration": "20 sec",
+                    "trackingMode": "time",
+                    "instruction": "Figure-4 stretch between sets",
+                    "definition": "Hip external rotator maintenance"
+                  },
+                  {
+                    "name": "SL Alternating Rapid Box Jump",
+                    "sets": 3,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Alternate single leg jumps onto box quickly",
+                    "definition": "Reactive single leg power"
+                  }
+                ]
+              },
+              {
+                "name": "SL RDL Complex",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 75,
+                "exercises": [
+                  {
+                    "name": "Snatch Grip SL RDL",
+                    "sets": 3,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "exerciseCategory": "compound",
+                    "instruction": "Wide grip on bar, single leg RDL pattern",
+                    "definition": "Upper back engagement with unilateral hip hinge"
+                  },
+                  {
+                    "name": "SL Rotational Box Jump",
+                    "sets": 3,
+                    "reps": "4 each",
+                    "trackingMode": "volume",
+                    "instruction": "Jump off one leg, rotate 90 degrees, land on box",
+                    "definition": "Multi-planar single leg power"
+                  },
+                  {
+                    "name": "Physio Ball SL Curl",
+                    "sets": 3,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Bridge with one leg on ball, curl and extend",
+                    "definition": "Unilateral hamstring work with instability"
+                  }
+                ]
+              },
+              {
+                "name": "Advanced Split Complex",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "5's Complex: 5 Split Squat + 5 sec Pause + 5 Jumps",
+                    "sets": 2,
+                    "reps": "1 each leg",
+                    "trackingMode": "volume",
+                    "instruction": "5 split squats, hold bottom 5 sec, then 5 jump squats",
+                    "definition": "Complete quad destruction through multiple training methods"
+                  },
+                  {
+                    "name": "Plank Hold",
+                    "sets": 2,
+                    "duration": "30 sec",
+                    "trackingMode": "time",
+                    "instruction": "Standard plank for core recovery between legs",
+                    "definition": "Active recovery maintaining core engagement"
+                  }
+                ]
+              },
+              {
+                "name": "Power Finisher",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "BB Split Squat Jump",
+                    "sets": 2,
+                    "reps": "6 each",
+                    "trackingMode": "volume",
+                    "instruction": "Barbell on back, explosive split squat jumps",
+                    "definition": "Loaded plyometric for single leg power"
+                  },
+                  {
+                    "name": "Plate Holds",
+                    "sets": 2,
+                    "duration": "30 sec",
+                    "trackingMode": "time",
+                    "instruction": "Hold plates in front for grip and delt endurance",
+                    "definition": "Grip and anterior delt endurance under fatigue"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 2,
+            "title": "Advanced Upper Body",
+            "focus": "Complex Pressing, Isometric Work, Tempo Training",
+            "durationMinutes": 70,
+            "blocks": [
+              {
+                "name": "Shoulder Mobility/Stability",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "Mini Band External Rotation",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Band around wrists, rotate hands outward",
+                    "definition": "Rotator cuff activation and shoulder warm-up"
+                  },
+                  {
+                    "name": "Prone ITW Hold",
+                    "sets": 2,
+                    "duration": "10 sec each",
+                    "trackingMode": "time",
+                    "instruction": "Face down, hold I, T, and W arm positions",
+                    "definition": "Isometric posterior shoulder and upper back activation"
+                  },
+                  {
+                    "name": "Tall Plank SA DB Lateral Raise",
+                    "sets": 2,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Hold plank, raise DB to side with one arm",
+                    "definition": "Core stability with shoulder isolation"
+                  }
+                ]
+              },
+              {
+                "name": "Core",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "MB V-Up Toss",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "V-up and toss med ball to partner or in air",
+                    "definition": "Explosive core flexion with release"
+                  },
+                  {
+                    "name": "BB Floor Press Complex",
+                    "sets": 2,
+                    "reps": "5 each movement",
+                    "trackingMode": "volume",
+                    "instruction": "Press + Leg Raise + Bent Knee Press, repeat sequence",
+                    "definition": "Complex combining pressing with core integration"
+                  }
+                ]
+              },
+              {
+                "name": "Main Bench Block",
+                "groupType": "circuit",
+                "rounds": 4,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Bench Press 1 + 1/2 Rep",
+                    "sets": 4,
+                    "reps": 10,
+                    "intensity": "60-70% 1RM",
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "Full press, lower halfway, press again, full lower",
+                    "definition": "Extended range pressing for chest development"
+                  },
+                  {
+                    "name": "MB Half Kneeling SA Chest Pass",
+                    "sets": 4,
+                    "reps": "6 each",
+                    "trackingMode": "volume",
+                    "instruction": "Half kneeling, explosive chest pass with one arm",
+                    "definition": "Rotational pressing power from stable base"
+                  },
+                  {
+                    "name": "Renegade Row",
+                    "sets": 4,
+                    "reps": 12,
+                    "trackingMode": "volume",
+                    "instruction": "Push up position, row DBs alternating sides",
+                    "definition": "Anti-rotation core with horizontal pulling"
+                  }
+                ]
+              },
+              {
+                "name": "Pull & Press Isometrics",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "ISO Hold Pull Up",
+                    "sets": 3,
+                    "duration": "20-30 sec",
+                    "trackingMode": "time",
+                    "instruction": "Hold top of pull up position",
+                    "definition": "Isometric lat and bicep strength"
+                  },
+                  {
+                    "name": "Supported DB Bent Row + 2 sec Pause",
+                    "sets": 3,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Chest supported row, pause 2 sec at top each rep",
+                    "definition": "Tempo pulling for back thickness"
+                  }
+                ]
+              },
+              {
+                "name": "Dip & Press Complex",
+                "groupType": "superset",
+                "rounds": 2,
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "Banded Chest Press",
+                    "sets": 2,
+                    "duration": "30 sec",
+                    "trackingMode": "time",
+                    "instruction": "Continuous pressing against band for time",
+                    "definition": "Accommodating resistance pressing endurance"
+                  },
+                  {
+                    "name": "Dip + 2 sec Pause at Bottom",
+                    "sets": 2,
+                    "reps": 8,
+                    "trackingMode": "volume",
+                    "instruction": "Pause 2 seconds at bottom of each dip",
+                    "definition": "Chest and tricep strength from stretched position"
+                  }
+                ]
+              },
+              {
+                "name": "Shoulder Finisher",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 45,
+                "exercises": [
+                  {
+                    "name": "DB Incline 21's",
+                    "sets": 2,
+                    "reps": "7 each position",
+                    "trackingMode": "volume",
+                    "instruction": "Hold at top, right side, left side, both sides, repeat x7",
+                    "definition": "Isometric shoulder torture for complete deltoid development"
+                  },
+                  {
+                    "name": "Banded Front Raise",
+                    "sets": 2,
+                    "reps": 12,
+                    "trackingMode": "volume",
+                    "instruction": "Front raises with band for constant tension",
+                    "definition": "Anterior deltoid isolation with accommodating resistance"
+                  },
+                  {
+                    "name": "MB Wall Shuffle",
+                    "sets": 2,
+                    "reps": 20,
+                    "trackingMode": "volume",
+                    "instruction": "Quick hand shuffles on med ball against wall",
+                    "definition": "Shoulder stability and coordination under fatigue"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "day": 3,
+            "title": "Total Body Power",
+            "focus": "Hex Bar Deadlift, Olympic Lifts, Full Body Integration",
+            "durationMinutes": 75,
+            "blocks": [
+              {
+                "name": "Hips & Glutes Activation",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "Dual GH Hold",
+                    "sets": 2,
+                    "duration": "20 sec",
+                    "trackingMode": "time",
+                    "instruction": "Hold glute bridge position in GHD",
+                    "definition": "Isometric glute and hamstring activation"
+                  },
+                  {
+                    "name": "SL GH Hold",
+                    "sets": 2,
+                    "duration": "10 sec each",
+                    "trackingMode": "time",
+                    "instruction": "Single leg bridge hold in GHD",
+                    "definition": "Unilateral posterior chain activation"
+                  },
+                  {
+                    "name": "SL Box Jump",
+                    "sets": 2,
+                    "reps": "3 each",
+                    "trackingMode": "volume",
+                    "instruction": "Jump onto box from single leg",
+                    "definition": "Single leg power assessment and development"
+                  }
+                ]
+              },
+              {
+                "name": "Core/Shoulder",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 30,
+                "exercises": [
+                  {
+                    "name": "GH MB Sit Up + Press + Hold",
+                    "sets": 2,
+                    "reps": "10 + 10 sec",
+                    "trackingMode": "volume",
+                    "instruction": "Sit up with med ball press, hold overhead 10 sec at end",
+                    "definition": "Complete core and shoulder integration"
+                  },
+                  {
+                    "name": "Half Kneeling KB Lift + Chop",
+                    "sets": 2,
+                    "reps": "8 each",
+                    "trackingMode": "volume",
+                    "instruction": "Diagonal lift pattern then chop pattern",
+                    "definition": "Anti-rotation with diagonal force production"
+                  },
+                  {
+                    "name": "Reverse Crunch",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Curl hips off floor bringing knees to chest",
+                    "definition": "Lower abdominal emphasis in core flexion"
+                  }
+                ]
+              },
+              {
+                "name": "Hip Hinge Block",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 75,
+                "exercises": [
+                  {
+                    "name": "Reverse Hyper",
+                    "sets": 3,
+                    "reps": 12,
+                    "trackingMode": "volume",
+                    "instruction": "Controlled swing, squeeze glutes at top",
+                    "definition": "Decompression hip extension for lower back health"
+                  },
+                  {
+                    "name": "Trap Bar Bent Row Hold/Pause",
+                    "sets": 3,
+                    "reps": 6,
+                    "trackingMode": "volume",
+                    "instruction": "Bent over position, row and hold each rep 3 sec",
+                    "definition": "Isometric pulling for back strength"
+                  },
+                  {
+                    "name": "Dual DB RDL + Lateral Lunge",
+                    "sets": 3,
+                    "reps": "3 each",
+                    "trackingMode": "volume",
+                    "instruction": "RDL, step into lateral lunge, return to RDL",
+                    "definition": "Multi-planar hip complex"
+                  }
+                ]
+              },
+              {
+                "name": "Main Deadlift Block",
+                "groupType": "superset",
+                "rounds": 3,
+                "restBetweenRounds": 120,
+                "exercises": [
+                  {
+                    "name": "Hex Bar Deadlift",
+                    "sets": 3,
+                    "reps": 12,
+                    "intensity": "60-75% 1RM",
+                    "trackingMode": "1RM",
+                    "exerciseCategory": "compound",
+                    "targetRPE": 7,
+                    "instruction": "Neutral grip in hex bar, drive through floor",
+                    "definition": "Quad-dominant deadlift variation for total leg development"
+                  },
+                  {
+                    "name": "Resisted Rapid Broad Jump",
+                    "sets": 3,
+                    "reps": 8,
+                    "trackingMode": "volume",
+                    "instruction": "Band around waist, explosive broad jumps",
+                    "definition": "Horizontal power with resistance"
+                  },
+                  {
+                    "name": "Pigeon Stretch",
+                    "sets": 3,
+                    "duration": "20-30 sec",
+                    "trackingMode": "time",
+                    "instruction": "Hip external rotation stretch between sets",
+                    "definition": "Deep hip stretch for glute and hip mobility"
+                  }
+                ]
+              },
+              {
+                "name": "Speed & Agility Block",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 45,
+                "exercises": [
+                  {
+                    "name": "Band Resisted Speed Back Extension",
+                    "sets": 2,
+                    "reps": 10,
+                    "trackingMode": "volume",
+                    "instruction": "Fast back extensions with band resistance",
+                    "definition": "Speed-strength for posterior chain"
+                  },
+                  {
+                    "name": "SL Mini Hurdle Jump (Forward/Back)",
+                    "sets": 2,
+                    "reps": "10 each",
+                    "trackingMode": "volume",
+                    "instruction": "Quick single leg hops over mini hurdle",
+                    "definition": "Single leg reactive agility"
+                  },
+                  {
+                    "name": "Calf Speed Raises + Stretch",
+                    "sets": 2,
+                    "reps": "10+ raises, 20 sec stretch",
+                    "trackingMode": "volume",
+                    "instruction": "Fast calf raises followed by wall stretch",
+                    "definition": "Calf power and flexibility maintenance"
+                  }
+                ]
+              },
+              {
+                "name": "Walking Press Finisher",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "BB Walking OH Press Complex",
+                    "sets": 2,
+                    "reps": "20 total presses, 20 yards walk",
+                    "trackingMode": "volume",
+                    "instruction": "5 presses, walk 5 yards overhead, repeat 4x",
+                    "definition": "Overhead stability with locomotion challenge"
+                  },
+                  {
+                    "name": "Reverse Bear Crawl",
+                    "sets": 2,
+                    "reps": "20 yards",
+                    "trackingMode": "distance",
+                    "instruction": "Bear crawl moving backwards for distance",
+                    "definition": "Full body coordination and shoulder stability"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
