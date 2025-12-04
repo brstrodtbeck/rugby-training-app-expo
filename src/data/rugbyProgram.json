@@ -1,322 +1,2237 @@
 {
+  "id": "program_rugby_season_prep",
+  "title": "Rugby Season Preparation",
+  "description": "Comprehensive rugby-specific training program with seasonal periodization",
+  "trainingMaxNote": "Use 90% of true 1RM for 1RM calculations",
+  "version": "2.1",
+  "schema": {
+    "exerciseFields": {
+      "required": ["name", "trackingMode"],
+      "trackingModes": {
+        "time": ["duration"],
+        "volume": ["sets", "reps"],
+        "1RM": ["sets", "reps", "intensity"],
+        "distance": ["sets", "reps"]
+      }
+    }
+  },
+  "standardTemplates": {
+    "warmUp": {
+      "name": "Standard Warm-Up",
+      "duration": "10-15 min",
+      "description": "Rugby-specific preparation for training",
+      "steps": [
+        {"name": "Light Cardio", "duration": "5 min", "cue": "Easy jog with dynamic movements (high knees, butt kicks, carioca)"},
+        {"name": "Dynamic Mobility", "duration": "5 min", "exercises": ["Leg Swings (10 each)", "Hip Circles (10 each)", "Walking Lunges with Twist (5 each)", "Inchworms (5)", "World's Greatest Stretch (3 each)"]},
+        {"name": "Activation", "duration": "2-3 min", "cue": "Glute bridges (10), band pull-aparts (15), bodyweight squats (10)"}
+      ]
+    },
+    "coolDown": {
+      "name": "Standard Cool-Down",
+      "duration": "15-20 min",
+      "description": "Recovery protocol for rugby athletes",
+      "steps": [
+        {"name": "Easy Cardio", "duration": "5 min", "cue": "Light jog or walk, let heart rate settle"},
+        {"name": "Static Stretching", "duration": "10 min", "exercises": [
+          {"name": "Hip Flexor Stretch", "duration": "60s each", "cue": "Half-kneeling, squeeze glute"},
+          {"name": "Hamstring Stretch", "duration": "60s each", "cue": "Doorway or supine stretch"},
+          {"name": "Piriformis/Glute Stretch", "duration": "60s each", "cue": "Figure-4 position"},
+          {"name": "Lat/Shoulder Stretch", "duration": "60s each", "cue": "Kneeling lat stretch or doorway stretch"}
+        ]},
+        {"name": "Breathing Reset", "duration": "2 min", "cue": "4-count inhale, 6-count exhale, full relaxation"}
+      ],
+      "optionalAddOn": {"name": "Contrast Therapy", "duration": "10-15 min", "cue": "Alternate hot/cold if available"}
+    },
+    "activeRecovery": {
+      "name": "Active Recovery Day",
+      "duration": "30-40 min",
+      "description": "Low-intensity movement for rugby athlete recovery",
+      "steps": [
+        {"name": "Pool Work or Light Swim", "duration": "15 min", "cue": "If available, great for joint decompression"},
+        {"name": "Light Bike or Walk", "duration": "15 min", "cue": "Zone 1-2, conversational pace"},
+        {"name": "Mobility & Foam Rolling", "duration": "10-15 min", "cue": "Address high-stress areas: hips, shoulders, thoracic spine"}
+      ]
+    }
+  },
   "macrocycle": {
+    "lengthWeeks": 16,
     "mesocycles": [
       {
         "id": "m1",
         "title": "Foundation",
-        "phase": "Nov–Dec",
-        "goal": "Build muscle, aerobic base, correct imbalances, prep for heavier loads later.",
-        "frequency": "5 training days + 1 conditioning day + 1 rest day",
+        "weeks": [1, 2, 3, 4],
+        "phaseFocus": "Nov–Dec: Build muscle, aerobic base, correct imbalances, prep for heavier loads later",
+        "progression": {
+          "week1": { "intensity": "65-70% 1RM", "volume": "Moderate" },
+          "week2": { "intensity": "70-72.5% 1RM", "volume": "Moderate" },
+          "week3": { "intensity": "72.5-75% 1RM", "volume": "Moderate" },
+          "week4": { "intensity": "70% 1RM", "volume": "Deload (-20% sets)" }
+        },
         "microcycle": [
           {
-            "id": "m1-week0-day-1",
             "day": 1,
             "title": "Strength + VO₂ Max",
-            "exercises": [
-              { "name": "Squat", "sets": 4, "reps": 8, "intensity": "70% 1RM", "rest": 90, "trackSets": true },
-              { "name": "Bench Press", "sets": 4, "reps": 8, "intensity": "70% 1RM", "rest": 90, "trackSets": true },
-              { "name": "Pull-Ups", "sets": 4, "reps": 8, "rest": 90, "trackSets": false },
-              { "name": "Bulgarian Split Squat", "sets": 3, "reps": 10, "rest": 60, "trackSets": true },
-              { "name": "VO₂ Max Intervals", "sets": 4, "reps": "4 min @ 90–95% HRmax", "rest": "3 min jog", "trackSets": false }
+            "durationMinutes": 95,
+            "blocks": [
+              {
+                "name": "Warm-Up",
+                "isCollapsible": true,
+                "duration": "10 min",
+                "exercises": [
+                  {
+                    "name": "Light Cardio",
+                    "duration": "4 min",
+                    "trackingMode": "time",
+                    "instruction": "Easy jog with dynamic movements (high knees, butt kicks, carioca)",
+                    "definition": "Elevates heart rate and prepares body for strength training"
+                  },
+                  {
+                    "name": "Dynamic Mobility",
+                    "duration": "4 min",
+                    "trackingMode": "time",
+                    "instruction": "Leg swings (10 each), hip circles (10 each), walking lunges with twist (5 each), inchworms (5)",
+                    "definition": "Rugby-specific mobility for lower body and core preparation"
+                  },
+                  {
+                    "name": "Activation",
+                    "duration": "2 min",
+                    "trackingMode": "time",
+                    "instruction": "Glute bridges (10), band pull-aparts (15)",
+                    "definition": "Activates key muscles and prepares nervous system for training"
+                  }
+                ]
+              },
+              {
+                "name": "Main Strength",
+                "groupType": "superset",
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Back Squat",
+                    "groupId": "day1-mainstrength-ex1",
+                    "sets": 4,
+                    "reps": 8,
+                    "intensity": "70% 1RM",
+                    "rest": 90,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Bench Press",
+                    "groupId": "day1-mainstrength-ex2",
+                    "sets": 4,
+                    "reps": 8,
+                    "intensity": "70% 1RM",
+                    "rest": 90,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Accessory",
+                "groupType": "superset",
+                "restBetweenRounds": 75,
+                "exercises": [
+                  {
+                    "name": "Pull-Ups",
+                    "groupId": "day1-accessory-ex1",
+                    "sets": 4,
+                    "reps": 8,
+                    "rest": 90,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Bulgarian Split Squat",
+                    "groupId": "day1-accessory-ex2",
+                    "sets": 3,
+                    "reps": 10,
+                    "rest": 60,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Conditioning",
+                "exercises": [
+                  {
+                    "name": "VO₂ Max Intervals",
+                    "sets": 4,
+                    "duration": "4 min",
+                    "rest": 180,
+                    "trackingMode": "time",
+                    "notes": "4 min @ 90–95% HRmax, 3 min jog recovery",
+                    "instruction": "Run/bike at near-maximum sustainable effort for 4 minutes, then jog or easy spin for 3 min recovery.",
+                    "definition": "High-intensity intervals targeting maximal oxygen uptake for improved aerobic power.",
+                    "intensity": "90–95% HRmax",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Cool-Down",
+                "isCollapsible": true,
+                "duration": "12-15 min",
+                "exercises": [
+                  {
+                    "name": "Light Jog/Walk",
+                    "duration": "4 min",
+                    "trackingMode": "time",
+                    "instruction": "Easy movement to gradually lower heart rate after intervals",
+                    "definition": "Facilitates lactate clearance and cardiovascular recovery"
+                  },
+                  {
+                    "name": "Static Stretching",
+                    "duration": "6-8 min",
+                    "trackingMode": "time",
+                    "instruction": "Hip flexors (30s each), hamstrings (30s each), quads (30s each), glutes (30s each)",
+                    "definition": "Targets lower body muscles stressed during strength and conditioning work",
+                    "expandableDetails": [
+                      "Hip flexor stretch: Half-kneeling position, squeeze glute, lean forward",
+                      "Hamstring stretch: Seated or doorway stretch, keep back flat",
+                      "Quad stretch: Standing or side-lying, pull heel to glute",
+                      "Piriformis stretch: Figure-4 position, pull knee toward chest"
+                    ]
+                  },
+                  {
+                    "name": "Breathing Reset",
+                    "duration": "2-3 min",
+                    "trackingMode": "time",
+                    "instruction": "Lie supine, 4-count inhale, 6-count exhale, full relaxation",
+                    "definition": "Activates parasympathetic system to initiate recovery"
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m1-week0-day-2",
             "day": 2,
             "title": "Speed/Agility + Accessory",
-            "exercises": [
-              { "name": "Sprint", "sets": 6, "reps": "30m", "rest": "walk back", "trackSets": false },
-              { "name": "Agility Ladder", "sets": 1, "reps": "3 min continuous", "rest": 60, "trackSets": false },
-              { "name": "Shuttle 5-10-5", "sets": 6, "reps": 1, "rest": 60, "trackSets": false },
-              { "name": "Overhead Press", "sets": 3, "reps": 10, "intensity": "65% 1RM", "rest": 90, "trackSets": true },
-              { "name": "Barbell Row", "sets": 3, "reps": 10, "rest": 90, "trackSets": true },
-              { "name": "Hanging Leg Raises", "sets": 3, "reps": 12, "rest": 60, "trackSets": false }
+            "durationMinutes": 85,
+            "blocks": [
+              {
+                "name": "Warm-Up",
+                "isCollapsible": true,
+                "duration": "10 min",
+                "exercises": [
+                  {
+                    "name": "Dynamic Warm-Up",
+                    "duration": "5 min",
+                    "trackingMode": "time",
+                    "instruction": "Light jog (2 min), then high knees, butt kicks, carioca, A-skips (30s each)",
+                    "definition": "Prepares neuromuscular system for explosive speed and agility work"
+                  },
+                  {
+                    "name": "Dynamic Mobility",
+                    "duration": "3 min",
+                    "trackingMode": "time",
+                    "instruction": "Leg swings (10 each direction), hip circles (10 each), walking lunges (5 each)",
+                    "definition": "Increases range of motion for athletic movements"
+                  },
+                  {
+                    "name": "Activation Drills",
+                    "duration": "2 min",
+                    "trackingMode": "time",
+                    "instruction": "Glute bridges (10), mini-band lateral walks (10 each), bodyweight squats (10)",
+                    "definition": "Activates glutes and hip stabilizers for lateral movement"
+                  }
+                ]
+              },
+              {
+                "name": "Speed & Agility",
+                "groupType": "circuit",
+                "rounds": 2,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Sprint",
+                    "groupId": "day2-speed-ex1",
+                    "sets": 6,
+                    "reps": "30m",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Agility Ladder",
+                    "groupId": "day2-speed-ex2",
+                    "sets": 3,
+                    "duration": "1 min",
+                    "rest": 60,
+                    "trackingMode": "time",
+                    "notes": "Continuous drills",
+                    "instruction": "Perform quick feet patterns through the ladder: in-in-out-out, lateral shuffles, Ickey shuffle. Focus on fast foot contacts.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Shuttle 5-10-5",
+                    "groupId": "day2-speed-ex3",
+                    "sets": 6,
+                    "reps": 1,
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Upper Body Accessory",
+                "groupType": "superset",
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Overhead Press",
+                    "groupId": "day2-upper-ex1",
+                    "sets": 3,
+                    "reps": 10,
+                    "intensity": "65% 1RM",
+                    "rest": 90,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Barbell Row",
+                    "groupId": "day2-upper-ex2",
+                    "sets": 3,
+                    "reps": 10,
+                    "rest": 90,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Core",
+                "exercises": [
+                  {
+                    "name": "Hanging Leg Raises",
+                    "sets": 3,
+                    "reps": 12,
+                    "rest": 60,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "instruction": "Slow, controlled leg raises with no swinging",
+                    "definition": "Lower abdominal and hip flexor strength for athletic performance",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": [],
+                    "formCues": [
+                      "Hang from bar with arms fully extended",
+                      "Engage lats to stabilize shoulders",
+                      "Initiate movement from lower abs, not momentum",
+                      "Raise legs with control - no swinging",
+                      "Lower slowly, maintaining tension throughout",
+                      "Keep lower back from arching excessively"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Cool-Down",
+                "isCollapsible": true,
+                "duration": "10 min",
+                "exercises": [
+                  {
+                    "name": "Light Movement",
+                    "duration": "3 min",
+                    "trackingMode": "time",
+                    "instruction": "Easy walk to lower heart rate",
+                    "definition": "Facilitates recovery after speed and strength work"
+                  },
+                  {
+                    "name": "Static Stretching",
+                    "duration": "5 min",
+                    "trackingMode": "time",
+                    "instruction": "Chest/shoulders (30s each), lats (30s each), hip flexors (30s each)",
+                    "definition": "Targets upper body muscles used in pressing and pulling"
+                  },
+                  {
+                    "name": "Breathing Reset",
+                    "duration": "2 min",
+                    "trackingMode": "time",
+                    "instruction": "Supine breathing, 4-count inhale, 6-count exhale",
+                    "definition": "Promotes parasympathetic activation"
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m1-week0-day-3",
             "day": 3,
             "title": "Recovery",
-            "exercises": [
-              { "name": "Light Jog/Bike", "sets": 1, "reps": "20 min @ 60% HRmax", "rest": 0, "trackSets": false },
-              { "name": "Yoga Flow", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
-              { "name": "Foam Rolling", "sets": 1, "reps": "10 min", "rest": 0, "trackSets": false }
+            "durationMinutes": 50,
+            "blocks": [
+              {
+                "name": "Active Recovery",
+                "exercises": [
+                  {
+                    "name": "Light Jog/Bike",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "60% HRmax",
+                    "instruction": "Very easy movement to promote blood flow. Should feel effortless and restorative.",
+                    "intensity": "60% HRmax",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Yoga Flow",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "",
+                    "instruction": "Move through sun salutations, downward dog, pigeon pose, and warrior sequences with controlled breathing.",
+                    "definition": "Dynamic stretching sequence that improves flexibility, balance, and body awareness.",
+                    "intensity": "Low-Moderate",
+                    "goal": "Improve flexibility, promote recovery, and enhance mind-body connection through controlled breathing and movement",
+                    "tempo": "",
+                    "substitutions": [],
+                    "isFlowGroup": true,
+                    "flowGroupType": "yoga",
+                    "trainerNotes": "Focus on breath-to-movement synchronization. Never force a stretch—find your edge and breathe into it. If any position causes pain, modify or skip. This is recovery work, not a competition.",
+                    "flowSteps": [
+                      {
+                        "name": "Sun Salutations",
+                        "duration": "5 min",
+                        "reps": "5 rounds",
+                        "cue": "Match breath to movement throughout",
+                        "detailedInstructions": [
+                          "Begin in Mountain Pose (Tadasana): Stand tall, feet together, arms at sides, weight evenly distributed",
+                          "INHALE: Sweep arms overhead, slight backbend, gaze up (Urdhva Hastasana)",
+                          "EXHALE: Hinge at hips, fold forward, hands to floor or shins (Uttanasana)",
+                          "INHALE: Lift chest halfway, flat back, fingertips on shins or floor (Ardha Uttanasana)",
+                          "EXHALE: Step or jump back to Plank, lower through Chaturanga (elbows tight to ribs)",
+                          "INHALE: Press through hands, lift chest into Upward Dog (Urdhva Mukha Svanasana)",
+                          "EXHALE: Lift hips, press back into Downward Dog (Adho Mukha Svanasana) - hold 5 breaths",
+                          "Step or jump feet to hands, INHALE lift halfway, EXHALE fold",
+                          "INHALE: Rise to standing, arms overhead, EXHALE: hands to heart center",
+                          "Repeat sequence 5 times, finding a smooth rhythm"
+                        ]
+                      },
+                      {
+                        "name": "Downward Dog to Pigeon Pose",
+                        "duration": "4 min",
+                        "reps": "2 min each side",
+                        "cue": "Square hips, fold forward, breathe into hip stretch",
+                        "detailedInstructions": [
+                          "From Downward Dog, lift right leg high",
+                          "Bring right knee forward behind right wrist",
+                          "Right shin can be parallel to front of mat (more advanced) or angled back toward left hip (modification)",
+                          "Extend left leg straight back, top of foot on floor",
+                          "Square hips toward front of mat—use a block under right hip if needed",
+                          "Walk hands forward, fold chest toward floor",
+                          "Hold for 2 minutes, breathing deeply into the hip",
+                          "Press back to Downward Dog, shake out legs, repeat on left side"
+                        ]
+                      },
+                      {
+                        "name": "Warrior I → Warrior II → Reverse Warrior",
+                        "duration": "4 min",
+                        "reps": "30s each position, both sides",
+                        "cue": "Strong legs, open hips, flow with breath",
+                        "detailedInstructions": [
+                          "WARRIOR I: Step right foot forward into lunge, back foot angled 45°, hips squared forward, arms overhead, gaze up. Hold 30s.",
+                          "WARRIOR II: Open hips and arms to side, back foot turns to 90°, front knee over ankle, arms parallel to floor, gaze over front fingers. Hold 30s.",
+                          "REVERSE WARRIOR: Keep legs as is, flip front palm up, reach back and up, back hand slides down back leg, side body opens. Hold 30s.",
+                          "Flow back through Warrior II to Warrior I",
+                          "Step back to Mountain Pose, repeat entire sequence on left side",
+                          "Maintain steady ujjayi breath throughout"
+                        ]
+                      },
+                      {
+                        "name": "Cat-Cow",
+                        "duration": "2 min",
+                        "reps": "10 cycles",
+                        "cue": "Initiate movement from pelvis, articulate through entire spine",
+                        "detailedInstructions": [
+                          "Start on hands and knees: wrists under shoulders, knees under hips",
+                          "COW (Inhale): Tilt pelvis forward, drop belly, lift chest and gaze, shoulder blades draw together",
+                          "CAT (Exhale): Tilt pelvis back, round spine toward ceiling, tuck chin, push floor away",
+                          "Move slowly—feel each vertebra articulate",
+                          "Let the breath initiate the movement, not the other way around",
+                          "Continue for 10 full cycles"
+                        ]
+                      },
+                      {
+                        "name": "Child's Pose",
+                        "duration": "2 min",
+                        "cue": "Full surrender, deep belly breaths",
+                        "detailedInstructions": [
+                          "From hands and knees, sit hips back toward heels",
+                          "Knees can be together (more back stretch) or wide apart (more hip stretch)",
+                          "Walk arms forward, forehead rests on floor (or on stacked hands)",
+                          "Let shoulders melt down away from ears",
+                          "Breathe into your lower back and sides of ribcage",
+                          "This is complete rest—let go of all tension"
+                        ]
+                      },
+                      {
+                        "name": "Seated Forward Fold",
+                        "duration": "2 min",
+                        "cue": "Hinge from hips, not from lower back",
+                        "detailedInstructions": [
+                          "Sit with legs extended straight in front",
+                          "Flex feet (toes point toward ceiling)",
+                          "Inhale, lengthen spine, reach arms overhead",
+                          "Exhale, hinge at hips (not waist), reach toward feet",
+                          "Hold whatever you can reach: thighs, shins, ankles, or feet",
+                          "Keep back as flat as possible—it's okay if knees bend slightly",
+                          "Relax head and neck, breathe deeply"
+                        ]
+                      },
+                      {
+                        "name": "Savasana (Corpse Pose)",
+                        "duration": "1 min",
+                        "cue": "Complete stillness and surrender",
+                        "detailedInstructions": [
+                          "Lie flat on back, legs extended, feet fall open naturally",
+                          "Arms at sides, palms facing up",
+                          "Close eyes, release all muscular effort",
+                          "Scan body for tension and consciously release it",
+                          "Breathe naturally, observe without controlling",
+                          "This is integration time—let the practice settle in"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Foam Rolling",
+                    "sets": 1,
+                    "duration": "10 min",
+                    "trackingMode": "time",
+                    "notes": "",
+                    "instruction": "Roll slowly over quads, IT band, glutes, lats, and thoracic spine. Pause on tender spots for 30s.",
+                    "definition": "Self-myofascial release to reduce muscle tension and improve tissue quality.",
+                    "intensity": "Low",
+                    "goal": "Release myofascial restrictions, improve tissue quality, reduce post-training soreness, and enhance recovery",
+                    "tempo": "",
+                    "substitutions": [],
+                    "isFlowGroup": true,
+                    "flowGroupType": "recovery",
+                    "trainerNotes": "Roll slowly (about 1 inch per second). When you find a tender spot, pause and breathe into it for 30-60 seconds. Avoid rolling directly over joints or bones. Pain should be 'good pain' (6-7/10)—never excruciating. Stay hydrated after rolling.",
+                    "flowSteps": [
+                      {
+                        "name": "Quads",
+                        "duration": "2 min",
+                        "reps": "1 min each leg",
+                        "cue": "Roll slowly, rotate leg to hit all areas",
+                        "detailedInstructions": [
+                          "Start face down with roller under front of thighs, just above knees",
+                          "Support upper body on forearms, engage core to protect lower back",
+                          "Roll slowly from just above knee to hip crease",
+                          "Rotate leg inward to target inner quad (vastus medialis)",
+                          "Rotate leg outward to target outer quad (vastus lateralis)",
+                          "When you find a tender spot, pause and breathe for 30s",
+                          "Spend 1 minute on each leg"
+                        ]
+                      },
+                      {
+                        "name": "IT Band",
+                        "duration": "2 min",
+                        "reps": "1 min each side",
+                        "cue": "Side-lying, control pressure with stacked legs",
+                        "detailedInstructions": [
+                          "Lie on your side with roller under outer thigh, just below hip",
+                          "Bottom leg straight, top leg can stack on bottom (more pressure) or step in front (less pressure)",
+                          "Support yourself on bottom forearm",
+                          "Roll from hip to just above knee (never roll over the knee joint)",
+                          "This area is often very tender—start with less pressure",
+                          "Pause on tender spots, breathe and relax into the discomfort",
+                          "Switch sides after 1 minute"
+                        ]
+                      },
+                      {
+                        "name": "Glutes",
+                        "duration": "1 min",
+                        "cue": "Cross ankle over knee for deeper release",
+                        "detailedInstructions": [
+                          "Sit on the roller, hands behind you for support",
+                          "Cross right ankle over left knee (figure-4 position)",
+                          "Lean into right glute, finding tender spots",
+                          "Make small movements or hold on tight spots",
+                          "Target the piriformis by leaning deeper into the outer glute",
+                          "Spend 30 seconds on each side"
+                        ]
+                      },
+                      {
+                        "name": "Hamstrings",
+                        "duration": "1 min",
+                        "reps": "30s each leg",
+                        "cue": "Rotate leg to target different areas",
+                        "detailedInstructions": [
+                          "Sit on roller positioned under back of thighs",
+                          "Hands behind you for support, lift hips off ground",
+                          "Roll from just below glutes to just above back of knee",
+                          "Rotate leg inward to target inner hamstrings",
+                          "Rotate leg outward to target outer hamstrings (biceps femoris)",
+                          "For more pressure, stack one leg on top of the other"
+                        ]
+                      },
+                      {
+                        "name": "Lats",
+                        "duration": "2 min",
+                        "reps": "1 min each side",
+                        "cue": "Thumb up, arm extended overhead",
+                        "detailedInstructions": [
+                          "Lie on your side with roller under armpit area",
+                          "Extend bottom arm overhead, thumb pointing up",
+                          "Roll from armpit down to mid-ribcage",
+                          "Rotate slightly forward to target the lat more directly",
+                          "Rotate slightly backward to target the teres major and rear delt",
+                          "Keep core engaged, breathe through tender spots"
+                        ]
+                      },
+                      {
+                        "name": "Thoracic Spine",
+                        "duration": "2 min",
+                        "cue": "Support head, extend over roller",
+                        "detailedInstructions": [
+                          "Sit on floor, place roller behind you at mid-back level",
+                          "Lie back with roller across upper-mid back",
+                          "Interlace hands behind head to support neck",
+                          "Lift hips slightly off ground",
+                          "Roll from mid-back to upper back (not into neck)",
+                          "At tight spots, pause and extend back over the roller",
+                          "Breathe deeply as you open the chest",
+                          "Keep core engaged to protect lower back"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m1-week0-day-4",
             "day": 4,
             "title": "Olympic Lifts + Tempo Runs",
-            "exercises": [
-              { "name": "Power Clean", "sets": 5, "reps": 3, "intensity": "70–75% 1RM", "rest": 120, "trackSets": true },
-              { "name": "Front Squat", "sets": 4, "reps": 6, "intensity": "75% 1RM", "rest": 120, "trackSets": true },
-              { "name": "Push Press", "sets": 4, "reps": 6, "intensity": "75% 1RM", "rest": 120, "trackSets": true },
-              { "name": "Romanian Deadlift", "sets": 3, "reps": 10, "rest": 90, "trackSets": true },
-              { "name": "Tempo Runs", "sets": 10, "reps": "100m @ 70%", "rest": 30, "trackSets": false }
+            "durationMinutes": 100,
+            "blocks": [
+              {
+                "name": "Warm-Up",
+                "isCollapsible": true,
+                "duration": "12 min",
+                "exercises": [
+                  {
+                    "name": "Light Cardio",
+                    "duration": "4 min",
+                    "trackingMode": "time",
+                    "instruction": "Easy jog or bike to elevate heart rate and body temperature",
+                    "definition": "Prepares cardiovascular and muscular systems for explosive work"
+                  },
+                  {
+                    "name": "Dynamic Mobility",
+                    "duration": "4 min",
+                    "trackingMode": "time",
+                    "instruction": "Hip circles (10 each), thoracic rotations (10 each), shoulder dislocates (10), ankle rocks (10 each)",
+                    "definition": "Prepares joints for Olympic lifting positions"
+                  },
+                  {
+                    "name": "Olympic Lift Warm-Up",
+                    "duration": "4 min",
+                    "trackingMode": "time",
+                    "instruction": "Empty bar: RDL × 5, high pull × 5, front squat × 5, push press × 5",
+                    "definition": "Movement-specific preparation for power clean technique"
+                  }
+                ]
+              },
+              {
+                "name": "Olympic Lifts",
+                "groupType": "complex",
+                "restBetweenRounds": 150,
+                "exercises": [
+                  {
+                    "name": "Power Clean",
+                    "groupId": "day4-olympic-ex1",
+                    "sets": 5,
+                    "reps": 3,
+                    "intensity": "70–75% 1RM",
+                    "rest": 120,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Front Squat",
+                    "groupId": "day4-olympic-ex2",
+                    "sets": 4,
+                    "reps": 6,
+                    "intensity": "75% 1RM",
+                    "rest": 120,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Push Press",
+                    "groupId": "day4-olympic-ex3",
+                    "sets": 4,
+                    "reps": 6,
+                    "intensity": "75% 1RM",
+                    "rest": 120,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Accessory & Conditioning",
+                "exercises": [
+                  {
+                    "name": "Romanian Deadlift",
+                    "sets": 3,
+                    "reps": 10,
+                    "rest": 90,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Tempo Runs",
+                    "sets": 10,
+                    "reps": "100m",
+                    "rest": 30,
+                    "trackingMode": "distance",
+                    "notes": "70% max speed",
+                    "intensity": "70%",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Cool-Down",
+                "isCollapsible": true,
+                "duration": "12 min",
+                "exercises": [
+                  {
+                    "name": "Light Jog",
+                    "duration": "4 min",
+                    "trackingMode": "time",
+                    "instruction": "Easy jog to flush legs after tempo runs",
+                    "definition": "Promotes lactate clearance and gradual heart rate reduction"
+                  },
+                  {
+                    "name": "Static Stretching",
+                    "duration": "6 min",
+                    "trackingMode": "time",
+                    "instruction": "Hip flexors (30s each), hamstrings (30s each), quads (30s each), calves (30s each)",
+                    "definition": "Targets lower body muscles stressed during running and lifting"
+                  },
+                  {
+                    "name": "Breathing Reset",
+                    "duration": "2 min",
+                    "trackingMode": "time",
+                    "instruction": "Supine, 4-count inhale, 6-count exhale, full relaxation",
+                    "definition": "Initiates recovery through parasympathetic activation"
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m1-week0-day-5",
             "day": 5,
             "title": "Conditioning Circuits + Plyometrics",
-            "exercises": [
-              { "name": "Sled Push", "sets": 3, "reps": "20m", "rest": 60, "trackSets": false },
-              { "name": "Box Jumps", "sets": 3, "reps": 10, "rest": 60, "trackSets": false },
-              { "name": "Medicine Ball Slams", "sets": 3, "reps": 12, "rest": 60, "trackSets": false },
-              { "name": "Farmer’s Carry", "sets": 3, "reps": "20m", "rest": 60, "trackSets": false },
-              { "name": "Depth Jumps", "sets": 3, "reps": 8, "rest": 90, "trackSets": false },
-              { "name": "Broad Jumps", "sets": 3, "reps": 8, "rest": 90, "trackSets": false }
+            "durationMinutes": 85,
+            "blocks": [
+              {
+                "name": "Warm-Up",
+                "isCollapsible": true,
+                "duration": "10 min",
+                "exercises": [
+                  {
+                    "name": "Light Cardio",
+                    "duration": "4 min",
+                    "trackingMode": "time",
+                    "instruction": "Easy jog or jump rope to elevate heart rate",
+                    "definition": "Prepares cardiovascular system for high-intensity circuit work"
+                  },
+                  {
+                    "name": "Dynamic Mobility",
+                    "duration": "3 min",
+                    "trackingMode": "time",
+                    "instruction": "High knees (30s), butt kicks (30s), leg swings (10 each), arm circles (10 each direction)",
+                    "definition": "Activates muscles and prepares joints for explosive movements"
+                  },
+                  {
+                    "name": "Plyometric Prep",
+                    "duration": "3 min",
+                    "trackingMode": "time",
+                    "instruction": "Pogo hops (20), squat jumps (10), ankle bounces (20)",
+                    "definition": "Prepares tendons and nervous system for plyometric loading"
+                  }
+                ]
+              },
+              {
+                "name": "Conditioning Circuit",
+                "groupType": "circuit",
+                "rounds": 3,
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "Sled Push",
+                    "groupId": "day5-circuit-ex1",
+                    "sets": 1,
+                    "reps": "20m",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Box Jumps",
+                    "groupId": "day5-circuit-ex2",
+                    "sets": 1,
+                    "reps": 10,
+                    "rest": 60,
+                    "trackingMode": "volume",
+                    "notes": "Choose box height where you can land softly with control",
+                    "instruction": "Explosive vertical jump onto box with soft landing",
+                    "definition": "Plyometric exercise developing lower body power and rate of force development",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": [],
+                    "executionCues": [
+                      "Setup: Stand arm's length from box, feet shoulder-width",
+                      "Load: Quick countermovement, arms swing back, hinge at hips",
+                      "Explode: Drive through floor, swing arms up, fully extend hips",
+                      "Land: Soft landing on box, full foot contact, knees track over toes",
+                      "Stand: Stand fully upright on box before stepping down",
+                      "Reset: Step down (don't jump), walk back, full recovery between reps"
+                    ]
+                  },
+                  {
+                    "name": "Medicine Ball Slams",
+                    "groupId": "day5-circuit-ex3",
+                    "sets": 1,
+                    "reps": 12,
+                    "rest": 60,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Farmer's Carry",
+                    "groupId": "day5-circuit-ex4",
+                    "sets": 1,
+                    "reps": "20m",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Plyometrics",
+                "groupType": "superset",
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Depth Jumps",
+                    "groupId": "day5-plyo-ex1",
+                    "sets": 3,
+                    "reps": 8,
+                    "rest": 90,
+                    "trackingMode": "volume",
+                    "notes": "Use 12-24 inch box based on ability",
+                    "instruction": "Step off box, absorb landing, immediately explode into max vertical jump",
+                    "definition": "Advanced plyometric using stretch-shortening cycle to develop reactive strength and power",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": [],
+                    "executionCues": [
+                      "Setup: Stand on edge of box (12-24 inches based on level)",
+                      "Step Off: Step (don't jump) off box with one foot, land with both",
+                      "Land: Absorb through ankles-knees-hips, ground contact <0.2 seconds",
+                      "Explode: Immediately drive into max height vertical jump",
+                      "Arms: Use aggressive arm swing to assist jump",
+                      "Land Final: Soft landing, reset fully before next rep",
+                      "Key: Minimize ground contact time - 'hot floor' mentality"
+                    ]
+                  },
+                  {
+                    "name": "Broad Jumps",
+                    "groupId": "day5-plyo-ex2",
+                    "sets": 3,
+                    "reps": 8,
+                    "rest": 90,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "instruction": "Explosive horizontal jump with countermovement and soft landing",
+                    "definition": "Develops horizontal power transfer for athletic performance",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": [],
+                    "executionCues": [
+                      "Setup: Feet hip-width, arms back, hinge at hips",
+                      "Load: Quick countermovement, arms swing back",
+                      "Explode: Drive arms forward and up, extend hips fully",
+                      "Flight: Reach forward with arms, bring knees up",
+                      "Land: Absorb through ankles-knees-hips, stick landing 2 seconds"
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Cool-Down",
+                "isCollapsible": true,
+                "duration": "10 min",
+                "exercises": [
+                  {
+                    "name": "Light Movement",
+                    "duration": "3 min",
+                    "trackingMode": "time",
+                    "instruction": "Easy walk to lower heart rate after plyometrics",
+                    "definition": "Allows nervous system to recover from explosive work"
+                  },
+                  {
+                    "name": "Static Stretching",
+                    "duration": "5 min",
+                    "trackingMode": "time",
+                    "instruction": "Calves (30s each), quads (30s each), hip flexors (30s each), hamstrings (30s each)",
+                    "definition": "Maintains flexibility in muscles stressed during plyometric work"
+                  },
+                  {
+                    "name": "Breathing Reset",
+                    "duration": "2 min",
+                    "trackingMode": "time",
+                    "instruction": "Supine, deep diaphragmatic breathing",
+                    "definition": "Promotes recovery and parasympathetic activation"
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m1-week0-day-6",
             "day": 6,
             "title": "Maximal Aerobic Speed / Hill Sprints",
-            "exercises": [
-              { "name": "MAS Intervals", "sets": 10, "reps": "15s sprint / 15s rest", "rest": 15, "trackSets": false },
-              { "name": "Hill Sprints", "sets": 6, "reps": "20m", "rest": 60, "trackSets": false }
+            "durationMinutes": 60,
+            "blocks": [
+              {
+                "name": "Conditioning",
+                "exercises": [
+                  {
+                    "name": "MAS Intervals",
+                    "sets": 10,
+                    "reps": "15s",
+                    "rest": 15,
+                    "trackingMode": "time",
+                    "notes": "15s sprint / 15s rest",
+                    "instruction": "Sprint at maximum sustainable speed for 15 seconds, then rest 15 seconds. Maintain intensity across all reps.",
+                    "definition": "Maximal Aerobic Speed training to improve speed endurance and lactate tolerance.",
+                    "intensity": "Maximal",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Hill Sprints",
+                    "sets": 6,
+                    "reps": "20m",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m1-week0-day-7",
             "day": 7,
             "title": "Rest",
-            "exercises": [
-              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
-              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            "durationMinutes": 40,
+            "blocks": [
+              {
+                "name": "Active Recovery",
+                "exercises": [
+                  {
+                    "name": "Mobility Drills",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "",
+                    "instruction": "Work through hip circles, leg swings, thoracic rotations, and shoulder dislocates. Hold stretches 30-60s each.",
+                    "definition": "Joint-by-joint mobility work to maintain range of motion and prevent stiffness.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Light Cardio",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "Easy bike/jog",
+                    "instruction": "Very low intensity movement to promote blood flow without adding training stress.",
+                    "intensity": "Easy",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           }
-        ]
+        ],
+        "weeklyAdjustments": {
+          "week2": {
+            "day1": {
+              "exercises": {
+                "Back Squat": { "intensity": "72.5% 1RM" },
+                "Bench Press": { "intensity": "72.5% 1RM" }
+              }
+            },
+            "day4": {
+              "exercises": {
+                "Power Clean": { "intensity": "72.5-77.5% 1RM" },
+                "Front Squat": { "intensity": "77.5% 1RM" },
+                "Push Press": { "intensity": "77.5% 1RM" }
+              }
+            }
+          },
+          "week3": {
+            "day1": {
+              "exercises": {
+                "Back Squat": { "intensity": "75% 1RM" },
+                "Bench Press": { "intensity": "75% 1RM" }
+              }
+            },
+            "day4": {
+              "exercises": {
+                "Power Clean": { "intensity": "75-80% 1RM" },
+                "Front Squat": { "intensity": "80% 1RM" },
+                "Push Press": { "intensity": "80% 1RM" }
+              }
+            }
+          },
+          "week4": {
+            "deload": true,
+            "setReduction": 0.2,
+            "day1": {
+              "exercises": {
+                "Back Squat": { "intensity": "70% 1RM", "sets": 3 },
+                "Bench Press": { "intensity": "70% 1RM", "sets": 3 },
+                "Pull-Ups": { "sets": 3 },
+                "Bulgarian Split Squat": { "sets": 2 }
+              }
+            },
+            "day4": {
+              "exercises": {
+                "Power Clean": { "intensity": "70% 1RM", "sets": 4 },
+                "Front Squat": { "intensity": "70% 1RM", "sets": 3 },
+                "Push Press": { "intensity": "70% 1RM", "sets": 3 }
+              }
+            },
+            "day5": {
+              "blocks": {
+                "Conditioning Circuit": { "rounds": 2 }
+              }
+            }
+          }
+        }
       },
       {
         "id": "m2",
         "title": "Strength & Power",
-        "phase": "Jan–Feb",
-        "goal": "Max strength, explosive lifts, anaerobic conditioning.",
-        "frequency": "5 training days + 1 conditioning day + 1 rest day",
+        "weeks": [5, 6, 7, 8],
+        "phaseFocus": "Jan–Feb: Max strength, explosive lifts, anaerobic conditioning",
+        "progression": {
+          "week5": { "intensity": "75-80% 1RM", "volume": "High" },
+          "week6": { "intensity": "80-82.5% 1RM", "volume": "High" },
+          "week7": { "intensity": "82.5-85% 1RM", "volume": "High" },
+          "week8": { "intensity": "75% 1RM", "volume": "Deload (-20% sets)" }
+        },
         "microcycle": [
           {
-            "id": "m2-week0-day-1",
             "day": 1,
             "title": "Heavy Strength",
-            "exercises": [
-              { "name": "Back Squat", "sets": 5, "reps": 5, "intensity": "80% 1RM", "rest": 120, "trackSets": true },
-              { "name": "Bench Press", "sets": 5, "reps": 5, "intensity": "80% 1RM", "rest": 120, "trackSets": true },
-              { "name": "Deadlift", "sets": 4, "reps": 5, "intensity": "80% 1RM", "rest": 150, "trackSets": true },
-              { "name": "Pull-Ups", "sets": 4, "reps": 10, "rest": 90, "trackSets": false }
+            "durationMinutes": 85,
+            "blocks": [
+              {
+                "name": "Main Strength",
+                "exercises": [
+                  {
+                    "name": "Back Squat",
+                    "sets": 5,
+                    "reps": 5,
+                    "intensity": "80% 1RM",
+                    "rest": 120,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Bench Press",
+                    "sets": 5,
+                    "reps": 5,
+                    "intensity": "80% 1RM",
+                    "rest": 120,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Deadlift & Accessory",
+                "exercises": [
+                  {
+                    "name": "Deadlift",
+                    "sets": 4,
+                    "reps": 5,
+                    "intensity": "80% 1RM",
+                    "rest": 150,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Pull-Ups",
+                    "sets": 4,
+                    "reps": 10,
+                    "rest": 90,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m2-week0-day-2",
             "day": 2,
             "title": "Olympic Lifts + Plyometrics",
-            "exercises": [
-              { "name": "Power Clean", "sets": 6, "reps": 3, "intensity": "75–80% 1RM", "rest": 120, "trackSets": true },
-              { "name": "Snatch", "sets": 5, "reps": 3, "intensity": "70% 1RM", "rest": 120, "trackSets": true },
-              { "name": "Push Jerk", "sets": 4, "reps": 5, "intensity": "75% 1RM", "rest": 120, "trackSets": true },
-              { "name": "Box Jumps", "sets": 4, "reps": 8, "rest": 90, "trackSets": false },
-              { "name": "Depth Jumps", "sets": 4, "reps": 6, "rest": 90, "trackSets": false }
+            "durationMinutes": 80,
+            "blocks": [
+              {
+                "name": "Olympic Lifts",
+                "exercises": [
+                  {
+                    "name": "Power Clean",
+                    "sets": 6,
+                    "reps": 3,
+                    "intensity": "75–80% 1RM",
+                    "rest": 120,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Snatch",
+                    "sets": 5,
+                    "reps": 3,
+                    "intensity": "70% 1RM",
+                    "rest": 120,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Push Jerk",
+                    "sets": 4,
+                    "reps": 5,
+                    "intensity": "75% 1RM",
+                    "rest": 120,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Plyometrics",
+                "exercises": [
+                  {
+                    "name": "Box Jumps",
+                    "sets": 4,
+                    "reps": 8,
+                    "rest": 90,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Depth Jumps",
+                    "sets": 4,
+                    "reps": 6,
+                    "rest": 90,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m2-week0-day-3",
             "day": 3,
             "title": "Recovery",
-            "exercises": [
-              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
-              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            "durationMinutes": 40,
+            "blocks": [
+              {
+                "name": "Active Recovery",
+                "exercises": [
+                  {
+                    "name": "Mobility Drills",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "",
+                    "instruction": "Work through hip circles, leg swings, thoracic rotations, and shoulder dislocates. Hold stretches 30-60s each.",
+                    "definition": "Joint-by-joint mobility work to maintain range of motion and prevent stiffness.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Light Cardio",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "Easy bike/jog",
+                    "instruction": "Very low intensity movement to promote blood flow without adding training stress.",
+                    "intensity": "Easy",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m2-week0-day-4",
             "day": 4,
-            "title": "Strongman Conditioning (Forwards) / Speed (Backs)",
-            "exercises": [
-              { "name": "Forwards Circuit", "sets": 3, "reps": "sled push, tire flip, carries", "rest": 90, "trackSets": false },
-              { "name": "Backs Sprint Mechanics", "sets": 8, "reps": "40m sprint", "rest": "walk back", "trackSets": false },
-              { "name": "Agility Cone Drills", "sets": 6, "reps": 1, "rest": 60, "trackSets": false }
+            "title": "Strongman Conditioning / Speed",
+            "durationMinutes": 70,
+            "blocks": [
+              {
+                "name": "Conditioning Circuit",
+                "rounds": 3,
+                "restBetweenRounds": 90,
+                "exercises": [
+                  {
+                    "name": "Sled Push",
+                    "sets": 1,
+                    "reps": "20m",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "Forwards focus",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Tire Flip",
+                    "sets": 1,
+                    "reps": 5,
+                    "rest": 60,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Carries",
+                    "sets": 1,
+                    "reps": "20m",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "Various carries",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Speed & Agility",
+                "exercises": [
+                  {
+                    "name": "Sprint Mechanics",
+                    "sets": 8,
+                    "reps": "40m",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "Backs focus, walk back recovery",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Agility Cone Drills",
+                    "sets": 6,
+                    "duration": "1 min",
+                    "rest": 60,
+                    "trackingMode": "time",
+                    "notes": "",
+                    "instruction": "Set up cones in various patterns (T-drill, L-drill, box). Sprint, shuffle, and backpedal through the course.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m2-week0-day-5",
             "day": 5,
             "title": "VO₂ Max Intervals",
-            "exercises": [
-              { "name": "VO₂ Max Intervals", "sets": 4, "reps": "4 min @ 90–95% HRmax", "rest": "3 min jog", "trackSets": false }
+            "durationMinutes": 50,
+            "blocks": [
+              {
+                "name": "Conditioning",
+                "exercises": [
+                  {
+                    "name": "VO₂ Max Intervals",
+                    "sets": 4,
+                    "duration": "4 min",
+                    "rest": 180,
+                    "trackingMode": "time",
+                    "notes": "4 min @ 90–95% HRmax, 3 min jog recovery",
+                    "instruction": "Run/bike at near-maximum sustainable effort for 4 minutes, then jog or easy spin for 3 min recovery.",
+                    "definition": "High-intensity intervals targeting maximal oxygen uptake for improved aerobic power.",
+                    "intensity": "90–95% HRmax",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m2-week0-day-6",
             "day": 6,
             "title": "Anaerobic Conditioning",
-            "exercises": [
-              { "name": "Shuttle Runs", "sets": 10, "reps": "40m", "rest": 30, "trackSets": false },
-              { "name": "Hill Sprints", "sets": 8, "reps": "20m", "rest": 60, "trackSets": false }
+            "durationMinutes": 60,
+            "blocks": [
+              {
+                "name": "Shuttle Runs",
+                "exercises": [
+                  {
+                    "name": "Shuttle Runs",
+                    "sets": 10,
+                    "reps": "40m",
+                    "rest": 30,
+                    "trackingMode": "distance",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Hill Sprints",
+                "exercises": [
+                  {
+                    "name": "Hill Sprints",
+                    "sets": 8,
+                    "reps": "20m",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m2-week0-day-7",
             "day": 7,
             "title": "Rest",
-            "exercises": [
-              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
-              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            "durationMinutes": 40,
+            "blocks": [
+              {
+                "name": "Active Recovery",
+                "exercises": [
+                  {
+                    "name": "Mobility Drills",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "",
+                    "instruction": "Work through hip circles, leg swings, thoracic rotations, and shoulder dislocates. Hold stretches 30-60s each.",
+                    "definition": "Joint-by-joint mobility work to maintain range of motion and prevent stiffness.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Light Cardio",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "Easy bike/jog",
+                    "instruction": "Very low intensity movement to promote blood flow without adding training stress.",
+                    "intensity": "Easy",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           }
-        ]
+        ],
+        "weeklyAdjustments": {
+          "week6": {
+            "day1": {
+              "exercises": {
+                "Back Squat": { "intensity": "82.5% 1RM" },
+                "Bench Press": { "intensity": "82.5% 1RM" },
+                "Deadlift": { "intensity": "82.5% 1RM" }
+              }
+            },
+            "day2": {
+              "exercises": {
+                "Power Clean": { "intensity": "77.5-82.5% 1RM" },
+                "Snatch": { "intensity": "72.5% 1RM" },
+                "Push Jerk": { "intensity": "77.5% 1RM" }
+              }
+            }
+          },
+          "week7": {
+            "day1": {
+              "exercises": {
+                "Back Squat": { "intensity": "85% 1RM" },
+                "Bench Press": { "intensity": "85% 1RM" },
+                "Deadlift": { "intensity": "85% 1RM" }
+              }
+            },
+            "day2": {
+              "exercises": {
+                "Power Clean": { "intensity": "80-85% 1RM" },
+                "Snatch": { "intensity": "75% 1RM" },
+                "Push Jerk": { "intensity": "80% 1RM" }
+              }
+            }
+          },
+          "week8": {
+            "deload": true,
+            "setReduction": 0.2,
+            "day1": {
+              "exercises": {
+                "Back Squat": { "intensity": "75% 1RM", "sets": 4 },
+                "Bench Press": { "intensity": "75% 1RM", "sets": 4 },
+                "Deadlift": { "intensity": "75% 1RM", "sets": 3 },
+                "Pull-Ups": { "sets": 3 }
+              }
+            },
+            "day2": {
+              "exercises": {
+                "Power Clean": { "intensity": "70-75% 1RM", "sets": 4 },
+                "Snatch": { "intensity": "65% 1RM", "sets": 4 },
+                "Push Jerk": { "intensity": "70% 1RM", "sets": 3 }
+              }
+            }
+          }
+        }
       },
       {
         "id": "m3",
         "title": "Speed & Conditioning",
-        "phase": "Mar",
-        "goal": "Sprint mechanics, agility, VO₂ max peak.",
-        "frequency": "4–5 training days + 1 conditioning day + 1 rest day",
+        "weeks": [9, 10, 11, 12],
+        "phaseFocus": "Mar: Sprint mechanics, agility, VO₂ max peak",
+        "progression": {
+          "week9": { "intensity": "75-80% 1RM", "volume": "Moderate" },
+          "week10": { "intensity": "80-82.5% 1RM", "volume": "Moderate" },
+          "week11": { "intensity": "82.5% 1RM", "volume": "Moderate" },
+          "week12": { "intensity": "75% 1RM", "volume": "Deload (-20% sets)" }
+        },
         "microcycle": [
           {
-            "id": "m3-week0-day-1",
             "day": 1,
             "title": "Sprint + Strength Maintenance",
-            "exercises": [
-              { "name": "Sprints", "sets": 10, "reps": "40m", "rest": "walk back", "trackSets": false },
-              { "name": "Squat", "sets": 3, "reps": 5, "intensity": "80% 1RM", "rest": 120, "trackSets": true },
-              { "name": "Bench Press", "sets": 3, "reps": 5, "intensity": "80% 1RM", "rest": 120, "trackSets": true }
+            "durationMinutes": 70,
+            "blocks": [
+              {
+                "name": "Sprinting",
+                "exercises": [
+                  {
+                    "name": "Sprints",
+                    "sets": 10,
+                    "reps": "40m",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "Walk back recovery",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Strength Maintenance",
+                "exercises": [
+                  {
+                    "name": "Back Squat",
+                    "sets": 3,
+                    "reps": 5,
+                    "intensity": "80% 1RM",
+                    "rest": 120,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Bench Press",
+                    "sets": 3,
+                    "reps": 5,
+                    "intensity": "80% 1RM",
+                    "rest": 120,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m3-week0-day-2",
             "day": 2,
             "title": "Agility + Plyometrics",
-            "exercises": [
-              { "name": "Cone Drills", "sets": 10, "reps": "zig-zag, 5-10-5", "rest": 60, "trackSets": false },
-              { "name": "Ladder Drills", "sets": 1, "reps": "5 min continuous", "rest": 60, "trackSets": false },
-              { "name": "Depth Jumps", "sets": 3, "reps": 8, "rest": 90, "trackSets": false },
-              { "name": "Broad Jumps", "sets": 3, "reps": 8, "rest": 90, "trackSets": false }
+            "durationMinutes": 65,
+            "blocks": [
+              {
+                "name": "Agility Drills",
+                "exercises": [
+                  {
+                    "name": "Cone Drills",
+                    "sets": 8,
+                    "duration": "90s",
+                    "rest": 60,
+                    "trackingMode": "time",
+                    "notes": "Zig-zag, 5-10-5 drills",
+                    "instruction": "Sprint through cone patterns emphasizing quick direction changes. Stay low through cuts.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Ladder Drills",
+                    "sets": 5,
+                    "duration": "1 min",
+                    "rest": 60,
+                    "trackingMode": "time",
+                    "notes": "Continuous",
+                    "instruction": "Quick feet through the ladder: high knees, lateral steps, in-out patterns. Focus on ground contact speed.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Plyometrics",
+                "exercises": [
+                  {
+                    "name": "Depth Jumps",
+                    "sets": 3,
+                    "reps": 8,
+                    "rest": 90,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Broad Jumps",
+                    "sets": 3,
+                    "reps": 8,
+                    "rest": 90,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m3-week0-day-3",
             "day": 3,
             "title": "Recovery",
-            "exercises": [
-              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
-              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            "durationMinutes": 40,
+            "blocks": [
+              {
+                "name": "Active Recovery",
+                "exercises": [
+                  {
+                    "name": "Mobility Drills",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "",
+                    "instruction": "Work through hip circles, leg swings, thoracic rotations, and shoulder dislocates. Hold stretches 30-60s each.",
+                    "definition": "Joint-by-joint mobility work to maintain range of motion and prevent stiffness.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Light Cardio",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "Easy bike/jog",
+                    "instruction": "Very low intensity movement to promote blood flow without adding training stress.",
+                    "intensity": "Easy",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m3-week0-day-4",
             "day": 4,
             "title": "VO₂ Max Intervals",
-            "exercises": [
-              { "name": "VO₂ Max Intervals", "sets": 4, "reps": "4 min @ 90–95% HRmax", "rest": "2 min jog", "trackSets": false },
-              { "name": "MAS Intervals", "sets": 12, "reps": "20s sprint / 20s rest", "rest": 20, "trackSets": false }
+            "durationMinutes": 60,
+            "blocks": [
+              {
+                "name": "VO₂ Max",
+                "exercises": [
+                  {
+                    "name": "VO₂ Max Intervals",
+                    "sets": 4,
+                    "duration": "4 min",
+                    "rest": 120,
+                    "trackingMode": "time",
+                    "notes": "4 min @ 90–95% HRmax, 2 min jog recovery",
+                    "instruction": "Run/bike at near-maximum sustainable effort for 4 minutes, then jog or easy spin for 2 min recovery.",
+                    "definition": "High-intensity intervals targeting maximal oxygen uptake for improved aerobic power.",
+                    "intensity": "90–95% HRmax",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "MAS Intervals",
+                "exercises": [
+                  {
+                    "name": "MAS Intervals",
+                    "sets": 12,
+                    "reps": "20s",
+                    "rest": 20,
+                    "trackingMode": "time",
+                    "notes": "20s sprint / 20s rest",
+                    "instruction": "Sprint at maximum sustainable speed for 20 seconds, then rest 20 seconds. Maintain intensity across all reps.",
+                    "definition": "Maximal Aerobic Speed training to improve speed endurance and lactate tolerance.",
+                    "intensity": "Maximal",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m3-week0-day-5",
             "day": 5,
             "title": "Conditioning Circuits",
-            "exercises": [
-              { "name": "Sled Push", "sets": 4, "reps": "20m", "rest": 60, "trackSets": false },
-              { "name": "Medicine Ball Throws", "sets": 4, "reps": 10, "rest": 60, "trackSets": false },
-              { "name": "Farmer’s Carry", "sets": 4, "reps": "30m", "rest": 60, "trackSets": false },
-              { "name": "Burpees", "sets": 4, "reps": 12, "rest": 60, "trackSets": false }
+            "durationMinutes": 60,
+            "blocks": [
+              {
+                "name": "Conditioning Circuit",
+                "rounds": 4,
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "Sled Push",
+                    "sets": 1,
+                    "reps": "20m",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Medicine Ball Throws",
+                    "sets": 1,
+                    "reps": 10,
+                    "rest": 60,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Farmer's Carry",
+                    "sets": 1,
+                    "reps": "30m",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Burpees",
+                    "sets": 1,
+                    "reps": 12,
+                    "rest": 60,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m3-week0-day-6",
             "day": 6,
             "title": "Hill Sprints / Game Conditioning",
-            "exercises": [
-              { "name": "Hill Sprints", "sets": 10, "reps": "20m", "rest": 60, "trackSets": false },
-              { "name": "Rugby Shuttle", "sets": 10, "reps": "goal line to 22m and back", "rest": 60, "trackSets": false }
+            "durationMinutes": 65,
+            "blocks": [
+              {
+                "name": "Hill Sprints",
+                "exercises": [
+                  {
+                    "name": "Hill Sprints",
+                    "sets": 10,
+                    "reps": "20m",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Rugby Shuttle",
+                "exercises": [
+                  {
+                    "name": "Rugby Shuttle",
+                    "sets": 10,
+                    "reps": "1",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "Goal line to 22m and back",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m3-week0-day-7",
             "day": 7,
             "title": "Rest",
-            "exercises": [
-              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
-              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            "durationMinutes": 40,
+            "blocks": [
+              {
+                "name": "Active Recovery",
+                "exercises": [
+                  {
+                    "name": "Mobility Drills",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "",
+                    "instruction": "Work through hip circles, leg swings, thoracic rotations, and shoulder dislocates. Hold stretches 30-60s each.",
+                    "definition": "Joint-by-joint mobility work to maintain range of motion and prevent stiffness.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Light Cardio",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "Easy bike/jog",
+                    "instruction": "Very low intensity movement to promote blood flow without adding training stress.",
+                    "intensity": "Easy",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           }
-        ]
+        ],
+        "weeklyAdjustments": {
+          "week10": {
+            "day1": {
+              "exercises": {
+                "Back Squat": { "intensity": "82.5% 1RM" },
+                "Bench Press": { "intensity": "82.5% 1RM" }
+              }
+            },
+            "day4": {
+              "exercises": {
+                "VO₂ Max Intervals": { "rest": 150 },
+                "MAS Intervals": { "sets": 14 }
+              }
+            }
+          },
+          "week11": {
+            "day1": {
+              "exercises": {
+                "Back Squat": { "intensity": "85% 1RM" },
+                "Bench Press": { "intensity": "85% 1RM" }
+              }
+            },
+            "day4": {
+              "exercises": {
+                "VO₂ Max Intervals": { "rest": 180 },
+                "MAS Intervals": { "sets": 16 }
+              }
+            }
+          },
+          "week12": {
+            "deload": true,
+            "setReduction": 0.2,
+            "day1": {
+              "exercises": {
+                "Sprints": { "sets": 8 },
+                "Back Squat": { "intensity": "75% 1RM", "sets": 2 },
+                "Bench Press": { "intensity": "75% 1RM", "sets": 2 }
+              }
+            },
+            "day4": {
+              "exercises": {
+                "VO₂ Max Intervals": { "sets": 3 },
+                "MAS Intervals": { "sets": 10 }
+              }
+            },
+            "day5": {
+              "blocks": {
+                "Conditioning Circuit": { "rounds": 3 }
+              }
+            }
+          }
+        }
       },
       {
         "id": "m4",
         "title": "Season Prep",
-        "phase": "Apr",
-        "goal": "Maintain strength/power, sharpen conditioning, taper for matches.",
-        "frequency": "3–4 training days + 1 conditioning day + 2 rest days",
+        "weeks": [13, 14, 15, 16],
+        "phaseFocus": "Apr: Maintain strength/power, sharpen conditioning, taper for matches",
+        "progression": {
+          "week13": { "intensity": "80-85% 1RM", "volume": "Low" },
+          "week14": { "intensity": "82.5-87.5% 1RM", "volume": "Low" },
+          "week15": { "intensity": "85-90% 1RM", "volume": "Very Low" },
+          "week16": { "intensity": "70-75% 1RM", "volume": "Taper (-50% sets)" }
+        },
         "microcycle": [
           {
-            "id": "m4-week0-day-1",
             "day": 1,
             "title": "Strength Maintenance",
-            "exercises": [
-              { "name": "Squat", "sets": 3, "reps": 3, "intensity": "85% 1RM", "rest": 120, "trackSets": true },
-              { "name": "Bench Press", "sets": 3, "reps": 3, "intensity": "85% 1RM", "rest": 120, "trackSets": true },
-              { "name": "Deadlift", "sets": 3, "reps": 3, "intensity": "85% 1RM", "rest": 150, "trackSets": true }
+            "durationMinutes": 60,
+            "blocks": [
+              {
+                "name": "Main Strength",
+                "exercises": [
+                  {
+                    "name": "Back Squat",
+                    "sets": 3,
+                    "reps": 3,
+                    "intensity": "85% 1RM",
+                    "rest": 120,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Bench Press",
+                    "sets": 3,
+                    "reps": 3,
+                    "intensity": "85% 1RM",
+                    "rest": 120,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Deadlift",
+                    "sets": 3,
+                    "reps": 3,
+                    "intensity": "85% 1RM",
+                    "rest": 150,
+                    "trackingMode": "1RM",
+                    "notes": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m4-week0-day-2",
             "day": 2,
             "title": "Speed & Agility",
-            "exercises": [
-              { "name": "Sprints", "sets": 6, "reps": "30m", "rest": "walk back", "trackSets": false },
-              { "name": "Cone Drills", "sets": 8, "reps": "zig-zag, 5-10-5", "rest": 60, "trackSets": false },
-              { "name": "Ladder Drills", "sets": 1, "reps": "3 min continuous", "rest": 60, "trackSets": false }
+            "durationMinutes": 55,
+            "blocks": [
+              {
+                "name": "Sprinting",
+                "exercises": [
+                  {
+                    "name": "Sprints",
+                    "sets": 6,
+                    "reps": "30m",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "Walk back recovery",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "Agility Drills",
+                "exercises": [
+                  {
+                    "name": "Cone Drills",
+                    "sets": 6,
+                    "duration": "90s",
+                    "rest": 60,
+                    "trackingMode": "time",
+                    "notes": "Zig-zag, 5-10-5 drills",
+                    "instruction": "Sprint through cone patterns emphasizing quick direction changes. Stay low through cuts.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Ladder Drills",
+                    "sets": 3,
+                    "duration": "1 min",
+                    "rest": 60,
+                    "trackingMode": "time",
+                    "notes": "Continuous",
+                    "instruction": "Quick feet through the ladder: high knees, lateral steps, in-out patterns. Focus on ground contact speed.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m4-week0-day-3",
             "day": 3,
             "title": "Recovery",
-            "exercises": [
-              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
-              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            "durationMinutes": 40,
+            "blocks": [
+              {
+                "name": "Active Recovery",
+                "exercises": [
+                  {
+                    "name": "Mobility Drills",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "",
+                    "instruction": "Work through hip circles, leg swings, thoracic rotations, and shoulder dislocates. Hold stretches 30-60s each.",
+                    "definition": "Joint-by-joint mobility work to maintain range of motion and prevent stiffness.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Light Cardio",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "Easy bike/jog",
+                    "instruction": "Very low intensity movement to promote blood flow without adding training stress.",
+                    "intensity": "Easy",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m4-week0-day-4",
             "day": 4,
             "title": "VO₂ Max Intervals",
-            "exercises": [
-              { "name": "VO₂ Max Intervals", "sets": 3, "reps": "4 min @ 90–95% HRmax", "rest": "2 min jog", "trackSets": false },
-              { "name": "MAS Intervals", "sets": 8, "reps": "15s sprint / 15s rest", "rest": 15, "trackSets": false }
+            "durationMinutes": 50,
+            "blocks": [
+              {
+                "name": "VO₂ Max",
+                "exercises": [
+                  {
+                    "name": "VO₂ Max Intervals",
+                    "sets": 3,
+                    "duration": "4 min",
+                    "rest": 120,
+                    "trackingMode": "time",
+                    "notes": "4 min @ 90–95% HRmax, 2 min jog recovery",
+                    "instruction": "Run/bike at near-maximum sustainable effort for 4 minutes, then jog or easy spin for 2 min recovery.",
+                    "definition": "High-intensity intervals targeting maximal oxygen uptake for improved aerobic power.",
+                    "intensity": "90–95% HRmax",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              },
+              {
+                "name": "MAS Intervals",
+                "exercises": [
+                  {
+                    "name": "MAS Intervals",
+                    "sets": 8,
+                    "reps": "15s",
+                    "rest": 15,
+                    "trackingMode": "time",
+                    "notes": "15s sprint / 15s rest",
+                    "intensity": "Maximal",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m4-week0-day-5",
             "day": 5,
             "title": "Conditioning Circuits",
-            "exercises": [
-              { "name": "Sled Push", "sets": 3, "reps": "20m", "rest": 60, "trackSets": false },
-              { "name": "Box Jumps", "sets": 3, "reps": 8, "rest": 60, "trackSets": false },
-              { "name": "Medicine Ball Slams", "sets": 3, "reps": 10, "rest": 60, "trackSets": false }
+            "durationMinutes": 45,
+            "blocks": [
+              {
+                "name": "Conditioning Circuit",
+                "rounds": 3,
+                "restBetweenRounds": 60,
+                "exercises": [
+                  {
+                    "name": "Sled Push",
+                    "sets": 1,
+                    "reps": "20m",
+                    "rest": 60,
+                    "trackingMode": "distance",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Box Jumps",
+                    "sets": 1,
+                    "reps": 8,
+                    "rest": 60,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Medicine Ball Slams",
+                    "sets": 1,
+                    "reps": 10,
+                    "rest": 60,
+                    "trackingMode": "volume",
+                    "notes": "",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m4-week0-day-6",
             "day": 6,
             "title": "Rest",
-            "exercises": [
-              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
-              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
+            "durationMinutes": 40,
+            "blocks": [
+              {
+                "name": "Active Recovery",
+                "exercises": [
+                  {
+                    "name": "Mobility Drills",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "",
+                    "instruction": "Work through hip circles, leg swings, thoracic rotations, and shoulder dislocates. Hold stretches 30-60s each.",
+                    "definition": "Joint-by-joint mobility work to maintain range of motion and prevent stiffness.",
+                    "intensity": "",
+                    "tempo": "",
+                    "substitutions": []
+                  },
+                  {
+                    "name": "Light Cardio",
+                    "sets": 1,
+                    "duration": "20 min",
+                    "trackingMode": "time",
+                    "notes": "Easy bike/jog",
+                    "instruction": "Very low intensity movement to promote blood flow without adding training stress.",
+                    "intensity": "Easy",
+                    "tempo": "",
+                    "substitutions": []
+                  }
+                ]
+              }
             ]
           },
           {
-            "id": "m4-week0-day-7",
             "day": 7,
             "title": "Rest",
-            "exercises": [
-              { "name": "Mobility Drills", "sets": 1, "reps": "20 min", "rest": 0, "trackSets": false },
-              { "name": "Light Cardio", "sets": 1, "reps": "20 min easy bike/jog", "rest": 0, "trackSets": false }
-            ]
+            "durationMinutes": 0,
+            "blocks": []
           }
-        ]
+        ],
+        "weeklyAdjustments": {
+          "week14": {
+            "day1": {
+              "exercises": {
+                "Back Squat": { "intensity": "87.5% 1RM" },
+                "Bench Press": { "intensity": "87.5% 1RM" },
+                "Deadlift": { "intensity": "87.5% 1RM" }
+              }
+            },
+            "day4": {
+              "exercises": {
+                "VO₂ Max Intervals": { "rest": 150 },
+                "MAS Intervals": { "sets": 10 }
+              }
+            }
+          },
+          "week15": {
+            "day1": {
+              "exercises": {
+                "Back Squat": { "intensity": "90% 1RM" },
+                "Bench Press": { "intensity": "90% 1RM" },
+                "Deadlift": { "intensity": "90% 1RM" }
+              }
+            },
+            "day4": {
+              "exercises": {
+                "VO₂ Max Intervals": { "rest": 180 },
+                "MAS Intervals": { "sets": 12 }
+              }
+            }
+          },
+          "week16": {
+            "taper": true,
+            "setReduction": 0.5,
+            "day1": {
+              "exercises": {
+                "Back Squat": { "intensity": "70-75% 1RM", "sets": 2 },
+                "Bench Press": { "intensity": "70-75% 1RM", "sets": 2 },
+                "Deadlift": { "intensity": "70-75% 1RM", "sets": 2 }
+              }
+            },
+            "day2": {
+              "exercises": {
+                "Sprints": { "sets": 4 },
+                "Cone Drills": { "duration": "8 min" },
+                "Ladder Drills": { "duration": "2 min" }
+              }
+            },
+            "day4": {
+              "exercises": {
+                "VO₂ Max Intervals": { "sets": 2 },
+                "MAS Intervals": { "sets": 6 }
+              }
+            },
+            "day5": {
+              "blocks": {
+                "Conditioning Circuit": { "rounds": 2 }
+              }
+            }
+          }
+        }
       }
     ]
+  },
+  "appImplementation": {
+    "autoCalcLoads": "For exercises with %1RM: weight = %1RM × 1RM, round to nearest 2.5 lb",
+    "rpeGuardrails": "If user logs RPE >8 on RPE 6-7 day, suggest reducing load by 2.5-5%",
+    "qualityChecks": {
+      "plyo": "If knee/back discomfort flagged, swap to low-impact alternatives",
+      "substitutions": {
+        "backSquat": ["Front Squat", "Goblet Squat"],
+        "benchPress": ["DB Bench", "Push-ups"],
+        "deadlift": ["RDL", "KB Deadlift"],
+        "powerClean": ["Hang Clean", "KB Clean"]
+      }
+    },
+    "tempoFormats": "Use '3-0-X' (eccentric-pause-concentric). Default assistance tempo: '2-0-1'",
+    "restDefaults": {
+      "heavyCompounds": 120,
+      "primaryAssistance": 90,
+      "olympicLifts": 120,
+      "plyometrics": 90,
+      "circuits": 60
+    },
+    "trackingModes": {
+      "time": "Use duration field",
+      "volume": "Use sets and reps fields",
+      "1RM": "Calculate from 1RM percentage",
+      "distance": "Use reps as distance measurement"
+    }
   }
 }
