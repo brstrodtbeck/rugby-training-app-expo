@@ -101,6 +101,21 @@ interface AdjustedExercise extends FlattenedExercise {
 export default function SessionScreen({ route, navigation }: Props) {
   const { sessionId } = route.params;
 
+  // Add help button to header
+  React.useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Help')}
+          style={{ marginRight: 16 }}
+          activeOpacity={0.7}
+        >
+          <Text style={{ fontSize: 24 }}>❓</Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
   // State for program data
   const [programData, setProgramData] = useState<RugbyProgram | null>(null);
   const [isLoadingProgram, setIsLoadingProgram] = useState(true);

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, Platform, Alert, TouchableOpacity, Modal, FlatList, ScrollView, Dimensions, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -150,7 +150,11 @@ export default function HomeScreen({ navigation }: Props) {
   const [showProgramPicker, setShowProgramPicker] = useState(false);
   const [todaySessionExpanded, setTodaySessionExpanded] = useState(true);
   const [readinessScore, setReadinessScore] = useState<number | null>(null);
-  const [calendarExpanded, setCalendarExpanded] = useState(false);
+  const [calendarExpanded, setCalendarExpanded] = useState(false); // Keep for backward compatibility, will be removed
+  const [calendarViewDate, setCalendarViewDate] = useState<Date>(new Date()); // Track which month/week is being viewed
+  const [showJumpToDate, setShowJumpToDate] = useState(false); // For jump to date picker
+  const [jumpToDatePicker, setJumpToDatePicker] = useState<Date>(new Date()); // Date picker for jump to date
+  const calendarScrollViewRef = useRef<ScrollView>(null);
   const [showSwapModal, setShowSwapModal] = useState(false);
   const [swapSearchQuery, setSwapSearchQuery] = useState('');
   const [swapFilterType, setSwapFilterType] = useState<string | null>(null);
@@ -890,25 +894,52 @@ export default function HomeScreen({ navigation }: Props) {
     );
   };
 
-  // Generate weekly calendar dates
-  const getWeeklyDates = (): string[] => {
-    const today = new Date();
+  // Generate multiple weeks for scrollable calendar (12 weeks = 84 days)
+  const getMultiWeekDates = (viewDate?: Date): string[] => {
     const dates: string[] = [];
-    // Get Monday of current week
-    const dayOfWeek = today.getDay();
-    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const monday = new Date(today);
-    monday.setDate(today.getDate() + mondayOffset);
+    const startDate = viewDate || calendarViewDate;
     
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(monday);
-      date.setDate(monday.getDate() + i);
+    // Get Monday of the week containing the view date
+    const dayOfWeek = startDate.getDay();
+    const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const monday = new Date(startDate);
+    monday.setDate(startDate.getDate() + mondayOffset);
+    
+    // Generate 12 weeks (84 days) starting from the Monday of the view date
+    // But also include 4 weeks before for scrolling backward
+    const totalWeeks = 16; // 4 weeks before + 12 weeks forward
+    const startMonday = new Date(monday);
+    startMonday.setDate(monday.getDate() - (4 * 7)); // Go back 4 weeks
+    
+    for (let i = 0; i < totalWeeks * 7; i++) {
+      const date = new Date(startMonday);
+      date.setDate(startMonday.getDate() + i);
       dates.push(formatYMD(date));
     }
     return dates;
   };
 
-  const weeklyDates = getWeeklyDates();
+  const multiWeekDates = getMultiWeekDates();
+  
+  // Get the index of today in the multi-week dates for auto-scrolling
+  const todayIndex = useMemo(() => {
+    const todayYMD = formatYMD(new Date());
+    return multiWeekDates.findIndex(d => d === todayYMD);
+  }, [multiWeekDates]);
+
+  // Auto-scroll to today when calendar loads or when view date changes
+  useEffect(() => {
+    if (todayIndex >= 0 && calendarScrollViewRef.current) {
+      // Scroll to show today (with some offset to center it)
+      const scrollPosition = Math.max(0, (todayIndex * DAY_WIDTH) - (SCREEN_WIDTH * 0.5));
+      const timeoutId = setTimeout(() => {
+        calendarScrollViewRef.current?.scrollTo({ x: scrollPosition, animated: false });
+      }, 100);
+      
+      // Cleanup timeout on unmount or dependency change
+      return () => clearTimeout(timeoutId);
+    }
+  }, [todayIndex, calendarViewDate]);
 
   // Get session for a specific date (basic info for calendar)
   const getSessionForDate = (dateYMD: string): { sessionId: string; title: string } | null => {
@@ -1299,8 +1330,58 @@ export default function HomeScreen({ navigation }: Props) {
     color: theme.primary,
     marginBottom: 12,
   },
+  calendarHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+    gap: 12,
+  },
+  calendarHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: 8,
+  },
+  calendarNavButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: theme.card,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: theme.border,
+  },
+  calendarNavButtonText: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: theme.primary,
+  },
+  calendarHeaderTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: theme.textPrimary,
+    flex: 1,
+    textAlign: 'center',
+  },
+  jumpToDateButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: theme.secondary,
+  },
+  jumpToDateButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: theme.textOnSecondary,
+  },
   weeklyCalendar: {
     paddingVertical: 8,
+  },
+  multiWeekCalendar: {
+    paddingVertical: 8,
+    paddingHorizontal: 4,
   },
   calendarDay: {
     width: DAY_WIDTH - 8,
@@ -2170,15 +2251,56 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         )}
 
-        {/* Weekly Calendar Strip */}
+        {/* Expanded Scrollable Calendar */}
         <View style={styles.calendarSection}>
-          <Text style={styles.calendarSectionTitle}>This Week</Text>
+          {/* Calendar Header with Navigation */}
+          <View style={styles.calendarHeader}>
+            <View style={styles.calendarHeaderLeft}>
+              <TouchableOpacity 
+                style={styles.calendarNavButton}
+                onPress={() => {
+                  const newDate = new Date(calendarViewDate);
+                  newDate.setMonth(newDate.getMonth() - 1);
+                  setCalendarViewDate(newDate);
+                }}
+              >
+                <Text style={styles.calendarNavButtonText}>‹</Text>
+              </TouchableOpacity>
+              <Text style={styles.calendarHeaderTitle}>
+                {calendarViewDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </Text>
+              <TouchableOpacity 
+                style={styles.calendarNavButton}
+                onPress={() => {
+                  const newDate = new Date(calendarViewDate);
+                  newDate.setMonth(newDate.getMonth() + 1);
+                  setCalendarViewDate(newDate);
+                }}
+              >
+                <Text style={styles.calendarNavButtonText}>›</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity 
+              style={styles.jumpToDateButton}
+              onPress={() => {
+                setJumpToDatePicker(new Date());
+                setShowJumpToDate(true);
+              }}
+            >
+              <Text style={styles.jumpToDateButtonText}>📍 Jump to Date</Text>
+            </TouchableOpacity>
+          </View>
+          
           <ScrollView 
+            ref={calendarScrollViewRef}
             horizontal 
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.weeklyCalendar}
+            showsHorizontalScrollIndicator={true}
+            contentContainerStyle={styles.multiWeekCalendar}
+            decelerationRate="fast"
+            snapToInterval={DAY_WIDTH * 7} // Snap to week boundaries
+            snapToAlignment="start"
           >
-            {weeklyDates.map((dateYMD) => {
+            {multiWeekDates.map((dateYMD) => {
               const session = getSessionForDate(dateYMD);
               const isToday = dateYMD === formatYMD(new Date());
               const isSelected = dateYMD === selectedDate;
@@ -2276,50 +2398,6 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         )}
 
-        {/* Full Calendar (Collapsible) */}
-        <View style={styles.fullCalendarSection}>
-          <TouchableOpacity
-            style={styles.calendarToggleButton}
-            onPress={() => setCalendarExpanded(!calendarExpanded)}
-          >
-            <Text style={styles.calendarSectionTitle}>Full Calendar</Text>
-            <Text style={styles.calendarToggleIcon}>
-              {calendarExpanded ? '▲' : '▼'}
-            </Text>
-          </TouchableOpacity>
-          {calendarExpanded && (
-            <Calendar
-              markedDates={(() => {
-                const marks: Record<string, any> = {};
-                if (startDateYMD) {
-                  completedSessions.forEach((s) => {
-                    const date = getDateFromSessionId(s.id, startDateYMD);
-                    if (date) {
-                      marks[date] = {
-                        marked: true,
-                        dotColor: theme.primary,
-                        customStyles: {
-                          container: { backgroundColor: theme.primaryFaded },
-                          text: { color: theme.textPrimary },
-                        },
-                      };
-                    }
-                  });
-                }
-                if (selectedDate) {
-                  marks[selectedDate] = {
-                    ...marks[selectedDate],
-                    selected: true,
-                    selectedColor: theme.secondary,
-                  };
-                }
-                return marks;
-              })()}
-              markingType="custom"
-              onDayPress={handleDayPress}
-            />
-          )}
-        </View>
 
         {/* Date Picker Modal */}
         {Platform.OS === 'ios' && showPicker && (
@@ -2365,6 +2443,100 @@ export default function HomeScreen({ navigation }: Props) {
             mode="date"
             display="default"
             onChange={handleDateChange}
+          />
+        )}
+
+        {/* Jump to Date Picker Modal */}
+        {Platform.OS === 'ios' && showJumpToDate && (
+          <Modal
+            visible={showJumpToDate}
+            transparent
+            animationType="slide"
+            onRequestClose={() => setShowJumpToDate(false)}
+          >
+            <View style={styles.datePickerModalOverlay}>
+              <View style={styles.datePickerModalContent}>
+                <View style={styles.datePickerHeader}>
+                  <Text style={styles.datePickerTitle}>Jump to Date</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setShowJumpToDate(false);
+                    }}
+                    style={styles.datePickerCloseButton}
+                  >
+                    <Text style={styles.datePickerCloseText}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={styles.datePickerContainer}>
+                  <DateTimePicker
+                    value={jumpToDatePicker}
+                    mode="date"
+                    display="spinner"
+                    onChange={(event, selectedDate) => {
+                      if (event.type === 'set' && selectedDate) {
+                        setJumpToDatePicker(selectedDate);
+                      } else if (event.type === 'dismissed') {
+                        setShowJumpToDate(false);
+                      }
+                    }}
+                    style={styles.datePicker}
+                    textColor={theme.textPrimary}
+                    themeVariant="light"
+                  />
+                </View>
+                <View style={styles.datePickerHeader}>
+                  <TouchableOpacity
+                    style={[styles.datePickerCloseButton, { flex: 1, backgroundColor: theme.primary, borderRadius: 10, paddingVertical: 12, marginHorizontal: 20 }]}
+                    onPress={() => {
+                      setCalendarViewDate(jumpToDatePicker);
+                      setShowJumpToDate(false);
+                      // Scroll to the selected date after a short delay to allow state update
+                      const selectedYMD = formatYMD(jumpToDatePicker);
+                      setTimeout(() => {
+                        // Recalculate dates with new view date
+                        const newDates = getMultiWeekDates(jumpToDatePicker);
+                        const index = newDates.findIndex(d => d === selectedYMD);
+                        if (index >= 0 && calendarScrollViewRef.current) {
+                          const scrollPosition = Math.max(0, (index * DAY_WIDTH) - (SCREEN_WIDTH * 0.5));
+                          calendarScrollViewRef.current?.scrollTo({ x: scrollPosition, animated: true });
+                        }
+                      }, 200);
+                    }}
+                  >
+                    <Text style={[styles.datePickerCloseText, { color: theme.textOnPrimary, fontWeight: '700' }]}>Go to Date</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+        )}
+        
+        {/* Android Jump to Date Picker (shows as system dialog) */}
+        {Platform.OS === 'android' && showJumpToDate && (
+          <DateTimePicker
+            value={jumpToDatePicker}
+            mode="date"
+            display="default"
+            onChange={(event, selectedDate) => {
+              if (event.type === 'set' && selectedDate) {
+                setJumpToDatePicker(selectedDate);
+                setCalendarViewDate(selectedDate);
+                setShowJumpToDate(false);
+                // Scroll to the selected date after a short delay to allow state update
+                const selectedYMD = formatYMD(selectedDate);
+                setTimeout(() => {
+                  // Recalculate dates with new view date
+                  const newDates = getMultiWeekDates(selectedDate);
+                  const index = newDates.findIndex(d => d === selectedYMD);
+                  if (index >= 0 && calendarScrollViewRef.current) {
+                    const scrollPosition = Math.max(0, (index * DAY_WIDTH) - (SCREEN_WIDTH * 0.5));
+                    calendarScrollViewRef.current?.scrollTo({ x: scrollPosition, animated: true });
+                  }
+                }, 200);
+              } else {
+                setShowJumpToDate(false);
+              }
+            }}
           />
         )}
 

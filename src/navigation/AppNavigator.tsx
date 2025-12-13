@@ -97,7 +97,7 @@ export default function AppNavigator() {
         options={{ title: 'My 1RMs' }}
       />
       <Stack.Screen
-        name="OneRMHistory"
+        name="1RMHistory"
         component={OneRMHistory}
         options={({ route }) => ({
           title: `${route.params.exerciseName} History`,

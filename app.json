@@ -2,7 +2,7 @@
   "expo": {
     "name": "Progressive Overlord",
     "slug": "brstr",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,12 +16,10 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.progressiveoverlord.app",
-      "buildNumber": "1",
+      "buildNumber": "6",
       "infoPlist": {
-        "NSHealthShareUsageDescription": "This app tracks your workout progress and training metrics.",
-        "NSHealthUpdateUsageDescription": "This app saves your workout data and training progress.",
         "NSCameraUsageDescription": "This app may use the camera for exercise form analysis.",
         "NSPhotoLibraryUsageDescription": "This app may access photos to save workout progress images."
       },
@@ -35,7 +33,7 @@
         "backgroundColor": "#E0E0E0"
       },
       "package": "com.progressiveoverlord.app",
-      "versionCode": 1,
+      "versionCode": 2,
       "permissions": [
         "VIBRATE",
         "RECEIVE_BOOT_COMPLETED"

@@ -83,7 +83,7 @@ const PROGRAM_OPTIONS: ProgramOption[] = [
     duration: '4 weeks',
     focus: ['Muscle Growth', 'Volume Training', 'Hypertrophy'],
     difficulty: 'Intermediate',
-    sessionsPerWeek: 3,
+    sessionsPerWeek: '3',
     highlights: [
       'High-volume training for muscle growth',
       'Superset and circuit training for efficiency',
