@@ -10,7 +10,8 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { THEME } from '../theme/colors';
+import { useThemedStyles } from '../theme/useThemedStyles';
+import { useTheme } from '../theme/ThemeContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
@@ -99,13 +100,261 @@ export default function OnboardingScreen({ navigation }: Props) {
   const [step, setStep] = useState<'1rm' | 'program'>('1rm');
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const { theme } = useTheme();
+  
+  const styles = useThemedStyles((theme) => StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.background,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      padding: 20,
+      paddingBottom: 40,
+    },
+    stepContainer: {
+      flex: 1,
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: '700',
+      color: theme.textPrimary,
+      marginBottom: 8,
+      textAlign: 'center',
+    },
+    subtitle: {
+      fontSize: 16,
+      color: theme.textSecondary,
+      marginBottom: 32,
+      textAlign: 'center',
+    },
+    card: {
+      backgroundColor: theme.card,
+      borderRadius: 16,
+      padding: 24,
+      borderWidth: 1,
+      borderColor: theme.borderLight,
+      shadowColor: theme.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    cardTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: theme.textPrimary,
+      marginBottom: 12,
+    },
+    cardDescription: {
+      fontSize: 15,
+      color: theme.textSecondary,
+      lineHeight: 22,
+      marginBottom: 16,
+    },
+    cardNote: {
+      fontSize: 14,
+      color: theme.textMuted,
+      fontStyle: 'italic',
+      marginBottom: 24,
+      lineHeight: 20,
+    },
+    buttonGroup: {
+      gap: 12,
+    },
+    button: {
+      paddingVertical: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    primaryButton: {
+      backgroundColor: theme.primary,
+      shadowColor: theme.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    primaryButtonText: {
+      color: theme.textOnPrimary,
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    secondaryButton: {
+      backgroundColor: theme.card,
+      borderWidth: 1,
+      borderColor: theme.border,
+    },
+    secondaryButtonText: {
+      color: theme.textSecondary,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    programCard: {
+      backgroundColor: theme.card,
+      borderRadius: 16,
+      padding: 20,
+      marginBottom: 16,
+      borderWidth: 2,
+      borderColor: theme.borderLight,
+      shadowColor: theme.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    programCardSelected: {
+      borderColor: theme.primary,
+      backgroundColor: theme.primary + '08',
+    },
+    programHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    programTitle: {
+      fontSize: 22,
+      fontWeight: '700',
+      color: theme.textPrimary,
+      flex: 1,
+    },
+    selectedBadge: {
+      backgroundColor: theme.primary,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 12,
+    },
+    selectedBadgeText: {
+      color: theme.textOnPrimary,
+      fontSize: 12,
+      fontWeight: '700',
+    },
+    programDescription: {
+      fontSize: 15,
+      color: theme.textSecondary,
+      lineHeight: 22,
+      marginBottom: 16,
+    },
+    programDetails: {
+      marginBottom: 16,
+      paddingBottom: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.borderLight,
+    },
+    detailRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 8,
+    },
+    detailLabel: {
+      fontSize: 14,
+      color: theme.textMuted,
+      fontWeight: '500',
+    },
+    detailValue: {
+      fontSize: 14,
+      color: theme.textPrimary,
+      fontWeight: '600',
+    },
+    focusSection: {
+      marginBottom: 16,
+    },
+    focusTitle: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: theme.textPrimary,
+      marginBottom: 8,
+    },
+    focusTags: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    focusTag: {
+      backgroundColor: theme.secondary + '20',
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 8,
+    },
+    focusTagText: {
+      fontSize: 13,
+      color: theme.secondary,
+      fontWeight: '600',
+    },
+    highlightsSection: {
+      marginTop: 8,
+    },
+    highlightsTitle: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: theme.textPrimary,
+      marginBottom: 12,
+    },
+    highlightItem: {
+      flexDirection: 'row',
+      marginBottom: 8,
+      alignItems: 'flex-start',
+    },
+    highlightBullet: {
+      fontSize: 16,
+      color: theme.primary,
+      marginRight: 8,
+      fontWeight: '700',
+    },
+    highlightText: {
+      fontSize: 14,
+      color: theme.textSecondary,
+      lineHeight: 20,
+      flex: 1,
+    },
+    loadingOverlay: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: theme.background + 'E6',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 16,
+    },
+    loadingText: {
+      marginTop: 12,
+      fontSize: 16,
+      color: theme.textSecondary,
+      fontWeight: '500',
+    },
+    helpLink: {
+      marginTop: 24,
+      padding: 16,
+      backgroundColor: theme.secondary + '15',
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: theme.secondary + '30',
+      alignItems: 'center',
+    },
+    helpLinkText: {
+      fontSize: 15,
+      color: theme.secondary,
+      fontWeight: '600',
+    },
+  }));
 
   const handleSkip1RM = async () => {
     setStep('program');
   };
 
   const handleGoTo1RM = () => {
-    navigation.navigate('My1RMs');
+    navigation.navigate('My1RMs', { 
+      isOnboarding: true,
+      onContinue: () => {
+        setStep('program');
+      }
+    });
   };
 
   const handleSelectProgram = async (programId: string) => {
@@ -115,6 +364,9 @@ export default function OnboardingScreen({ navigation }: Props) {
     try {
       // Save program selection
       await AsyncStorage.setItem('selectedProgramId', programId);
+      
+      // Reset program offset to ensure clean start
+      await AsyncStorage.setItem('programOffset', '0');
       
       // Mark onboarding as complete
       await AsyncStorage.setItem(ONBOARDING_COMPLETE_KEY, 'true');
@@ -235,242 +487,22 @@ export default function OnboardingScreen({ navigation }: Props) {
 
             {isLoading && (
               <View style={styles.loadingOverlay}>
-                <ActivityIndicator size="large" color={THEME.primary} />
+                <ActivityIndicator size="large" color={theme.primary} />
                 <Text style={styles.loadingText}>Setting up your program...</Text>
               </View>
             )}
           </View>
         )}
+
+        {/* Help Link */}
+        <TouchableOpacity
+          style={styles.helpLink}
+          onPress={() => navigation.navigate('Help')}
+        >
+          <Text style={styles.helpLinkText}>📖 View Help & Instructions</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: THEME.background,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  stepContainer: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: THEME.textPrimary,
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: THEME.textSecondary,
-    marginBottom: 32,
-    textAlign: 'center',
-  },
-  card: {
-    backgroundColor: THEME.card,
-    borderRadius: 16,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: THEME.borderLight,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  cardTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: THEME.textPrimary,
-    marginBottom: 12,
-  },
-  cardDescription: {
-    fontSize: 15,
-    color: THEME.textSecondary,
-    lineHeight: 22,
-    marginBottom: 16,
-  },
-  cardNote: {
-    fontSize: 14,
-    color: THEME.textMuted,
-    fontStyle: 'italic',
-    marginBottom: 24,
-    lineHeight: 20,
-  },
-  buttonGroup: {
-    gap: 12,
-  },
-  button: {
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  primaryButton: {
-    backgroundColor: THEME.primary,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  primaryButtonText: {
-    color: THEME.textOnPrimary,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  secondaryButton: {
-    backgroundColor: THEME.card,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  secondaryButtonText: {
-    color: THEME.textSecondary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  programCard: {
-    backgroundColor: THEME.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 2,
-    borderColor: THEME.borderLight,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  programCardSelected: {
-    borderColor: THEME.primary,
-    backgroundColor: THEME.primary + '08',
-  },
-  programHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  programTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: THEME.textPrimary,
-    flex: 1,
-  },
-  selectedBadge: {
-    backgroundColor: THEME.primary,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  selectedBadgeText: {
-    color: THEME.textOnPrimary,
-    fontSize: 12,
-    fontWeight: '700',
-  },
-  programDescription: {
-    fontSize: 15,
-    color: THEME.textSecondary,
-    lineHeight: 22,
-    marginBottom: 16,
-  },
-  programDetails: {
-    marginBottom: 16,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.borderLight,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  detailLabel: {
-    fontSize: 14,
-    color: THEME.textMuted,
-    fontWeight: '500',
-  },
-  detailValue: {
-    fontSize: 14,
-    color: THEME.textPrimary,
-    fontWeight: '600',
-  },
-  focusSection: {
-    marginBottom: 16,
-  },
-  focusTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: THEME.textPrimary,
-    marginBottom: 8,
-  },
-  focusTags: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  focusTag: {
-    backgroundColor: THEME.secondary + '20',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  focusTagText: {
-    fontSize: 13,
-    color: THEME.secondary,
-    fontWeight: '600',
-  },
-  highlightsSection: {
-    marginTop: 8,
-  },
-  highlightsTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: THEME.textPrimary,
-    marginBottom: 12,
-  },
-  highlightItem: {
-    flexDirection: 'row',
-    marginBottom: 8,
-    alignItems: 'flex-start',
-  },
-  highlightBullet: {
-    fontSize: 16,
-    color: THEME.primary,
-    marginRight: 8,
-    fontWeight: '700',
-  },
-  highlightText: {
-    fontSize: 14,
-    color: THEME.textSecondary,
-    lineHeight: 20,
-    flex: 1,
-  },
-  loadingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: THEME.background + 'E6',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 16,
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: THEME.textSecondary,
-    fontWeight: '500',
-  },
-});
 

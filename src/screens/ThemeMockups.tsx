@@ -6,8 +6,16 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Alert,
+  BackHandler,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/AppNavigator';
+import { useTheme } from '../theme/ThemeContext';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'ThemeMockups'>;
 
 const { width } = Dimensions.get('window');
 
@@ -61,7 +69,7 @@ const PALETTES = {
   },
 };
 
-type PaletteKey = keyof typeof PALETTES;
+type PaletteKey = 'dominionBold' | 'ironSteel' | 'overlordInferno' | 'adaptiveProgression';
 type Palette = typeof PALETTES[PaletteKey];
 
 // ============================================
@@ -306,7 +314,7 @@ const SessionSummaryMockup: React.FC<{ palette: Palette }> = ({ palette }) => {
 // ============================================
 // PALETTE SHOWCASE
 // ============================================
-const PaletteShowcase: React.FC<{ paletteKey: PaletteKey }> = ({ paletteKey }) => {
+const PaletteShowcase: React.FC<{ paletteKey: PaletteKey; onSelectTheme?: (key: PaletteKey) => void; isSelected?: boolean }> = ({ paletteKey, onSelectTheme, isSelected }) => {
   const palette = PALETTES[paletteKey];
   const [showCard, setShowCard] = useState(true);
 
@@ -314,12 +322,31 @@ const PaletteShowcase: React.FC<{ paletteKey: PaletteKey }> = ({ paletteKey }) =
     <View style={[styles.showcase, { backgroundColor: palette.background }]}>
       {/* Palette Header */}
       <View style={styles.paletteHeader}>
-        <Text style={[styles.paletteName, { color: palette.primary }]}>
-          {palette.name}
-        </Text>
-        <Text style={[styles.paletteSubtitle, { color: palette.textOnBackground + '99' }]}>
-          {palette.subtitle}
-        </Text>
+        <View style={styles.paletteHeaderTop}>
+          <View style={styles.paletteHeaderLeft}>
+            <Text style={[styles.paletteName, { color: palette.primary }]}>
+              {palette.name}
+            </Text>
+            <Text style={[styles.paletteSubtitle, { color: palette.textOnBackground + '99' }]}>
+              {palette.subtitle}
+            </Text>
+          </View>
+          {isSelected && (
+            <View style={[styles.selectedBadge, { backgroundColor: palette.primary + '20', borderColor: palette.primary }]}>
+              <Text style={[styles.selectedBadgeText, { color: palette.primary }]}>✓ Active</Text>
+            </View>
+          )}
+        </View>
+        {onSelectTheme && (
+          <TouchableOpacity
+            style={[styles.selectThemeButton, { backgroundColor: palette.primary, borderColor: palette.primary }]}
+            onPress={() => onSelectTheme(paletteKey)}
+          >
+            <Text style={[styles.selectThemeButtonText, { color: palette.textOnPrimary }]}>
+              {isSelected ? '✓ Selected' : 'Select Theme'}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Color Swatches */}
@@ -383,14 +410,88 @@ const PaletteShowcase: React.FC<{ paletteKey: PaletteKey }> = ({ paletteKey }) =
 // ============================================
 // MAIN SCREEN
 // ============================================
-const ThemeMockups: React.FC = () => {
+const ThemeMockups: React.FC<Props> = ({ navigation }) => {
   const [selectedPalette, setSelectedPalette] = useState<PaletteKey>('dominionBold');
+  const { themeKey, setTheme, theme } = useTheme();
+
+  React.useEffect(() => {
+    console.log('[ThemeMockups] Screen mounted');
+    console.log('[ThemeMockups] Current theme key:', themeKey);
+    console.log('[ThemeMockups] Current theme colors:', {
+      primary: theme.primary,
+      background: theme.background,
+      card: theme.card,
+    });
+  }, [themeKey, theme]);
+
+  const handleSelectTheme = async (key: PaletteKey) => {
+    console.log('[ThemeMockups] User selected theme:', key);
+    // Show confirmation dialog first
+    Alert.alert(
+      'Select Theme',
+      `You're about to select the "${PALETTES[key].name}" theme.\n\n⚠️ Theme changes will be applied when you restart the app.\n\nWould you like to continue?`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+          onPress: () => console.log('[ThemeMockups] User cancelled theme selection'),
+        },
+        {
+          text: 'Select & Restart',
+          onPress: async () => {
+            try {
+              console.log('[ThemeMockups] Calling setTheme with key:', key);
+              await setTheme(key);
+              console.log('[ThemeMockups] Theme set successfully');
+              Alert.alert(
+                'Theme Saved',
+                `The "${PALETTES[key].name}" theme has been saved.\n\nTo see the changes, please restart the app.\n\nYou can continue using the app now and restart later, or restart now.`,
+                [
+                  {
+                    text: 'Continue Using App',
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'Restart Now',
+                    style: 'destructive',
+                    onPress: () => {
+                      if (Platform.OS === 'android') {
+                        BackHandler.exitApp();
+                      } else {
+                        // On iOS, we can't programmatically restart, so just show a message
+                        Alert.alert(
+                          'Restart Required',
+                          'Please manually close and reopen the app to see the theme changes.',
+                          [{ text: 'OK' }]
+                        );
+                      }
+                    },
+                  },
+                ]
+              );
+            } catch (error) {
+              console.error('[ThemeMockups] Error setting theme:', error);
+              Alert.alert('Error', 'Failed to apply theme. Please try again.');
+            }
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
         {/* Screen Header */}
         <View style={styles.header}>
+          <View style={styles.headerTop}>
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.backButtonText}>← Back</Text>
+            </TouchableOpacity>
+          </View>
           <Text style={styles.headerTitle}>🎨 Theme Mockups</Text>
           <Text style={styles.headerSubtitle}>
             Compare color palettes for Progressive Overlord
@@ -421,7 +522,11 @@ const ThemeMockups: React.FC = () => {
         </ScrollView>
 
         {/* Selected Palette Showcase */}
-        <PaletteShowcase paletteKey={selectedPalette} />
+        <PaletteShowcase 
+          paletteKey={selectedPalette} 
+          onSelectTheme={handleSelectTheme}
+          isSelected={themeKey === selectedPalette}
+        />
 
         {/* All Palettes Comparison */}
         <View style={styles.comparisonSection}>
@@ -432,7 +537,11 @@ const ThemeMockups: React.FC = () => {
           
           {(Object.keys(PALETTES) as PaletteKey[]).map((key) => (
             <View key={key} style={styles.comparisonCard}>
-              <PaletteShowcase paletteKey={key} />
+              <PaletteShowcase 
+                paletteKey={key} 
+                onSelectTheme={handleSelectTheme}
+                isSelected={themeKey === key}
+              />
             </View>
           ))}
         </View>
@@ -452,6 +561,24 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     alignItems: 'center',
+  },
+  headerTop: {
+    width: '100%',
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  backButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: '#2A2A2A',
+    borderWidth: 1,
+    borderColor: '#444',
+  },
+  backButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#FFFFFF',
   },
   headerTitle: {
     fontSize: 28,
@@ -507,6 +634,15 @@ const styles = StyleSheet.create({
   paletteHeader: {
     marginBottom: 12,
   },
+  paletteHeaderTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  paletteHeaderLeft: {
+    flex: 1,
+  },
   paletteName: {
     fontSize: 22,
     fontWeight: '700',
@@ -514,6 +650,29 @@ const styles = StyleSheet.create({
   paletteSubtitle: {
     fontSize: 13,
     marginTop: 2,
+  },
+  selectedBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginLeft: 12,
+  },
+  selectedBadgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  selectThemeButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 2,
+    marginTop: 8,
+  },
+  selectThemeButtonText: {
+    fontSize: 14,
+    fontWeight: '700',
   },
 
   // Swatches

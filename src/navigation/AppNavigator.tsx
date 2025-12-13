@@ -11,7 +11,8 @@ import SessionSummaryScreen from '../screens/SessionSummary';
 import TestValidationScreen from '../screens/TestValidationScreen';
 import ThemeMockups from '../screens/ThemeMockups';
 import OnboardingScreen from '../screens/OnboardingScreen';
-import { THEME } from '../theme/colors';
+import HelpScreen from '../screens/HelpScreen';
+import { useTheme } from '../theme/ThemeContext';
 
 export type RootStackParamList = {
   Onboarding: undefined;
@@ -19,12 +20,15 @@ export type RootStackParamList = {
   BaselineSetup: undefined;
   My1RMs: {
     onUpdate1RM?: (exerciseName: string, newValue: number) => void;
+    isOnboarding?: boolean;
+    onContinue?: () => void;
   } | undefined;
   '1RMHistory': { exerciseName: string };
   Session: { sessionId: string };
   SessionSummary: { sessionId: string; completed: number[] };
   TestValidation: undefined;
   ThemeMockups: undefined;
+  Help: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -33,6 +37,7 @@ const ONBOARDING_COMPLETE_KEY = 'onboardingComplete';
 export default function AppNavigator() {
   const [isLoading, setIsLoading] = useState(true);
   const [initialRoute, setInitialRoute] = useState<'Onboarding' | 'Home'>('Onboarding');
+  const { theme } = useTheme();
 
   useEffect(() => {
     const checkOnboarding = async () => {
@@ -52,8 +57,8 @@ export default function AppNavigator() {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={THEME.primary} />
+      <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
+        <ActivityIndicator size="large" color={theme.primary} />
       </View>
     );
   }
@@ -63,9 +68,9 @@ export default function AppNavigator() {
       initialRouteName={initialRoute}
       screenOptions={{
         headerStyle: {
-          backgroundColor: THEME.card,
+          backgroundColor: theme.card,
         },
-        headerTintColor: THEME.textPrimary,
+        headerTintColor: theme.textPrimary,
         headerTitleStyle: {
           fontWeight: '700',
         },
@@ -121,6 +126,11 @@ export default function AppNavigator() {
         component={ThemeMockups}
         options={{ title: 'Theme Mockups', headerShown: false }}
       />
+      <Stack.Screen
+        name="Help"
+        component={HelpScreen}
+        options={{ title: 'Help & Instructions' }}
+      />
     </Stack.Navigator>
   );
 }
@@ -130,6 +140,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: THEME.background,
   },
 });

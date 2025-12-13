@@ -11,13 +11,13 @@ import {
   ScrollView,
 } from 'react-native';
 import { getExercise1RM } from '../storage/logs';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRoute } from '@react-navigation/native';
-import { THEME } from '../theme/colors';
+import { useThemedStyles } from '../theme/useThemedStyles';
+import { useTheme } from '../theme/ThemeContext';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'My1RMs'>;
 type RouteProp = NativeStackScreenProps<RootStackParamList, 'My1RMs'>['route'];
@@ -50,6 +50,233 @@ const My1RMs: React.FC = () => {
   const [reps, setReps] = useState<string>('');
   const [calculated1RM, setCalculated1RM] = useState<number | null>(null);
   const navigation = useNavigation<NavigationProp>();
+  const isOnboarding = route.params?.isOnboarding ?? false;
+  const { theme } = useTheme();
+  
+  const styles = useThemedStyles((theme) => StyleSheet.create({
+    container: { 
+      flex: 1, 
+      backgroundColor: theme.background 
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      padding: 16,
+      paddingBottom: 32,
+    },
+    title: { 
+      fontSize: 24, 
+      fontWeight: '700', 
+      marginBottom: 4, 
+      color: theme.primary 
+    },
+    subtitle: { 
+      fontSize: 14, 
+      color: theme.textMuted, 
+      marginBottom: 20 
+    },
+    picker: { 
+      marginBottom: 16, 
+      backgroundColor: theme.card,
+      borderRadius: 8,
+    },
+    inputSection: {
+      marginBottom: 24,
+      backgroundColor: theme.card,
+      padding: 16,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: theme.border,
+    },
+    sectionLabel: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: theme.primary,
+      marginBottom: 16,
+    },
+    inputGroup: {
+      marginBottom: 16,
+    },
+    inputGroupLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: theme.textSecondary,
+      marginBottom: 8,
+    },
+    divider: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginVertical: 20,
+    },
+    dividerLine: {
+      flex: 1,
+      height: 1,
+      backgroundColor: theme.border,
+    },
+    dividerText: {
+      marginHorizontal: 12,
+      fontSize: 12,
+      fontWeight: '600',
+      color: theme.textMuted,
+      textTransform: 'uppercase',
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: theme.border,
+      backgroundColor: theme.card,
+      padding: 14,
+      marginBottom: 12,
+      borderRadius: 8,
+      fontSize: 16,
+      color: theme.textPrimary,
+    },
+    calculateButton: {
+      backgroundColor: theme.primary,
+      paddingVertical: 14,
+      borderRadius: 8,
+      alignItems: 'center',
+      marginTop: 4,
+    },
+    calculateButtonDisabled: {
+      backgroundColor: theme.border,
+      opacity: 0.6,
+    },
+    calculateButtonText: {
+      color: theme.textOnPrimary,
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    resultContainer: {
+      marginTop: 16,
+      padding: 16,
+      backgroundColor: theme.primaryFaded,
+      borderRadius: 8,
+      alignItems: 'center',
+    },
+    resultLabel: {
+      fontSize: 14,
+      color: theme.textSecondary,
+      marginBottom: 4,
+    },
+    resultValue: {
+      fontSize: 24,
+      fontWeight: '700',
+      color: theme.primary,
+    },
+    saveButton: {
+      backgroundColor: theme.primary,
+      paddingVertical: 16,
+      borderRadius: 8,
+      alignItems: 'center',
+      marginTop: 16,
+      shadowColor: theme.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    saveButtonText: {
+      color: theme.textOnPrimary,
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: theme.textPrimary,
+      marginTop: 8,
+      marginBottom: 12,
+    },
+    emptyText: {
+      fontSize: 14,
+      color: theme.textMuted,
+      textAlign: 'center',
+      paddingVertical: 24,
+      fontStyle: 'italic',
+    },
+    listContainer: {
+      marginBottom: 16,
+    },
+    row: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 14,
+      paddingHorizontal: 16,
+      marginBottom: 10,
+      backgroundColor: theme.card,
+      borderRadius: 8,
+      shadowColor: theme.shadow,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+      elevation: 2,
+    },
+    rowContent: {
+      flex: 1,
+    },
+    exercise: { 
+      fontSize: 16, 
+      fontWeight: '600', 
+      color: theme.textPrimary,
+      marginBottom: 4,
+    },
+    value: { 
+      fontSize: 14, 
+      color: theme.primary, 
+      fontWeight: '500' 
+    },
+    button: {
+      backgroundColor: theme.secondary,
+      paddingVertical: 8,
+      paddingHorizontal: 14,
+      borderRadius: 6,
+      marginLeft: 12,
+    },
+    buttonText: { 
+      color: theme.textOnSecondary, 
+      fontWeight: '600',
+      fontSize: 13,
+    },
+    onboardingActions: {
+      flexDirection: 'row',
+      gap: 12,
+      marginTop: 24,
+      marginBottom: 16,
+    },
+    primaryActionButton: {
+      flex: 1,
+      backgroundColor: theme.primary,
+      paddingVertical: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      shadowColor: theme.shadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.15,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    primaryActionButtonText: {
+      color: theme.textOnPrimary,
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    secondaryActionButton: {
+      flex: 1,
+      backgroundColor: theme.card,
+      borderWidth: 1,
+      borderColor: theme.border,
+      paddingVertical: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+    },
+    secondaryActionButtonText: {
+      color: theme.textSecondary,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+  }));
 
   const handleSave = async (value: number) => {
     if (!value || value <= 0) return;
@@ -172,7 +399,7 @@ const My1RMs: React.FC = () => {
             <TextInput
               style={styles.input}
               placeholder="Enter 1RM (lbs)"
-              placeholderTextColor={THEME.textMuted}
+              placeholderTextColor={theme.textMuted}
               keyboardType="numeric"
               value={manual1RM}
               onChangeText={(text) => {
@@ -198,7 +425,7 @@ const My1RMs: React.FC = () => {
             <TextInput
               style={styles.input}
               placeholder="Weight lifted (lbs)"
-              placeholderTextColor={THEME.textMuted}
+              placeholderTextColor={theme.textMuted}
               keyboardType="numeric"
               value={weight}
               onChangeText={(text) => {
@@ -213,7 +440,7 @@ const My1RMs: React.FC = () => {
             <TextInput
               style={styles.input}
               placeholder="Reps performed"
-              placeholderTextColor={THEME.textMuted}
+              placeholderTextColor={theme.textMuted}
               keyboardType="numeric"
               value={reps}
               onChangeText={(text) => {
@@ -278,197 +505,32 @@ const My1RMs: React.FC = () => {
             ))}
           </View>
         )}
+
+        {/* Onboarding Navigation Buttons */}
+        {isOnboarding && (
+          <View style={styles.onboardingActions}>
+            <TouchableOpacity
+              style={[styles.button, styles.secondaryActionButton]}
+              onPress={() => navigation.goBack()}
+            >
+              <Text style={styles.secondaryActionButtonText}>Back</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.primaryActionButton]}
+              onPress={() => {
+                if (route.params?.onContinue) {
+                  route.params.onContinue();
+                }
+                navigation.goBack();
+              }}
+            >
+              <Text style={styles.primaryActionButtonText}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: THEME.background 
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 32,
-  },
-  title: { 
-    fontSize: 24, 
-    fontWeight: '700', 
-    marginBottom: 4, 
-    color: THEME.primary 
-  },
-  subtitle: { 
-    fontSize: 14, 
-    color: THEME.textMuted, 
-    marginBottom: 20 
-  },
-  picker: { 
-    marginBottom: 16, 
-    backgroundColor: THEME.card,
-    borderRadius: 8,
-  },
-  inputSection: {
-    marginBottom: 24,
-    backgroundColor: THEME.card,
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  sectionLabel: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: THEME.primary,
-    marginBottom: 16,
-  },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  inputGroupLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: THEME.textSecondary,
-    marginBottom: 8,
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 20,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: THEME.border,
-  },
-  dividerText: {
-    marginHorizontal: 12,
-    fontSize: 12,
-    fontWeight: '600',
-    color: THEME.textMuted,
-    textTransform: 'uppercase',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: THEME.border,
-    backgroundColor: THEME.card,
-    padding: 14,
-    marginBottom: 12,
-    borderRadius: 8,
-    fontSize: 16,
-    color: THEME.textPrimary,
-  },
-  calculateButton: {
-    backgroundColor: THEME.primary,
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  calculateButtonDisabled: {
-    backgroundColor: THEME.border,
-    opacity: 0.6,
-  },
-  calculateButtonText: {
-    color: THEME.textOnPrimary,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  resultContainer: {
-    marginTop: 16,
-    padding: 16,
-    backgroundColor: THEME.primaryFaded,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  resultLabel: {
-    fontSize: 14,
-    color: THEME.textSecondary,
-    marginBottom: 4,
-  },
-  resultValue: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: THEME.primary,
-  },
-  saveButton: {
-    backgroundColor: THEME.primary,
-    paddingVertical: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 16,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  saveButtonText: {
-    color: THEME.textOnPrimary,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: THEME.textPrimary,
-    marginTop: 8,
-    marginBottom: 12,
-  },
-  emptyText: {
-    fontSize: 14,
-    color: THEME.textMuted,
-    textAlign: 'center',
-    paddingVertical: 24,
-    fontStyle: 'italic',
-  },
-  listContainer: {
-    marginBottom: 16,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    marginBottom: 10,
-    backgroundColor: THEME.card,
-    borderRadius: 8,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  rowContent: {
-    flex: 1,
-  },
-  exercise: { 
-    fontSize: 16, 
-    fontWeight: '600', 
-    color: THEME.textPrimary,
-    marginBottom: 4,
-  },
-  value: { 
-    fontSize: 14, 
-    color: THEME.primary, 
-    fontWeight: '500' 
-  },
-  button: {
-    backgroundColor: THEME.secondary,
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 6,
-    marginLeft: 12,
-  },
-  buttonText: { 
-    color: THEME.textOnSecondary, 
-    fontWeight: '600',
-    fontSize: 13,
-  },
-});
 
 export default My1RMs;

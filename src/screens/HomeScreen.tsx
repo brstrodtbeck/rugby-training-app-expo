@@ -6,7 +6,8 @@ import { Calendar } from 'react-native-calendars';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
-import { THEME } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
+import { useThemedStyles } from '../theme/useThemedStyles';
 
 // Import all programs
 import rugbyData from '../data/rugbyProgram.json';
@@ -99,30 +100,47 @@ function daysBetweenYMD(startYMD: string, endYMD: string): number {
   return Math.round((end.getTime() - start.getTime()) / msPerDay);
 }
 
-// Get session type color
-function getSessionTypeColor(sessionTitle: string): string {
-  const lower = sessionTitle.toLowerCase();
-  if (lower.includes('strength') || lower.includes('squat') || lower.includes('deadlift') || lower.includes('press')) {
-    return THEME.error; // Red for strength
-  }
-  if (lower.includes('recovery') || lower.includes('mobility') || lower.includes('yoga') || lower.includes('foam')) {
-    return THEME.primary; // Green for recovery
-  }
-  if (lower.includes('conditioning') || lower.includes('cardio') || lower.includes('interval') || lower.includes('circuit')) {
-    return THEME.secondary; // Blue for conditioning
-  }
-  return THEME.textMuted; // Default gray
-}
-
-// Get readiness badge
-function getReadinessBadge(readiness: number | null): { emoji: string; color: string } {
-  if (!readiness) return { emoji: '◇', color: THEME.textMuted };
-  if (readiness >= 8) return { emoji: '⚡', color: THEME.readinessHigh };
-  if (readiness <= 3) return { emoji: '◇', color: THEME.readinessLow };
-  return { emoji: '▲', color: THEME.readinessMedium };
-}
-
 export default function HomeScreen({ navigation }: Props) {
+  const { theme } = useTheme();
+  
+  // Get session type color
+  const getSessionTypeColor = useCallback((sessionTitle: string): string => {
+    const lower = sessionTitle.toLowerCase();
+    if (lower.includes('strength') || lower.includes('squat') || lower.includes('deadlift') || lower.includes('press')) {
+      return theme.error; // Red for strength
+    }
+    if (lower.includes('recovery') || lower.includes('mobility') || lower.includes('yoga') || lower.includes('foam')) {
+      return theme.primary; // Green for recovery
+    }
+    if (lower.includes('conditioning') || lower.includes('cardio') || lower.includes('interval') || lower.includes('circuit')) {
+      return theme.secondary; // Blue for conditioning
+    }
+    return theme.textMuted; // Default gray
+  }, [theme]);
+
+  // Get readiness badge
+  const getReadinessBadge = useCallback((readiness: number | null): { emoji: string; color: string } => {
+    if (!readiness) return { emoji: '◇', color: theme.textMuted };
+    if (readiness >= 8) return { emoji: '⚡', color: theme.readinessHigh };
+    if (readiness <= 3) return { emoji: '◇', color: theme.readinessLow };
+    return { emoji: '▲', color: theme.readinessMedium };
+  }, [theme]);
+  
+  // Add help button to header
+  React.useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Help')}
+          style={{ marginRight: 16 }}
+          activeOpacity={0.7}
+        >
+          <Text style={{ fontSize: 24 }}>❓</Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
   const [startDateYMD, setStartDateYMD] = useState<string | null>(null);
   const [completedSessions, setCompletedSessions] = useState<{ id: string; date: string }[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -130,7 +148,7 @@ export default function HomeScreen({ navigation }: Props) {
   const [pickerDate, setPickerDate] = useState<Date>(new Date());
   const [selectedProgramId, setSelectedProgramId] = useState<string>('rugby');
   const [showProgramPicker, setShowProgramPicker] = useState(false);
-  const [todaySessionExpanded, setTodaySessionExpanded] = useState(false);
+  const [todaySessionExpanded, setTodaySessionExpanded] = useState(true);
   const [readinessScore, setReadinessScore] = useState<number | null>(null);
   const [calendarExpanded, setCalendarExpanded] = useState(false);
   const [showSwapModal, setShowSwapModal] = useState(false);
@@ -140,6 +158,7 @@ export default function HomeScreen({ navigation }: Props) {
   const [showPushModal, setShowPushModal] = useState(false);
   const [programOffset, setProgramOffset] = useState<number>(0);
   const [pendingPushDate, setPendingPushDate] = useState<string | null>(null);
+  const [selectedMissedSessions, setSelectedMissedSessions] = useState<Set<string>>(new Set());
   const [showRecoveryModal, setShowRecoveryModal] = useState(false);
   const [recoveryModalDate, setRecoveryModalDate] = useState<string | null>(null);
 
@@ -411,10 +430,8 @@ export default function HomeScreen({ navigation }: Props) {
     return 100;
   };
 
-  // Handle day press → compute sessionId based on date-only offset
+  // Handle day press → show preview instead of navigating immediately
   const handleDayPress = (day: { dateString: string }) => {
-    setSelectedDate(day.dateString);
-
     if (!startDateYMD) {
       Alert.alert(
         'Set Start Date',
@@ -433,88 +450,17 @@ export default function HomeScreen({ navigation }: Props) {
     if (offsetDays < 0) {
       Alert.alert(
         'Before Program Start',
-        'This date is before your program start date. Please select a date on or after your start date.'
+        `This date is before your program start date. Please select a date on or after your start date.\n\nStart Date: ${startDateYMD}\nSelected: ${day.dateString}`
       );
       return;
     }
 
-    // Calculate program week (1-indexed) and day within week
-    let programWeek: number;
-    let dayNumber: number;
-    
-    // Special handling for Hypertrophy Month (3-day per week: Mon-Wed-Fri pattern)
-    if (selectedProgramId === 'hypertrophy') {
-      // For 3-day programs: Day 1 = start date, Day 2 = +2 days, Day 3 = +4 days, then repeat weekly
-      const daysInCycle = offsetDays % 7;
-      programWeek = Math.floor(offsetDays / 7) + 1;
-      
-      // Map to program days: 0,2,4 → 1,2,3; others are rest days
-      if (daysInCycle === 0) {
-        dayNumber = 1; // Start date (Day 1)
-      } else if (daysInCycle === 2) {
-        dayNumber = 2; // +2 days (Day 2)
-      } else if (daysInCycle === 4) {
-        dayNumber = 3; // +4 days (Day 3)
-      } else {
-        // Rest day - show recovery options
-        setShowRecoveryModal(true);
-        setRecoveryModalDate(day.dateString);
-        return;
-      }
-    } else {
-      // Standard 7-day week calculation for other programs
-      programWeek = Math.floor(offsetDays / 7) + 1;
-      dayNumber = (offsetDays % 7) + 1;
-    }
+    // Just set the selected date - preview will show
+    setSelectedDate(day.dateString);
+  };
 
-    // Check if we're within the program length
-    const totalWeeks = programData.macrocycle?.lengthWeeks || (programData as any).macrocycle?.lengthWeeks || 4;
-    if (programWeek > totalWeeks) {
-      Alert.alert(
-        'Beyond Program',
-        `Week ${programWeek} is beyond the ${totalWeeks}-week program. Consider restarting or extending.`
-      );
-      return;
-    }
-
-    // Find the correct mesocycle
-    const mesoInfo = getMesocycleForWeek(programWeek);
-    if (!mesoInfo) {
-      console.error('Could not find mesocycle for week:', programWeek);
-      // Show recovery workout options instead of error
-      setShowRecoveryModal(true);
-      setRecoveryModalDate(day.dateString);
-      return;
-    }
-
-    // Check if day exists in the mesocycle
-    const mesocycles = getMesocycles();
-    const meso = mesocycles.find(m => m.id === mesoInfo.mesoId);
-    if (!meso) {
-      setShowRecoveryModal(true);
-      setRecoveryModalDate(day.dateString);
-      return;
-    }
-
-    const trainingDays = (meso as any).trainingDays || (meso as any).microcycle;
-    const dayExists = trainingDays?.some((d: any) => (d.day === dayNumber || d.dayNumber === dayNumber));
-    
-    if (!dayExists) {
-      // No session scheduled for this day - show recovery options
-      setShowRecoveryModal(true);
-      setRecoveryModalDate(day.dateString);
-      return;
-    }
-
-    // Generate session ID using the utility function
-    const sessionId = generateSessionId(mesoInfo.mesoId, mesoInfo.weekInMeso, dayNumber);
-
-    console.log('➡️ Navigating to session:', sessionId, {
-      programWeek,
-      dayNumber,
-      mesoId: mesoInfo.mesoId,
-      weekInMeso: mesoInfo.weekInMeso,
-    });
+  // Handle navigation to session from preview
+  const handleViewSession = (sessionId: string) => {
     navigation.navigate('Session', { sessionId });
   };
 
@@ -558,7 +504,16 @@ export default function HomeScreen({ navigation }: Props) {
     const ymd = formatYMD(date);
     setStartDateYMD(ymd);
     await AsyncStorage.setItem('startDateYMD', ymd);
-    console.log('📅 Start date set (YMD):', ymd);
+    
+    // Reset program offset when setting a new start date to ensure clean calculation
+    // Only reset if offset is not 0 (to avoid unnecessary writes)
+    if (programOffset !== 0) {
+      setProgramOffset(0);
+      await AsyncStorage.setItem('programOffset', '0');
+      console.log('📅 Reset programOffset to 0 when setting start date');
+    }
+    
+    console.log('📅 Start date set (YMD):', ymd, 'programOffset:', programOffset);
   };
 
   // Handle Done button (iOS)
@@ -566,9 +521,21 @@ export default function HomeScreen({ navigation }: Props) {
     // Check if we're pushing workouts to this date
     if (pendingPushDate !== null) {
       const targetYMD = formatYMD(pickerDate);
-      await executePushWorkouts(targetYMD);
-      setPendingPushDate(null);
-      setShowPicker(false);
+      // Show confirmation alert for custom date push
+      Alert.alert(
+        'Push Workouts',
+        `Push ${selectedMissedSessions.size} selected workout(s) to ${parseYMD(targetYMD).toLocaleDateString()}?`,
+        [
+          { text: 'Cancel', style: 'cancel', onPress: () => setShowPicker(false) },
+          {
+            text: 'Push',
+            onPress: async () => {
+              await executePushWorkouts(targetYMD);
+              setShowPicker(false);
+            },
+          },
+        ]
+      );
     } else {
       // Save whatever date is currently in the picker
       await saveStartDate(pickerDate);
@@ -582,16 +549,6 @@ export default function HomeScreen({ navigation }: Props) {
     navigation.navigate('Session', { sessionId: todaySession.sessionId });
   };
 
-  // Handle reschedule
-  const handleReschedule = () => {
-    Alert.alert('Reschedule', 'Select a new date for this session', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Select Date', onPress: () => {
-        // For now, just open calendar. Can be enhanced with drag-and-drop
-        setShowPicker(true);
-      }},
-    ]);
-  };
 
   // Get missed/incomplete sessions
   const getMissedSessions = useMemo(() => {
@@ -655,20 +612,50 @@ export default function HomeScreen({ navigation }: Props) {
       Alert.alert('No Missed Workouts', 'All workouts are up to date!');
       return;
     }
+    // Initialize with all sessions selected
+    setSelectedMissedSessions(new Set(missed.map(s => s.sessionId)));
     setShowPushModal(true);
+  };
+
+  // Toggle selection of a missed session
+  const toggleMissedSessionSelection = (sessionId: string) => {
+    setSelectedMissedSessions(prev => {
+      const next = new Set(prev);
+      if (next.has(sessionId)) {
+        next.delete(sessionId);
+      } else {
+        next.add(sessionId);
+      }
+      return next;
+    });
+  };
+
+  // Toggle select all missed sessions
+  const toggleSelectAllMissedSessions = () => {
+    const missed = getMissedSessions;
+    if (selectedMissedSessions.size === missed.length) {
+      setSelectedMissedSessions(new Set());
+    } else {
+      setSelectedMissedSessions(new Set(missed.map(s => s.sessionId)));
+    }
   };
 
   // Execute push workouts
   const executePushWorkouts = async (targetDate: string) => {
     const missed = getMissedSessions;
-    if (missed.length === 0) return;
+    const selected = missed.filter(s => selectedMissedSessions.has(s.sessionId));
+    
+    if (selected.length === 0) {
+      Alert.alert('No Sessions Selected', 'Please select at least one session to push.');
+      return;
+    }
     
     const todayYMD = formatYMD(new Date());
     const targetYMD = targetDate || todayYMD;
     
     // Calculate how many days to push forward
-    // Find the earliest missed session date
-    const earliestMissed = missed[0].shouldHaveBeen;
+    // Find the earliest selected missed session date
+    const earliestMissed = selected[0].shouldHaveBeen;
     const daysToPush = daysBetweenYMD(earliestMissed, targetYMD);
     
     if (daysToPush < 0) {
@@ -683,11 +670,13 @@ export default function HomeScreen({ navigation }: Props) {
     
     Alert.alert(
       'Workouts Pushed!',
-      `${missed.length} missed workout(s) have been rescheduled. The program will continue from the new position.`,
+      `${selected.length} missed workout(s) have been rescheduled. The program will continue from the new position.`,
       [{ text: 'OK' }]
     );
     
     setShowPushModal(false);
+    setSelectedMissedSessions(new Set());
+    setPendingPushDate(null);
   };
 
   // Load swapped sessions and readiness score from storage
@@ -921,7 +910,7 @@ export default function HomeScreen({ navigation }: Props) {
 
   const weeklyDates = getWeeklyDates();
 
-  // Get session for a specific date
+  // Get session for a specific date (basic info for calendar)
   const getSessionForDate = (dateYMD: string): { sessionId: string; title: string } | null => {
     if (!startDateYMD) return null;
     const offsetDays = daysBetweenYMD(startDateYMD, dateYMD) - programOffset;
@@ -975,6 +964,1037 @@ export default function HomeScreen({ navigation }: Props) {
       title: day.title || `Day ${dayNumber}`,
     };
   };
+
+  // Get full session details for selected date (for preview)
+  const selectedDateSession = useMemo(() => {
+    if (!selectedDate || !startDateYMD) return null;
+    
+    const offsetDays = daysBetweenYMD(startDateYMD, selectedDate) - programOffset;
+    
+    if (offsetDays < 0) return null; // Before program start
+    
+    // Special handling for Hypertrophy Month (3-day per week: Mon-Wed-Fri pattern)
+    let programWeek: number;
+    let dayNumber: number;
+    
+    if (selectedProgramId === 'hypertrophy') {
+      const daysInCycle = offsetDays % 7;
+      programWeek = Math.floor(offsetDays / 7) + 1;
+      
+      if (daysInCycle === 0) {
+        dayNumber = 1;
+      } else if (daysInCycle === 2) {
+        dayNumber = 2;
+      } else if (daysInCycle === 4) {
+        dayNumber = 3;
+      } else {
+        return null; // Rest day
+      }
+    } else {
+      programWeek = Math.floor(offsetDays / 7) + 1;
+      dayNumber = (offsetDays % 7) + 1;
+    }
+    
+    const totalWeeks = currentProgram.weeks || programData.macrocycle?.lengthWeeks || (programData as any).macrocycle?.lengthWeeks || 4;
+    if (programWeek > totalWeeks) return null;
+    
+    const mesoInfo = getMesocycleForWeek(programWeek);
+    if (!mesoInfo) return null;
+    
+    const sessionId = generateSessionId(mesoInfo.mesoId, mesoInfo.weekInMeso, dayNumber);
+    const mesocycles = getMesocycles();
+    const meso = mesocycles.find((m: any) => m.id === mesoInfo.mesoId);
+    if (!meso) return null;
+    
+    const trainingDays = (meso as any).trainingDays || (meso as any).microcycle || [];
+    const day = trainingDays.find((d: any) => (d.day === dayNumber || d.dayNumber === dayNumber));
+    if (!day) return null;
+    
+    return {
+      sessionId,
+      title: day.title || `Day ${dayNumber}`,
+      durationMinutes: day.durationMinutes || 60,
+      blocks: day.blocks || [],
+      date: selectedDate,
+    };
+  }, [selectedDate, startDateYMD, programOffset, programData, currentProgram, selectedProgramId]);
+
+  const styles = useThemedStyles((theme) => StyleSheet.create({
+    container: { flex: 1, backgroundColor: theme.background },
+    scrollContent: { padding: 20 },
+  
+  // Program Selector Styles
+  programSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.card,
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: theme.primary,
+    shadowColor: theme.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  programSelectorContent: {
+    flex: 1,
+  },
+  programSelectorLabel: {
+    fontSize: 11,
+    color: theme.secondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 2,
+    fontWeight: '600',
+  },
+  programSelectorTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: theme.primary,
+  },
+  programSelectorMeta: {
+    fontSize: 12,
+    color: theme.textMuted,
+    marginTop: 2,
+  },
+  programSelectorArrow: {
+    fontSize: 14,
+    color: theme.primary,
+    marginLeft: 8,
+    fontWeight: '700',
+  },
+
+  // Today's Session Card
+  todayCard: {
+    backgroundColor: theme.card,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: theme.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  todayCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+    gap: 12,
+  },
+  todayCardTitleContainer: {
+    flex: 1,
+    flexShrink: 1,
+    marginRight: 8,
+  },
+  todayCardLabel: {
+    fontSize: 11,
+    color: theme.secondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+    fontWeight: '600',
+  },
+  todayCardTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: theme.primary,
+    flexShrink: 1,
+  },
+  sessionTypeBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    flexShrink: 0,
+  },
+  sessionTypeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  todayCardDetails: {
+    flexDirection: 'row',
+    gap: 20,
+    marginBottom: 16,
+  },
+  todayCardDetailItem: {
+    flex: 1,
+  },
+  todayCardDetailLabel: {
+    fontSize: 12,
+    color: theme.textMuted,
+    marginBottom: 2,
+  },
+  todayCardDetailValue: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: theme.textPrimary,
+  },
+  todayCardInstructions: {
+    backgroundColor: theme.backgroundLight,
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  instructionsTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: theme.primary,
+    marginBottom: 8,
+  },
+  instructionItem: {
+    fontSize: 13,
+    color: theme.textSecondary,
+    marginBottom: 4,
+  },
+  todayCardActions: {
+    gap: 10,
+  },
+  startButton: {
+    backgroundColor: theme.primary,
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  startButtonText: {
+    color: theme.textOnPrimary,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  quickActions: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 12,
+  },
+  quickActionButton: {
+    flex: 1,
+    backgroundColor: theme.card,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: theme.borderLight,
+    shadowColor: theme.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+    minHeight: 56,
+  },
+  quickActionButtonUndo: {
+    backgroundColor: theme.primaryFaded,
+    borderColor: theme.primary + '40',
+  },
+  quickActionIcon: {
+    fontSize: 18,
+    marginBottom: 4,
+  },
+  quickActionText: {
+    color: theme.textPrimary,
+    fontSize: 11,
+    fontWeight: '600',
+    textAlign: 'center',
+    letterSpacing: 0.2,
+  },
+  expandButton: {
+    marginTop: 12,
+    paddingVertical: 8,
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: theme.borderLight,
+  },
+  expandButtonText: {
+    color: theme.secondary,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+
+  // Start Date Button
+  startDateButton: {
+    backgroundColor: theme.card,
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: theme.secondary,
+  },
+  startDateButtonSet: {
+    borderColor: theme.border,
+    backgroundColor: theme.backgroundLight,
+  },
+  startDateButtonText: {
+    color: theme.secondary,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  startDateButtonTextSet: {
+    color: theme.textSecondary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+
+  // Date Picker Modal
+  datePickerModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  datePickerModalContent: {
+    backgroundColor: theme.card,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
+    minHeight: 300,
+  },
+  datePickerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.borderLight,
+    marginBottom: 10,
+  },
+  datePickerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: theme.primary,
+  },
+  datePickerCloseButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  datePickerCloseText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.secondary,
+  },
+  datePickerContainer: {
+    width: '100%',
+    height: 220,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.card,
+  },
+  datePicker: {
+    width: '100%',
+    height: 220,
+  },
+
+  // Calendar Section
+  calendarSection: {
+    marginBottom: 20,
+  },
+  calendarSectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: theme.primary,
+    marginBottom: 12,
+  },
+  weeklyCalendar: {
+    paddingVertical: 8,
+  },
+  calendarDay: {
+    width: DAY_WIDTH - 8,
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    marginHorizontal: 4,
+    backgroundColor: theme.card,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: theme.border,
+  },
+  calendarDayToday: {
+    backgroundColor: theme.primaryFaded,
+    borderColor: theme.primary,
+    borderWidth: 2,
+  },
+  calendarDaySelected: {
+    backgroundColor: theme.secondaryFaded,
+    borderColor: theme.secondary,
+  },
+  calendarDayName: {
+    fontSize: 11,
+    color: theme.textMuted,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  calendarDayNameToday: {
+    color: theme.primary,
+  },
+  calendarDayNumber: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: theme.textPrimary,
+    marginBottom: 6,
+  },
+  calendarDayNumberToday: {
+    color: theme.primary,
+  },
+  sessionIndicator: {
+    width: '80%',
+    height: 3,
+    borderRadius: 2,
+    marginBottom: 4,
+  },
+  completionOverlay: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: theme.primary,
+    borderRadius: 8,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+  },
+  completionText: {
+    fontSize: 9,
+    color: theme.textOnPrimary,
+    fontWeight: '700',
+  },
+  readinessBadge: {
+    fontSize: 14,
+    marginTop: 2,
+  },
+
+  // Full Calendar
+  fullCalendarSection: {
+    marginBottom: 20,
+  },
+  calendarToggleButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: theme.card,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: theme.border,
+  },
+  calendarToggleIcon: {
+    fontSize: 16,
+    color: theme.secondary,
+    fontWeight: '700',
+  },
+
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalHeader: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.borderLight,
+    position: 'relative',
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    color: theme.textSecondary,
+    marginTop: 4,
+  },
+  modalContent: {
+    backgroundColor: theme.card,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    maxHeight: '70%',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 16,
+    textAlign: 'center',
+    color: theme.primary,
+  },
+  programOption: {
+    backgroundColor: theme.backgroundLight,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 10,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    position: 'relative',
+  },
+  programOptionSelected: {
+    backgroundColor: theme.primaryFaded,
+    borderColor: theme.primary,
+  },
+  programOptionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.textPrimary,
+    marginBottom: 4,
+  },
+  programOptionTitleSelected: {
+    color: theme.primary,
+  },
+  programOptionDesc: {
+    fontSize: 13,
+    color: theme.textSecondary,
+    marginBottom: 4,
+  },
+  programOptionWeeks: {
+    fontSize: 12,
+    color: theme.textMuted,
+    fontWeight: '500',
+  },
+  programOptionCheck: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    fontSize: 18,
+    color: theme.primary,
+    fontWeight: '700',
+  },
+  modalCloseButton: {
+    backgroundColor: theme.backgroundDark,
+    borderRadius: 12,
+    padding: 14,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  modalCloseButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.textSecondary,
+  },
+
+  // Swap Modal Styles
+  swapModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  swapModalContent: {
+    backgroundColor: theme.background,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '90%',
+    paddingBottom: 20,
+  },
+  swapModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.border,
+  },
+  swapModalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: theme.primary,
+  },
+  swapModalCloseButton: {
+    padding: 8,
+  },
+  swapModalCloseText: {
+    fontSize: 24,
+    color: theme.textSecondary,
+    fontWeight: '300',
+  },
+  suggestedSection: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.border,
+  },
+  suggestedTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.primary,
+    marginBottom: 12,
+  },
+  suggestedScroll: {
+    marginHorizontal: -20,
+    paddingHorizontal: 20,
+  },
+  suggestedCard: {
+    backgroundColor: theme.card,
+    padding: 16,
+    borderRadius: 12,
+    marginRight: 12,
+    borderWidth: 2,
+    minWidth: 180,
+  },
+  suggestedCardTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: theme.textPrimary,
+    marginBottom: 4,
+  },
+  suggestedCardMeta: {
+    fontSize: 12,
+    color: theme.textSecondary,
+  },
+  swapFilters: {
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.border,
+  },
+  swapSearchInput: {
+    backgroundColor: theme.card,
+    borderWidth: 1,
+    borderColor: theme.border,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    color: theme.textPrimary,
+    marginBottom: 12,
+  },
+  filterButtons: {
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  filterButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: theme.card,
+    borderWidth: 1,
+    borderColor: theme.border,
+  },
+  filterButtonActive: {
+    backgroundColor: theme.primary,
+    borderColor: theme.primary,
+  },
+  filterButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.textSecondary,
+  },
+  filterButtonTextActive: {
+    color: theme.textOnPrimary,
+  },
+  swapListContent: {
+    padding: 20,
+    paddingTop: 0,
+  },
+  swapSessionCard: {
+    backgroundColor: theme.card,
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: theme.border,
+  },
+  swapSessionCardSuggested: {
+    borderWidth: 2,
+    borderColor: theme.primary,
+  },
+  swapSessionCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  swapSessionCardTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: theme.textPrimary,
+    flex: 1,
+    marginRight: 12,
+  },
+  swapSessionTypeBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  swapSessionTypeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  swapSessionCardMeta: {
+    fontSize: 14,
+    color: theme.textSecondary,
+  },
+  swapEmptyContainer: {
+    padding: 40,
+    alignItems: 'center',
+  },
+  swapEmptyText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.textSecondary,
+    marginBottom: 8,
+  },
+  swapEmptySubtext: {
+    fontSize: 14,
+    color: theme.textMuted,
+  },
+
+  // Push Workouts Modal Styles
+  pushModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  pushModalContent: {
+    backgroundColor: theme.background,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '90%',
+    paddingBottom: 20,
+  },
+  pushModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.border,
+  },
+  pushModalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: theme.primary,
+  },
+  pushModalCloseButton: {
+    padding: 8,
+  },
+  pushModalCloseText: {
+    fontSize: 24,
+    color: theme.textSecondary,
+    fontWeight: '300',
+  },
+  pushModalInfo: {
+    padding: 20,
+    backgroundColor: theme.primaryFaded,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.border,
+  },
+  pushModalInfoText: {
+    fontSize: 14,
+    color: theme.textPrimary,
+    lineHeight: 20,
+  },
+  pushListContainer: {
+    maxHeight: 200,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: theme.border,
+    borderRadius: 8,
+    backgroundColor: theme.background,
+  },
+  pushListContent: {
+    paddingVertical: 10,
+  },
+  pushSessionCard: {
+    backgroundColor: theme.card,
+    borderRadius: 8,
+    padding: 10,
+    marginHorizontal: 10,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: theme.border,
+  },
+  pushSessionCardSelected: {
+    borderColor: theme.primary,
+    backgroundColor: theme.primaryFaded,
+  },
+  pushSessionCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  pushSessionCheckbox: {
+    marginRight: 10,
+  },
+  pushSessionCheckboxText: {
+    fontSize: 20,
+    color: theme.textPrimary,
+  },
+  pushSessionCardText: {
+    flex: 1,
+  },
+  pushSessionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: theme.textPrimary,
+    marginBottom: 4,
+  },
+  pushSessionDate: {
+    fontSize: 12,
+    color: theme.textSecondary,
+  },
+  pushEmptyContainer: {
+    padding: 40,
+    alignItems: 'center',
+  },
+  pushEmptyText: {
+    fontSize: 16,
+    color: theme.textMuted,
+  },
+  pushDateSection: {
+    padding: 20,
+    borderTopWidth: 1,
+    borderTopColor: theme.border,
+  },
+  pushDateLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.textPrimary,
+    marginBottom: 12,
+  },
+  pushDateButton: {
+    backgroundColor: theme.primary,
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  pushDateButtonSecondary: {
+    backgroundColor: theme.card,
+    borderWidth: 1,
+    borderColor: theme.border,
+  },
+  pushDateButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: theme.textOnPrimary,
+  },
+  pushDateButtonTextSecondary: {
+    color: theme.textPrimary,
+  },
+  pushHelperText: {
+    fontSize: 14,
+    color: theme.textSecondary,
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  pushSelectedCount: {
+    fontSize: 16,
+    color: theme.textPrimary,
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  selectAllButton: {
+    padding: 8,
+    backgroundColor: theme.secondary,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 10,
+    marginHorizontal: 10,
+  },
+  selectAllButtonText: {
+    color: theme.textOnSecondary,
+    fontWeight: 'bold',
+  },
+
+  // Other Actions
+  otherActions: {
+    gap: 12,
+    marginTop: 8,
+  },
+  actionButton: {
+    backgroundColor: theme.secondary,
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  actionButtonSecondary: {
+    backgroundColor: theme.card,
+    borderWidth: 2,
+    borderColor: theme.accentMuted,
+  },
+  actionButtonText: {
+    color: theme.textOnSecondary,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  actionButtonTextSecondary: {
+    color: theme.textSecondary,
+  },
+  disabledButton: {
+    opacity: 0.6,
+  },
+  
+  // Recovery Modal Styles
+  recoveryWorkoutList: {
+    padding: 16,
+  },
+  recoveryWorkoutCard: {
+    backgroundColor: theme.card,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: theme.borderLight,
+    shadowColor: theme.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  recoveryWorkoutHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  recoveryWorkoutTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: theme.textPrimary,
+    flex: 1,
+  },
+  recoveryWorkoutDuration: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.primary,
+  },
+  recoveryWorkoutDescription: {
+    fontSize: 14,
+    color: theme.textSecondary,
+    lineHeight: 20,
+    marginBottom: 12,
+  },
+  recoveryWorkoutMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  recoveryWorkoutBadge: {
+    backgroundColor: theme.secondary + '20',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  recoveryWorkoutBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: theme.secondary,
+  },
+
+  // Start Date Banner Styles
+  startDateBanner: {
+    backgroundColor: theme.secondary,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: theme.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  startDateBannerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  startDateBannerIcon: {
+    fontSize: 28,
+  },
+  startDateBannerTextContainer: {
+    flex: 1,
+  },
+  startDateBannerTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: theme.textOnSecondary,
+    marginBottom: 4,
+  },
+  startDateBannerSubtitle: {
+    fontSize: 13,
+    color: theme.textOnSecondary,
+    opacity: 0.9,
+    lineHeight: 18,
+  },
+  startDateBannerArrow: {
+    fontSize: 20,
+    color: theme.textOnSecondary,
+    fontWeight: '700',
+  },
+
+  // Selected Date Preview Card Styles
+  previewCard: {
+    backgroundColor: theme.card,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    marginTop: 8,
+    shadowColor: theme.shadow,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+    borderWidth: 2,
+    borderColor: theme.secondary,
+  },
+  previewCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+    gap: 12,
+  },
+  previewCardTitleContainer: {
+    flex: 1,
+    flexShrink: 1,
+    marginRight: 8,
+  },
+  previewCardLabel: {
+    fontSize: 11,
+    color: theme.secondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+    fontWeight: '600',
+  },
+  previewCardTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: theme.primary,
+    flexShrink: 1,
+  },
+  previewCardDetails: {
+    flexDirection: 'row',
+    gap: 20,
+    marginBottom: 16,
+  },
+  previewCardDetailItem: {
+    flex: 1,
+  },
+  previewCardDetailLabel: {
+    fontSize: 12,
+    color: theme.textMuted,
+    marginBottom: 2,
+  },
+  previewCardDetailValue: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: theme.textPrimary,
+  },
+  previewCardInstructions: {
+    backgroundColor: theme.backgroundLight,
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  previewViewButton: {
+    backgroundColor: theme.secondary,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  previewViewButtonText: {
+    color: theme.textOnSecondary,
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  }));
 
   return (
     <SafeAreaView style={styles.container}>
@@ -1039,6 +2059,24 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         </Modal>
 
+        {/* Start Date Banner - Shows when start date is not set */}
+        {!startDateYMD && (
+          <TouchableOpacity 
+            style={styles.startDateBanner}
+            onPress={handleOpenPicker}
+            activeOpacity={0.8}
+          >
+            <View style={styles.startDateBannerContent}>
+              <Text style={styles.startDateBannerIcon}>📅</Text>
+              <View style={styles.startDateBannerTextContainer}>
+                <Text style={styles.startDateBannerTitle}>Set Your Program Start Date</Text>
+                <Text style={styles.startDateBannerSubtitle}>Tap to select when you want to begin your training program</Text>
+              </View>
+              <Text style={styles.startDateBannerArrow}>→</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+
         {/* Today's Session Card */}
         {todaySession && (
           <View style={styles.todayCard}>
@@ -1093,14 +2131,6 @@ export default function HomeScreen({ navigation }: Props) {
               <View style={styles.quickActions}>
                 <TouchableOpacity 
                   style={styles.quickActionButton} 
-                  onPress={handleReschedule}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.quickActionIcon}>📅</Text>
-                  <Text style={styles.quickActionText}>Reschedule</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={styles.quickActionButton} 
                   onPress={handleSwap}
                   activeOpacity={0.7}
                 >
@@ -1140,18 +2170,6 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         )}
 
-        {/* Pick Start Date Button */}
-        <TouchableOpacity 
-          style={styles.startDateButton}
-          onPress={handleOpenPicker}
-        >
-          <Text style={styles.startDateButtonText}>
-            {startDateYMD 
-              ? `📅 Start Date: ${parseYMD(startDateYMD).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
-              : '📅 Select Start Date'}
-          </Text>
-        </TouchableOpacity>
-
         {/* Weekly Calendar Strip */}
         <View style={styles.calendarSection}>
           <Text style={styles.calendarSectionTitle}>This Week</Text>
@@ -1168,7 +2186,7 @@ export default function HomeScreen({ navigation }: Props) {
               const date = parseYMD(dateYMD);
               const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
               const dayNumber = date.getDate();
-              const sessionColor = session ? getSessionTypeColor(session.title) : THEME.textMuted;
+              const sessionColor = session ? getSessionTypeColor(session.title) : theme.textMuted;
               const badge = readinessScore !== null ? getReadinessBadge(readinessScore) : null;
 
               return (
@@ -1208,6 +2226,56 @@ export default function HomeScreen({ navigation }: Props) {
           </ScrollView>
         </View>
 
+        {/* Selected Date Preview Card */}
+        {selectedDate && selectedDateSession && (
+          <View style={styles.previewCard}>
+            <View style={styles.previewCardHeader}>
+              <View style={styles.previewCardTitleContainer}>
+                <Text style={styles.previewCardLabel}>
+                  {parseYMD(selectedDate).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                </Text>
+                <Text style={styles.previewCardTitle} numberOfLines={2} ellipsizeMode="tail">
+                  {selectedDateSession.title}
+                </Text>
+              </View>
+              <View style={[styles.sessionTypeBadge, { backgroundColor: getSessionTypeColor(selectedDateSession.title) + '20' }]}>
+                <Text style={[styles.sessionTypeText, { color: getSessionTypeColor(selectedDateSession.title) }]}>
+                  {selectedDateSession.title.includes('Recovery') || selectedDateSession.title.includes('Mobility') ? 'Recovery' :
+                   selectedDateSession.title.includes('Conditioning') || selectedDateSession.title.includes('Cardio') ? 'Conditioning' :
+                   'Strength'}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.previewCardDetails}>
+              <View style={styles.previewCardDetailItem}>
+                <Text style={styles.previewCardDetailLabel}>Duration</Text>
+                <Text style={styles.previewCardDetailValue}>{selectedDateSession.durationMinutes} min</Text>
+              </View>
+            </View>
+
+            {/* Session Overview */}
+            {selectedDateSession.blocks && selectedDateSession.blocks.length > 0 && (
+              <View style={styles.previewCardInstructions}>
+                <Text style={styles.instructionsTitle}>Session Overview</Text>
+                {selectedDateSession.blocks.slice(0, 3).map((block: any, idx: number) => (
+                  <Text key={idx} style={styles.instructionItem}>
+                    • {block.name}
+                  </Text>
+                ))}
+              </View>
+            )}
+
+            {/* View Session Button */}
+            <TouchableOpacity 
+              style={styles.previewViewButton} 
+              onPress={() => handleViewSession(selectedDateSession.sessionId)}
+            >
+              <Text style={styles.previewViewButtonText}>View Full Session</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
         {/* Full Calendar (Collapsible) */}
         <View style={styles.fullCalendarSection}>
           <TouchableOpacity
@@ -1229,10 +2297,10 @@ export default function HomeScreen({ navigation }: Props) {
                     if (date) {
                       marks[date] = {
                         marked: true,
-                        dotColor: THEME.primary,
+                        dotColor: theme.primary,
                         customStyles: {
-                          container: { backgroundColor: THEME.primaryFaded },
-                          text: { color: THEME.textPrimary },
+                          container: { backgroundColor: theme.primaryFaded },
+                          text: { color: theme.textPrimary },
                         },
                       };
                     }
@@ -1242,7 +2310,7 @@ export default function HomeScreen({ navigation }: Props) {
                   marks[selectedDate] = {
                     ...marks[selectedDate],
                     selected: true,
-                    selectedColor: THEME.secondary,
+                    selectedColor: theme.secondary,
                   };
                 }
                 return marks;
@@ -1264,7 +2332,9 @@ export default function HomeScreen({ navigation }: Props) {
             <View style={styles.datePickerModalOverlay}>
               <View style={styles.datePickerModalContent}>
                 <View style={styles.datePickerHeader}>
-                  <Text style={styles.datePickerTitle}>Select Start Date</Text>
+                  <Text style={styles.datePickerTitle}>
+                    {pendingPushDate !== null ? 'Select Push Date' : 'Select Start Date'}
+                  </Text>
                   <TouchableOpacity
                     onPress={handleDatePickerDone}
                     style={styles.datePickerCloseButton}
@@ -1279,7 +2349,7 @@ export default function HomeScreen({ navigation }: Props) {
                     display="spinner"
                     onChange={handleDateChange}
                     style={styles.datePicker}
-                    textColor={THEME.textPrimary}
+                    textColor={theme.textPrimary}
                     themeVariant="light"
                   />
                 </View>
@@ -1354,7 +2424,7 @@ export default function HomeScreen({ navigation }: Props) {
                 <TextInput
                   style={styles.swapSearchInput}
                   placeholder="Search sessions..."
-                  placeholderTextColor={THEME.textMuted}
+                  placeholderTextColor={theme.textMuted}
                   value={swapSearchQuery}
                   onChangeText={setSwapSearchQuery}
                 />
@@ -1436,7 +2506,11 @@ export default function HomeScreen({ navigation }: Props) {
           visible={showPushModal}
           transparent
           animationType="slide"
-          onRequestClose={() => setShowPushModal(false)}
+          onRequestClose={() => {
+            setShowPushModal(false);
+            setSelectedMissedSessions(new Set());
+            setPendingPushDate(null);
+          }}
         >
           <View style={styles.pushModalOverlay}>
             <View style={styles.pushModalContent}>
@@ -1444,7 +2518,11 @@ export default function HomeScreen({ navigation }: Props) {
               <View style={styles.pushModalHeader}>
                 <Text style={styles.pushModalTitle}>Push Missed Workouts</Text>
                 <TouchableOpacity
-                  onPress={() => setShowPushModal(false)}
+                  onPress={() => {
+                    setShowPushModal(false);
+                    setSelectedMissedSessions(new Set());
+                    setPendingPushDate(null);
+                  }}
                   style={styles.pushModalCloseButton}
                 >
                   <Text style={styles.pushModalCloseText}>✕</Text>
@@ -1454,55 +2532,98 @@ export default function HomeScreen({ navigation }: Props) {
               {/* Info */}
               <View style={styles.pushModalInfo}>
                 <Text style={styles.pushModalInfoText}>
-                  Found {getMissedSessions.length} missed workout(s). Select a target date to push them forward.
+                  Found {getMissedSessions.length} missed workout(s). Select which ones to push forward.
                 </Text>
               </View>
 
+              {/* Selected Count */}
+              <Text style={styles.pushSelectedCount}>
+                {selectedMissedSessions.size} of {getMissedSessions.length} selected
+              </Text>
+
+              {/* Select All Button */}
+              <TouchableOpacity
+                style={styles.selectAllButton}
+                onPress={toggleSelectAllMissedSessions}
+              >
+                <Text style={styles.selectAllButtonText}>
+                  {selectedMissedSessions.size === getMissedSessions.length ? 'Deselect All' : 'Select All'}
+                </Text>
+              </TouchableOpacity>
+
               {/* Missed Sessions List */}
-              <FlatList
-                data={getMissedSessions}
-                keyExtractor={(item) => item.sessionId}
-                renderItem={({ item }) => (
-                  <View style={styles.pushSessionCard}>
-                    <Text style={styles.pushSessionTitle}>{item.title}</Text>
-                    <Text style={styles.pushSessionDate}>
-                      Missed on: {new Date(item.shouldHaveBeen).toLocaleDateString()}
-                    </Text>
-                  </View>
-                )}
-                ListEmptyComponent={
-                  <View style={styles.pushEmptyContainer}>
-                    <Text style={styles.pushEmptyText}>No missed workouts</Text>
-                  </View>
-                }
-                contentContainerStyle={styles.pushListContent}
-              />
+              <View style={styles.pushListContainer}>
+                <FlatList
+                  data={getMissedSessions}
+                  keyExtractor={(item) => item.sessionId}
+                  renderItem={({ item }) => {
+                    const isSelected = selectedMissedSessions.has(item.sessionId);
+                    return (
+                      <TouchableOpacity
+                        style={[styles.pushSessionCard, isSelected && styles.pushSessionCardSelected]}
+                        onPress={() => toggleMissedSessionSelection(item.sessionId)}
+                      >
+                        <View style={styles.pushSessionCardContent}>
+                          <Text style={styles.pushSessionCheckbox}>
+                            {isSelected ? '☑' : '☐'}
+                          </Text>
+                          <View style={styles.pushSessionCardText}>
+                            <Text style={styles.pushSessionTitle}>{item.title}</Text>
+                            <Text style={styles.pushSessionDate}>
+                              Missed on: {parseYMD(item.shouldHaveBeen).toLocaleDateString()}
+                            </Text>
+                          </View>
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  }}
+                  ListEmptyComponent={
+                    <View style={styles.pushEmptyContainer}>
+                      <Text style={styles.pushEmptyText}>No missed workouts</Text>
+                    </View>
+                  }
+                  contentContainerStyle={styles.pushListContent}
+                  nestedScrollEnabled
+                  showsVerticalScrollIndicator
+                />
+              </View>
 
               {/* Target Date Selection */}
               <View style={styles.pushDateSection}>
                 <Text style={styles.pushDateLabel}>Push to date:</Text>
+                {pendingPushDate !== null && (
+                  <Text style={styles.pushHelperText}>
+                    Selected date: {parseYMD(formatYMD(pickerDate)).toLocaleDateString()}. Tap "Push to Selected Date" below to confirm.
+                  </Text>
+                )}
                 <TouchableOpacity
-                  style={styles.pushDateButton}
+                  style={[styles.pushDateButton, selectedMissedSessions.size === 0 && styles.disabledButton]}
                   onPress={() => {
-                    // Use today's date as default, or allow date picker
+                    if (selectedMissedSessions.size === 0) return;
                     const todayYMD = formatYMD(new Date());
                     executePushWorkouts(todayYMD);
                   }}
+                  disabled={selectedMissedSessions.size === 0}
                 >
                   <Text style={styles.pushDateButtonText}>Push to Today</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.pushDateButton, styles.pushDateButtonSecondary]}
+                  style={[
+                    styles.pushDateButton,
+                    styles.pushDateButtonSecondary,
+                    selectedMissedSessions.size === 0 && styles.disabledButton,
+                  ]}
                   onPress={() => {
-                    // Close push modal and open date picker with push flag
-                    setShowPushModal(false);
+                    if (selectedMissedSessions.size === 0) return;
+                    // Keep push modal open and open date picker with push flag
                     setPendingPushDate('pending'); // Flag that we want to push after date selection
                     setPickerDate(new Date()); // Initialize picker to today
                     setShowPicker(true);
                   }}
+                  disabled={selectedMissedSessions.size === 0}
                 >
                   <Text style={[styles.pushDateButtonText, styles.pushDateButtonTextSecondary]}>
-                    Choose Custom Date
+                    {pendingPushDate !== null ? 'Push to Selected Date' : 'Choose Custom Date'}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -1572,6 +2693,24 @@ export default function HomeScreen({ navigation }: Props) {
           >
             <Text style={styles.actionButtonText}>💪 Go to My 1RMs</Text>
           </TouchableOpacity>
+
+          {/* Pick Start Date Button - Moved here since it's a one-time setup */}
+          <TouchableOpacity 
+            style={[
+              styles.startDateButton,
+              startDateYMD && styles.startDateButtonSet
+            ]}
+            onPress={handleOpenPicker}
+          >
+            <Text style={[
+              styles.startDateButtonText,
+              startDateYMD && styles.startDateButtonTextSet
+            ]}>
+              {startDateYMD 
+                ? `📅 Start Date: ${parseYMD(startDateYMD).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+                : '📅 Select Start Date'}
+            </Text>
+          </TouchableOpacity>
           
           <TouchableOpacity 
             style={[
@@ -1596,6 +2735,42 @@ export default function HomeScreen({ navigation }: Props) {
               🎨 View Theme Mockups
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.actionButtonSecondary, { borderColor: theme.error }]}
+            onPress={async () => {
+              Alert.alert(
+                'Reset Onboarding',
+                'This will reset your onboarding status. Would you like to go to the setup screen now?',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  {
+                    text: 'Reset & Go to Setup',
+                    style: 'destructive',
+                    onPress: async () => {
+                      try {
+                        await AsyncStorage.removeItem('onboardingComplete');
+                        // Also reset program offset to avoid date calculation issues
+                        await AsyncStorage.removeItem('programOffset');
+                        // Clear start date
+                        await AsyncStorage.removeItem('startDateYMD');
+                        // Update state to reflect cleared start date
+                        setStartDateYMD(null);
+                        // Navigate directly to onboarding
+                        navigation.replace('Onboarding');
+                      } catch (error) {
+                        Alert.alert('Error', 'Failed to reset onboarding.');
+                      }
+                    },
+                  },
+                ]
+              );
+            }}
+          >
+            <Text style={[styles.actionButtonTextSecondary, { color: theme.error }]}>
+              🔄 Reset Onboarding (Dev)
+            </Text>
+          </TouchableOpacity>
         </View>
         
         {/* Bottom spacing for scroll */}
@@ -1604,802 +2779,3 @@ export default function HomeScreen({ navigation }: Props) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: THEME.background },
-  scrollContent: { padding: 20 },
-  
-  // Program Selector Styles
-  programSelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: THEME.card,
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 16,
-    borderWidth: 2,
-    borderColor: THEME.primary,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  programSelectorContent: {
-    flex: 1,
-  },
-  programSelectorLabel: {
-    fontSize: 11,
-    color: THEME.secondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 2,
-    fontWeight: '600',
-  },
-  programSelectorTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: THEME.primary,
-  },
-  programSelectorMeta: {
-    fontSize: 12,
-    color: THEME.textMuted,
-    marginTop: 2,
-  },
-  programSelectorArrow: {
-    fontSize: 14,
-    color: THEME.primary,
-    marginLeft: 8,
-    fontWeight: '700',
-  },
-
-  // Today's Session Card
-  todayCard: {
-    backgroundColor: THEME.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  todayCardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-    gap: 12,
-  },
-  todayCardTitleContainer: {
-    flex: 1,
-    flexShrink: 1,
-    marginRight: 8,
-  },
-  todayCardLabel: {
-    fontSize: 11,
-    color: THEME.secondary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    marginBottom: 4,
-    fontWeight: '600',
-  },
-  todayCardTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: THEME.primary,
-    flexShrink: 1,
-  },
-  sessionTypeBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    flexShrink: 0,
-  },
-  sessionTypeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-  },
-  todayCardDetails: {
-    flexDirection: 'row',
-    gap: 20,
-    marginBottom: 16,
-  },
-  todayCardDetailItem: {
-    flex: 1,
-  },
-  todayCardDetailLabel: {
-    fontSize: 12,
-    color: THEME.textMuted,
-    marginBottom: 2,
-  },
-  todayCardDetailValue: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: THEME.textPrimary,
-  },
-  todayCardInstructions: {
-    backgroundColor: THEME.backgroundLight,
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  instructionsTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: THEME.primary,
-    marginBottom: 8,
-  },
-  instructionItem: {
-    fontSize: 13,
-    color: THEME.textSecondary,
-    marginBottom: 4,
-  },
-  todayCardActions: {
-    gap: 10,
-  },
-  startButton: {
-    backgroundColor: THEME.primary,
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  startButtonText: {
-    color: THEME.textOnPrimary,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  quickActions: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 12,
-  },
-  quickActionButton: {
-    flex: 1,
-    backgroundColor: THEME.card,
-    paddingVertical: 10,
-    paddingHorizontal: 8,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: THEME.borderLight,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-    minHeight: 56,
-  },
-  quickActionButtonUndo: {
-    backgroundColor: THEME.primaryFaded,
-    borderColor: THEME.primary + '40',
-  },
-  quickActionIcon: {
-    fontSize: 18,
-    marginBottom: 4,
-  },
-  quickActionText: {
-    color: THEME.textPrimary,
-    fontSize: 11,
-    fontWeight: '600',
-    textAlign: 'center',
-    letterSpacing: 0.2,
-  },
-  expandButton: {
-    marginTop: 12,
-    paddingVertical: 8,
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: THEME.borderLight,
-  },
-  expandButtonText: {
-    color: THEME.secondary,
-    fontSize: 13,
-    fontWeight: '600',
-  },
-
-  // Start Date Button
-  startDateButton: {
-    backgroundColor: THEME.card,
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginBottom: 16,
-    borderWidth: 2,
-    borderColor: THEME.secondary,
-  },
-  startDateButtonText: {
-    color: THEME.secondary,
-    fontSize: 15,
-    fontWeight: '700',
-  },
-
-  // Date Picker Modal
-  datePickerModalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  datePickerModalContent: {
-    backgroundColor: THEME.card,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    paddingTop: 20,
-    paddingBottom: 40,
-    minHeight: 300,
-  },
-  datePickerHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.borderLight,
-    marginBottom: 10,
-  },
-  datePickerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: THEME.primary,
-  },
-  datePickerCloseButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-  datePickerCloseText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: THEME.secondary,
-  },
-  datePickerContainer: {
-    width: '100%',
-    height: 220,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: THEME.card,
-  },
-  datePicker: {
-    width: '100%',
-    height: 220,
-  },
-
-  // Calendar Section
-  calendarSection: {
-    marginBottom: 20,
-  },
-  calendarSectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: THEME.primary,
-    marginBottom: 12,
-  },
-  weeklyCalendar: {
-    paddingVertical: 8,
-  },
-  calendarDay: {
-    width: DAY_WIDTH - 8,
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 4,
-    marginHorizontal: 4,
-    backgroundColor: THEME.card,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  calendarDayToday: {
-    backgroundColor: THEME.primaryFaded,
-    borderColor: THEME.primary,
-    borderWidth: 2,
-  },
-  calendarDaySelected: {
-    backgroundColor: THEME.secondaryFaded,
-    borderColor: THEME.secondary,
-  },
-  calendarDayName: {
-    fontSize: 11,
-    color: THEME.textMuted,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  calendarDayNameToday: {
-    color: THEME.primary,
-  },
-  calendarDayNumber: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: THEME.textPrimary,
-    marginBottom: 6,
-  },
-  calendarDayNumberToday: {
-    color: THEME.primary,
-  },
-  sessionIndicator: {
-    width: '80%',
-    height: 3,
-    borderRadius: 2,
-    marginBottom: 4,
-  },
-  completionOverlay: {
-    position: 'absolute',
-    top: 2,
-    right: 2,
-    backgroundColor: THEME.primary,
-    borderRadius: 8,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-  },
-  completionText: {
-    fontSize: 9,
-    color: THEME.textOnPrimary,
-    fontWeight: '700',
-  },
-  readinessBadge: {
-    fontSize: 14,
-    marginTop: 2,
-  },
-
-  // Full Calendar
-  fullCalendarSection: {
-    marginBottom: 20,
-  },
-  calendarToggleButton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: THEME.card,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  calendarToggleIcon: {
-    fontSize: 16,
-    color: THEME.secondary,
-    fontWeight: '700',
-  },
-
-  // Modal Styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalHeader: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.borderLight,
-    position: 'relative',
-  },
-  modalSubtitle: {
-    fontSize: 14,
-    color: THEME.textSecondary,
-    marginTop: 4,
-  },
-  modalContent: {
-    backgroundColor: THEME.card,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    padding: 20,
-    maxHeight: '70%',
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 16,
-    textAlign: 'center',
-    color: THEME.primary,
-  },
-  programOption: {
-    backgroundColor: THEME.backgroundLight,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 10,
-    borderWidth: 2,
-    borderColor: 'transparent',
-    position: 'relative',
-  },
-  programOptionSelected: {
-    backgroundColor: THEME.primaryFaded,
-    borderColor: THEME.primary,
-  },
-  programOptionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: THEME.textPrimary,
-    marginBottom: 4,
-  },
-  programOptionTitleSelected: {
-    color: THEME.primary,
-  },
-  programOptionDesc: {
-    fontSize: 13,
-    color: THEME.textSecondary,
-    marginBottom: 4,
-  },
-  programOptionWeeks: {
-    fontSize: 12,
-    color: THEME.textMuted,
-    fontWeight: '500',
-  },
-  programOptionCheck: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    fontSize: 18,
-    color: THEME.primary,
-    fontWeight: '700',
-  },
-  modalCloseButton: {
-    backgroundColor: THEME.backgroundDark,
-    borderRadius: 12,
-    padding: 14,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  modalCloseButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: THEME.textSecondary,
-  },
-
-  // Swap Modal Styles
-  swapModalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  swapModalContent: {
-    backgroundColor: THEME.background,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: '90%',
-    paddingBottom: 20,
-  },
-  swapModalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
-  },
-  swapModalTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: THEME.primary,
-  },
-  swapModalCloseButton: {
-    padding: 8,
-  },
-  swapModalCloseText: {
-    fontSize: 24,
-    color: THEME.textSecondary,
-    fontWeight: '300',
-  },
-  suggestedSection: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
-  },
-  suggestedTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: THEME.primary,
-    marginBottom: 12,
-  },
-  suggestedScroll: {
-    marginHorizontal: -20,
-    paddingHorizontal: 20,
-  },
-  suggestedCard: {
-    backgroundColor: THEME.card,
-    padding: 16,
-    borderRadius: 12,
-    marginRight: 12,
-    borderWidth: 2,
-    minWidth: 180,
-  },
-  suggestedCardTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: THEME.textPrimary,
-    marginBottom: 4,
-  },
-  suggestedCardMeta: {
-    fontSize: 12,
-    color: THEME.textSecondary,
-  },
-  swapFilters: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
-  },
-  swapSearchInput: {
-    backgroundColor: THEME.card,
-    borderWidth: 1,
-    borderColor: THEME.border,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    color: THEME.textPrimary,
-    marginBottom: 12,
-  },
-  filterButtons: {
-    flexDirection: 'row',
-    gap: 8,
-    flexWrap: 'wrap',
-  },
-  filterButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: THEME.card,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  filterButtonActive: {
-    backgroundColor: THEME.primary,
-    borderColor: THEME.primary,
-  },
-  filterButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: THEME.textSecondary,
-  },
-  filterButtonTextActive: {
-    color: THEME.textOnPrimary,
-  },
-  swapListContent: {
-    padding: 20,
-    paddingTop: 0,
-  },
-  swapSessionCard: {
-    backgroundColor: THEME.card,
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  swapSessionCardSuggested: {
-    borderWidth: 2,
-    borderColor: THEME.primary,
-  },
-  swapSessionCardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
-  },
-  swapSessionCardTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: THEME.textPrimary,
-    flex: 1,
-    marginRight: 12,
-  },
-  swapSessionTypeBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  swapSessionTypeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-  },
-  swapSessionCardMeta: {
-    fontSize: 14,
-    color: THEME.textSecondary,
-  },
-  swapEmptyContainer: {
-    padding: 40,
-    alignItems: 'center',
-  },
-  swapEmptyText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: THEME.textSecondary,
-    marginBottom: 8,
-  },
-  swapEmptySubtext: {
-    fontSize: 14,
-    color: THEME.textMuted,
-  },
-
-  // Push Workouts Modal Styles
-  pushModalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'flex-end',
-  },
-  pushModalContent: {
-    backgroundColor: THEME.background,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: '90%',
-    paddingBottom: 20,
-  },
-  pushModalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
-  },
-  pushModalTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: THEME.primary,
-  },
-  pushModalCloseButton: {
-    padding: 8,
-  },
-  pushModalCloseText: {
-    fontSize: 24,
-    color: THEME.textSecondary,
-    fontWeight: '300',
-  },
-  pushModalInfo: {
-    padding: 20,
-    backgroundColor: THEME.primaryFaded,
-    borderBottomWidth: 1,
-    borderBottomColor: THEME.border,
-  },
-  pushModalInfoText: {
-    fontSize: 14,
-    color: THEME.textPrimary,
-    lineHeight: 20,
-  },
-  pushListContent: {
-    padding: 20,
-    paddingTop: 0,
-    maxHeight: 300,
-  },
-  pushSessionCard: {
-    backgroundColor: THEME.card,
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  pushSessionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: THEME.textPrimary,
-    marginBottom: 4,
-  },
-  pushSessionDate: {
-    fontSize: 12,
-    color: THEME.textSecondary,
-  },
-  pushEmptyContainer: {
-    padding: 40,
-    alignItems: 'center',
-  },
-  pushEmptyText: {
-    fontSize: 16,
-    color: THEME.textMuted,
-  },
-  pushDateSection: {
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: THEME.border,
-  },
-  pushDateLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: THEME.textPrimary,
-    marginBottom: 12,
-  },
-  pushDateButton: {
-    backgroundColor: THEME.primary,
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  pushDateButtonSecondary: {
-    backgroundColor: THEME.card,
-    borderWidth: 1,
-    borderColor: THEME.border,
-  },
-  pushDateButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: THEME.textOnPrimary,
-  },
-  pushDateButtonTextSecondary: {
-    color: THEME.textPrimary,
-  },
-
-  // Other Actions
-  otherActions: {
-    gap: 12,
-    marginTop: 8,
-  },
-  actionButton: {
-    backgroundColor: THEME.secondary,
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  actionButtonSecondary: {
-    backgroundColor: THEME.card,
-    borderWidth: 2,
-    borderColor: THEME.accentMuted,
-  },
-  actionButtonText: {
-    color: THEME.textOnSecondary,
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  actionButtonTextSecondary: {
-    color: THEME.textSecondary,
-  },
-  
-  // Recovery Modal Styles
-  recoveryWorkoutList: {
-    padding: 16,
-  },
-  recoveryWorkoutCard: {
-    backgroundColor: THEME.card,
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: THEME.borderLight,
-    shadowColor: THEME.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  recoveryWorkoutHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  recoveryWorkoutTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: THEME.textPrimary,
-    flex: 1,
-  },
-  recoveryWorkoutDuration: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: THEME.primary,
-  },
-  recoveryWorkoutDescription: {
-    fontSize: 14,
-    color: THEME.textSecondary,
-    lineHeight: 20,
-    marginBottom: 12,
-  },
-  recoveryWorkoutMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  recoveryWorkoutBadge: {
-    backgroundColor: THEME.secondary + '20',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  recoveryWorkoutBadgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: THEME.secondary,
-  },
-});
