@@ -1,7 +1,8 @@
-# 🚀 Push to Production - Version 1.0.2
+# 🚀 Push to Production - Version 1.0.3 (RepMaster)
 
 ## Current Status
-- ✅ Version numbers updated: `1.0.2` (iOS build 6, Android versionCode 2)
+- ✅ App name updated: **RepMaster**
+- ✅ Version numbers updated: `1.0.3` (iOS build 7, Android versionCode 3)
 - ✅ All bugs fixed (TypeScript errors, memory leaks)
 - ✅ Code reviewed and ready
 
@@ -15,9 +16,10 @@ Open your terminal in the project directory and run:
 
 ```bash
 git add .
-git commit -m "Release v1.0.2: Expanded calendar, enhanced home screen, searchable help, and bug fixes
+git commit -m "Release v1.0.3: App rebranded to RepMaster
 
 Features:
+- App renamed from 'Progressive Overlord' to 'RepMaster'
 - Added scrollable multi-week calendar with month navigation
 - Implemented 'Jump to Date' feature for quick navigation
 - Enhanced home screen with workout preview cards
@@ -29,6 +31,7 @@ Bug Fixes:
 - Fixed TypeScript navigation type error (OneRMHistory → 1RMHistory)
 - Fixed OnboardingScreen type error (sessionsPerWeek)
 - Fixed memory leak in calendar auto-scroll useEffect
+- Fixed JSX.Element TypeScript error in HelpScreen
 
 Improvements:
 - Better home screen organization
@@ -116,10 +119,11 @@ npm run submit:ios
 1. Visit [appstoreconnect.apple.com](https://appstoreconnect.apple.com)
 2. Navigate to your app → "App Store" tab
 3. Click "+" next to "iOS App" to create new version
-4. Select the new build (version 1.0.2, build 6)
-5. Add release notes (see below)
-6. Complete any required sections
-7. Click "Submit for Review"
+4. Select the new build (version 1.0.3, build 7)
+5. **IMPORTANT: Update App Name to "RepMaster"** in App Information section
+6. Add release notes (see below)
+7. Complete any required sections
+8. Click "Submit for Review"
 
 #### Google Play Store Submission
 
@@ -136,8 +140,9 @@ npm run submit:android
 1. Visit [play.google.com/console](https://play.google.com/console)
 2. Navigate to your app → "Production" → "Create new release"
 3. The uploaded `.aab` should be available
-4. Add release notes (see below)
-5. Review and roll out
+4. **IMPORTANT: Update App Name to "RepMaster"** in Store listing
+5. Add release notes (see below)
+6. Review and roll out
 
 ---
 
@@ -146,9 +151,10 @@ npm run submit:android
 ### For iOS App Store Connect:
 
 ```
-Version 1.0.2 - Enhanced Calendar & Home Screen
+Version 1.0.3 - RepMaster Rebrand & Enhanced Calendar
 
 New Features:
+• App rebranded to RepMaster
 • Scrollable multi-week calendar - navigate through weeks and months
 • Jump to Date - quickly navigate to any date
 • Workout preview cards - see session details without opening
@@ -170,9 +176,10 @@ Bug Fixes:
 ### For Google Play Console:
 
 ```
-Version 1.0.2 - Enhanced Calendar & Home Screen
+Version 1.0.3 - RepMaster Rebrand & Enhanced Calendar
 
 New Features:
+• App rebranded to RepMaster
 • Scrollable multi-week calendar - navigate through weeks and months
 • Jump to Date - quickly navigate to any date
 • Workout preview cards - see session details without opening
@@ -197,7 +204,7 @@ Bug Fixes:
 
 ```bash
 # 1. Commit
-git add . && git commit -m "Release v1.0.2"
+git add . && git commit -m "Release v1.0.3: RepMaster rebrand"
 
 # 2. Build both platforms
 npm run build:all
@@ -230,7 +237,8 @@ npm run submit:android
 
 ### iOS
 - [ ] Build submitted to App Store Connect
-- [ ] Version 1.0.2 selected in App Store Connect
+- [ ] Version 1.0.3 selected in App Store Connect
+- [ ] **App name updated to "RepMaster" in App Information**
 - [ ] Release notes added
 - [ ] Screenshots reviewed (if changed)
 - [ ] App description reviewed
@@ -239,6 +247,7 @@ npm run submit:android
 
 ### Android
 - [ ] Build uploaded to Play Console
+- [ ] **App name updated to "RepMaster" in Store listing**
 - [ ] Release notes added
 - [ ] Store listing reviewed
 - [ ] Screenshots reviewed (if changed)
@@ -283,4 +292,3 @@ If you need to rebuild after a fix:
 ---
 
 **Ready to start? Begin with Step 1: Commit Changes!** 🎯
-

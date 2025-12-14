@@ -18,7 +18,7 @@ interface HelpSection {
   id: string;
   title: string;
   icon: string;
-  content: JSX.Element;
+  content: React.ReactElement;
   searchableText: string; // All text content for searching
 }
 
@@ -41,7 +41,7 @@ export default function HelpScreen({ navigation }: Props) {
       content: (
         <View style={styles.sectionContent}>
           <Text style={styles.paragraph}>
-            Welcome to Progressive Overlord! This app helps you track your workouts and automatically progress your weights using intelligent algorithms.
+            Welcome to RepMaster! This app helps you track your workouts and automatically progress your weights using intelligent algorithms.
           </Text>
           
           <Text style={styles.subheading}>First Steps:</Text>
@@ -65,7 +65,7 @@ export default function HelpScreen({ navigation }: Props) {
       content: (
         <View style={styles.sectionContent}>
           <Text style={styles.paragraph}>
-            Progressive Overlord uses two intelligent progression systems:
+            RepMaster uses two intelligent progression systems:
           </Text>
 
           <Text style={styles.subheading}>Main Lifts (Hybrid 1RM System):</Text>
@@ -332,7 +332,7 @@ export default function HelpScreen({ navigation }: Props) {
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Help & Instructions</Text>
           <Text style={styles.headerSubtitle}>
-            Learn how to get the most out of Progressive Overlord
+            Learn how to get the most out of RepMaster
           </Text>
         </View>
 

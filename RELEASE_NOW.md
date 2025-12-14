@@ -1,9 +1,10 @@
-# 🚀 Quick Release - Version 1.0.2
+# 🚀 Quick Release - Version 1.0.3 (RepMaster)
 
 ## ✅ Version Numbers Updated
-- App version: `1.0.1` → `1.0.2` ✓
-- iOS buildNumber: `5` → `6` ✓
-- Android versionCode: `1` → `2` ✓
+- App name: `Progressive Overlord` → `RepMaster` ✓
+- App version: `1.0.2` → `1.0.3` ✓
+- iOS buildNumber: `6` → `7` ✓
+- Android versionCode: `2` → `3` ✓
 
 ---
 
@@ -11,15 +12,26 @@
 
 ```bash
 git add .
-git commit -m "Release v1.0.2: Expanded calendar, enhanced home screen, and searchable help
+git commit -m "Release v1.0.3: App rebranded to RepMaster
 
+Features:
+- App renamed from 'Progressive Overlord' to 'RepMaster'
 - Added scrollable multi-week calendar with month navigation
 - Implemented 'Jump to Date' feature for quick navigation
 - Enhanced home screen with workout preview cards
 - Added start date banner for new users
 - Made session overview open by default
 - Implemented searchable help functionality
-- Improved overall UI/UX and information hierarchy"
+
+Bug Fixes:
+- Fixed TypeScript navigation type error
+- Fixed OnboardingScreen type error
+- Fixed memory leak in calendar auto-scroll
+- Fixed JSX.Element TypeScript error
+
+Improvements:
+- Better home screen organization
+- Improved user flow and information hierarchy"
 ```
 
 ---
@@ -56,10 +68,14 @@ eas build:list
 npm run submit:ios
 ```
 
+**IMPORTANT:** After submission, update app name to "RepMaster" in App Store Connect → App Information
+
 ### Google Play Store:
 ```bash
 npm run submit:android
 ```
+
+**IMPORTANT:** After submission, update app name to "RepMaster" in Play Console → Store listing
 
 ---
 
@@ -67,9 +83,10 @@ npm run submit:android
 
 ### iOS & Android Release Notes:
 ```
-Version 1.0.2 - Enhanced Calendar & Home Screen
+Version 1.0.3 - RepMaster Rebrand & Enhanced Calendar
 
 New Features:
+• App rebranded to RepMaster
 • Scrollable multi-week calendar - navigate through weeks and months
 • Jump to Date - quickly navigate to any date
 • Workout preview cards - see session details without opening
@@ -81,6 +98,11 @@ Improvements:
 • Better home screen organization
 • Improved user flow and information hierarchy
 • Enhanced calendar navigation with month/year controls
+
+Bug Fixes:
+• Fixed navigation type errors
+• Fixed memory leaks
+• Improved app stability
 ```
 
 ---
@@ -89,7 +111,7 @@ Improvements:
 
 **Full release (commit + build + submit):**
 ```bash
-git add . && git commit -m "Release v1.0.2" && npm run build:all
+git add . && git commit -m "Release v1.0.3: RepMaster rebrand" && npm run build:all
 ```
 
 Then after builds complete:
@@ -101,7 +123,7 @@ npm run submit:ios && npm run submit:android
 
 ## 📖 Full Details
 
-See `PRODUCTION_RELEASE.md` for complete instructions and troubleshooting.
+See `PUSH_TO_PRODUCTION.md` for complete instructions and troubleshooting.
 
 ---
 

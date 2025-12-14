@@ -494,7 +494,7 @@ const ThemeMockups: React.FC<Props> = ({ navigation }) => {
           </View>
           <Text style={styles.headerTitle}>🎨 Theme Mockups</Text>
           <Text style={styles.headerSubtitle}>
-            Compare color palettes for Progressive Overlord
+            Compare color palettes for RepMaster
           </Text>
         </View>
 

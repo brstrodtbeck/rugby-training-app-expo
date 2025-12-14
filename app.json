@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Progressive Overlord",
+    "name": "RepMaster",
     "slug": "brstr",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -18,7 +18,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.progressiveoverlord.app",
-      "buildNumber": "6",
+      "buildNumber": "7",
       "infoPlist": {
         "NSCameraUsageDescription": "This app may use the camera for exercise form analysis.",
         "NSPhotoLibraryUsageDescription": "This app may access photos to save workout progress images."
@@ -33,7 +33,7 @@
         "backgroundColor": "#E0E0E0"
       },
       "package": "com.progressiveoverlord.app",
-      "versionCode": 2,
+      "versionCode": 3,
       "permissions": [
         "VIBRATE",
         "RECEIVE_BOOT_COMPLETED"
