@@ -1,0 +1,27 @@
+# Enable E2E Fast Timers for session testing
+# Run before session-complete flow. Timers will run at 10x speed.
+# App must be on Home screen. Navigate to Test Validation and enable fast timers.
+appId: com.progressiveoverlord.app
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text:
+        contains: "Week"
+    timeout: 10000
+- tapOn:
+    text: "Tests"
+- extendedWaitUntil:
+    visible:
+      text: "Progression Test Block"
+    timeout: 5000
+- tapOn:
+    text: "E2E Fast Timers OFF"
+    optional: true
+- tapOn:
+    text: "E2E Fast Timers ON"
+    optional: true
+- tapOn:
+    text: "OK"
+    optional: true
+- back

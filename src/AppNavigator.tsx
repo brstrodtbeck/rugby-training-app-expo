@@ -1,15 +1,15 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
-import HomeScreen from '../screens/HomeScreen';
-import SessionSummary from '../screens/SessionSummary';
-import BaselineSetup from '../screens/BaselineSetup';
-import My1RMs from '../screens/My1RMs';
+import HomeScreen from './screens/HomeScreen';
+import SessionSummary from './screens/SessionSummary';
+import BaselineSetupScreen from './screens/BaselineSetupScreen';
+import My1RMs from './screens/My1RMs';
 
 export type RootStackParamList = {
   Home: undefined;
-  SessionSummary: { mesoId: string; weekNum: number; dayNum: number };
-  BaselineSetup: { exerciseName?: string };
+  SessionSummary: { sessionId: string; completed: number[] };
+  BaselineSetup: undefined;
   My1RMs: undefined;
 };
 
@@ -31,7 +31,7 @@ const AppNavigator = () => {
         />
         <Stack.Screen
           name="BaselineSetup"
-          component={BaselineSetup}
+          component={BaselineSetupScreen}
           options={{ title: 'Baseline 1RM Setup' }}
         />
         <Stack.Screen

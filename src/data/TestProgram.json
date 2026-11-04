@@ -35,6 +35,7 @@
                     "rest": 180,
                     "intensity": "75% TM",
                     "targetRPE": 7,
+                    "tempo": "3-0-X",
                     "notes": "1RM tracked exercise - uses hybrid progression logic",
                     "instruction": "Validate: TM updates on completed sessions, deload reduces intensity",
                     "definition": "Primary test for hybrid 1RM progression system"
@@ -54,6 +55,7 @@
                     "rest": 90,
                     "targetRPE": 7,
                     "minIncrement": 2.5,
+                    "tempo": "2-0-1",
                     "notes": "Rule of 3 progression - 3 consecutive successes or +3 extra reps",
                     "instruction": "Validate: consecutiveSuccesses tracking, extraReps fallback, readiness safeguard",
                     "definition": "Primary test for Rule of 3 volume progression"
@@ -125,6 +127,7 @@
                     "rest": 180,
                     "intensity": "75% TM",
                     "targetRPE": 7,
+                    "tempo": "3-0-X",
                     "notes": "Session 2 of the week",
                     "instruction": "Continue validating 1RM progression"
                   }
@@ -143,6 +146,7 @@
                     "rest": 90,
                     "targetRPE": 7,
                     "minIncrement": 2.5,
+                    "tempo": "2-0-1",
                     "notes": "Session 2 - check streak count"
                   }
                 ]
@@ -181,6 +185,7 @@
                     "rest": 90,
                     "targetRPE": 7,
                     "minIncrement": 2.5,
+                    "tempo": "2-0-1",
                     "notes": "Optional session - extra streak opportunity"
                   }
                 ]

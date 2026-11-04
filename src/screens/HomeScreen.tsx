@@ -2,12 +2,15 @@ import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import { View, Text, StyleSheet, Platform, Alert, TouchableOpacity, Modal, FlatList, ScrollView, Dimensions, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Calendar } from 'react-native-calendars';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { useTheme } from '../theme/ThemeContext';
 import { useThemedStyles } from '../theme/useThemedStyles';
+import { analytics } from '../utils/analytics';
+import Toast from 'react-native-toast-message';
+import ProgressDashboard from '../components/ProgressDashboard';
+import UpcomingSessions from '../components/UpcomingSessions';
 
 // Import all programs
 import rugbyData from '../data/rugbyProgram.json';
@@ -17,7 +20,7 @@ import testProgramData from '../data/TestProgram.json';
 import hypertrophyData from '../data/HypertrophyMonth.json';
 import recoveryWorkoutsData from '../data/recoveryWorkouts.json';
 
-import { RugbyProgram, generateSessionId, parseSessionId, TrainingDay } from '../types/program';
+import { RugbyProgram, generateSessionId, parseSessionId } from '../types/program';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const DAY_WIDTH = SCREEN_WIDTH / 7;
@@ -126,17 +129,26 @@ export default function HomeScreen({ navigation }: Props) {
     return { emoji: '▲', color: theme.readinessMedium };
   }, [theme]);
   
-  // Add help button to header
+  // Add help and account buttons to header
   React.useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Help')}
-          style={{ marginRight: 16 }}
-          activeOpacity={0.7}
-        >
-          <Text style={{ fontSize: 24 }}>❓</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Account')}
+            style={{ padding: 4 }}
+            activeOpacity={0.7}
+          >
+            <Text style={{ fontSize: 22 }}>👤</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Help')}
+            style={{ marginRight: 8 }}
+            activeOpacity={0.7}
+          >
+            <Text style={{ fontSize: 24 }}>❓</Text>
+          </TouchableOpacity>
+        </View>
       ),
     });
   }, [navigation]);
@@ -150,7 +162,6 @@ export default function HomeScreen({ navigation }: Props) {
   const [showProgramPicker, setShowProgramPicker] = useState(false);
   const [todaySessionExpanded, setTodaySessionExpanded] = useState(true);
   const [readinessScore, setReadinessScore] = useState<number | null>(null);
-  const [calendarExpanded, setCalendarExpanded] = useState(false); // Keep for backward compatibility, will be removed
   const [calendarViewDate, setCalendarViewDate] = useState<Date>(new Date()); // Track which month/week is being viewed
   const [showJumpToDate, setShowJumpToDate] = useState(false); // For jump to date picker
   const [jumpToDatePicker, setJumpToDatePicker] = useState<Date>(new Date()); // Date picker for jump to date
@@ -165,6 +176,8 @@ export default function HomeScreen({ navigation }: Props) {
   const [selectedMissedSessions, setSelectedMissedSessions] = useState<Set<string>>(new Set());
   const [showRecoveryModal, setShowRecoveryModal] = useState(false);
   const [recoveryModalDate, setRecoveryModalDate] = useState<string | null>(null);
+  const [showProgramCompleteModal, setShowProgramCompleteModal] = useState(false);
+  const [programCompleteShown, setProgramCompleteShown] = useState(false);
 
   // Get the current program data based on selection
   const currentProgram = PROGRAMS.find(p => p.id === selectedProgramId) || PROGRAMS[0];
@@ -209,6 +222,17 @@ export default function HomeScreen({ navigation }: Props) {
     loadReadiness();
   }, []);
 
+  // Load program completion shown flag
+  useEffect(() => {
+    const loadProgramCompleteShown = async () => {
+      const stored = await AsyncStorage.getItem('programCompleteShown');
+      if (stored === 'true') {
+        setProgramCompleteShown(true);
+      }
+    };
+    loadProgramCompleteShown();
+  }, []);
+
   // Handle program selection
   const handleProgramSelect = useCallback(async (programId: string) => {
     if (programId === selectedProgramId) {
@@ -227,16 +251,31 @@ export default function HomeScreen({ navigation }: Props) {
           onPress: async () => {
             // Save new program selection
             await AsyncStorage.setItem(STORAGE_KEY_PROGRAM, programId);
-            // Clear progress data
+            // Clear progress data (but keep 1RMs and logs)
             await AsyncStorage.removeItem('startDateYMD');
             await AsyncStorage.removeItem('completedSessions');
+            await AsyncStorage.removeItem('programOffset');
+            await AsyncStorage.removeItem('programCompleteShown'); // Reset completion flag for new program
             // Update state
             setSelectedProgramId(programId);
             setStartDateYMD(null);
             setCompletedSessions([]);
             setSelectedDate(null);
+            setProgramOffset(0);
+            setProgramCompleteShown(false);
             setShowProgramPicker(false);
-            console.log('📋 Switched to program:', programId);
+            
+            // Track program selection
+            const program = PROGRAMS.find(p => p.id === programId);
+            if (program) {
+              analytics.programSelected(programId, program.title).catch(() => {
+                // Silently fail - analytics is optional
+              });
+            }
+            
+            if (__DEV__) {
+              console.log('📋 Switched to program:', programId);
+            }
           },
         },
       ]
@@ -334,6 +373,81 @@ export default function HomeScreen({ navigation }: Props) {
     return null;
   };
 
+  // Get mesocycle color by mesoId
+  const getMesocycleColor = useCallback((mesoId: string): string => {
+    const id = mesoId.toLowerCase();
+    if (id.includes('foundation') || id === 'm1' || id.includes('week1')) {
+      return '#4A90E2'; // Blue for Foundation
+    }
+    if (id.includes('strength') || id === 'm2' || id.includes('week2')) {
+      return '#E85A4F'; // Red/Orange for Strength
+    }
+    if (id.includes('power') || id === 'm3') {
+      return '#F5A623'; // Yellow/Gold for Power
+    }
+    if (id.includes('conditioning') || id === 'm4') {
+      return '#7ED321'; // Green for Conditioning
+    }
+    if (id.includes('peak') || id === 'm5') {
+      return '#9013FE'; // Purple for Peak
+    }
+    return theme.secondary; // Default
+  }, [theme]);
+
+  // Get mesocycle info for a date
+  const getMesocycleForDate = useCallback((dateYMD: string): { meso: any; weekInMeso: number; programWeek: number } | null => {
+    if (!startDateYMD || !programData) return null;
+    
+    const offsetDays = daysBetweenYMD(startDateYMD, dateYMD) - programOffset;
+    if (offsetDays < 0) return null;
+    
+    let programWeek: number;
+    if (selectedProgramId === 'hypertrophy') {
+      programWeek = Math.floor(offsetDays / 7) + 1;
+    } else {
+      programWeek = Math.floor(offsetDays / 7) + 1;
+    }
+    
+    const mesoInfo = getMesocycleForWeek(programWeek);
+    if (!mesoInfo) return null;
+    
+    const mesocycles = getMesocycles();
+    const meso = mesocycles.find((m: any) => m.id === mesoInfo.mesoId);
+    if (!meso) return null;
+    
+    return { meso, weekInMeso: mesoInfo.weekInMeso, programWeek };
+  }, [startDateYMD, programData, programOffset, selectedProgramId]);
+
+  // Get microcycle day number from sessionId
+  const getMicrocycleDay = useCallback((sessionId: string): { day: number; totalDays: number } | null => {
+    const parsed = parseSessionId(sessionId);
+    if (!parsed) return null;
+
+    const mesocycles = getMesocycles();
+    const meso = mesocycles.find((m: any) => m.id === parsed.mesoId);
+    if (!meso) return null;
+
+    const trainingDays = (meso as any).trainingDays || (meso as any).microcycle || [];
+    return {
+      day: parsed.dayNumber,
+      totalDays: trainingDays.length,
+    };
+  }, []);
+
+  // Get mesocycle progress percentage
+  const getMesocycleProgress = useCallback((programWeek: number): number => {
+    const mesoInfo = getMesocycleForWeek(programWeek);
+    if (!mesoInfo) return 0;
+
+    const mesocycles = getMesocycles();
+    const meso = mesocycles.find((m: any) => m.id === mesoInfo.mesoId);
+    if (!meso || !meso.weeks || !Array.isArray(meso.weeks)) return 0;
+
+    const totalWeeks = meso.weeks.length;
+    const currentWeek = mesoInfo.weekInMeso + 1; // 1-indexed
+    return Math.round((currentWeek / totalWeeks) * 100);
+  }, []);
+
   // Calculate today's session (checking for swaps first)
   const todaySession = useMemo(() => {
     if (!startDateYMD) return null;
@@ -415,6 +529,66 @@ export default function HomeScreen({ navigation }: Props) {
       return null;
     }
     
+    // Get mesocycle and microcycle info
+    let mesocycleInfo = null;
+    let microcycleInfo = null;
+    let programWeekForMeso = null;
+    
+    if (swap) {
+      // For swapped sessions, get mesocycle from swapped session ID
+      const swappedParsed = parseSessionId(swap.swappedSessionId);
+      if (swappedParsed) {
+        const swappedMeso = mesocycles.find((m: any) => m.id === swappedParsed.mesoId);
+        if (swappedMeso) {
+          // Calculate program week for swapped session
+          const offsetDays = daysBetweenYMD(startDateYMD, todayYMD) - programOffset;
+          if (offsetDays >= 0) {
+            if (selectedProgramId === 'hypertrophy') {
+              programWeekForMeso = Math.floor(offsetDays / 7) + 1;
+            } else {
+              programWeekForMeso = Math.floor(offsetDays / 7) + 1;
+            }
+            const swappedMesoInfo = getMesocycleForWeek(programWeekForMeso);
+            if (swappedMesoInfo && swappedMesoInfo.mesoId === swappedParsed.mesoId) {
+              mesocycleInfo = {
+                id: swappedMeso.id,
+                title: swappedMeso.title || swappedMeso.id,
+                weekInMeso: swappedMesoInfo.weekInMeso + 1,
+                totalWeeks: swappedMeso.weeks?.length || 0,
+                phaseFocus: swappedMeso.phaseFocus || '',
+              };
+              microcycleInfo = getMicrocycleDay(swap.swappedSessionId);
+            }
+          }
+        }
+      }
+    } else {
+      // For regular sessions, calculate from program week
+      const offsetDays = daysBetweenYMD(startDateYMD, todayYMD) - programOffset;
+      if (offsetDays >= 0) {
+        if (selectedProgramId === 'hypertrophy') {
+          programWeekForMeso = Math.floor(offsetDays / 7) + 1;
+        } else {
+          programWeekForMeso = Math.floor(offsetDays / 7) + 1;
+        }
+        
+        const mesoInfo = getMesocycleForWeek(programWeekForMeso);
+        if (mesoInfo) {
+          const currentMeso = mesocycles.find((m: any) => m.id === mesoInfo.mesoId);
+          if (currentMeso) {
+            mesocycleInfo = {
+              id: currentMeso.id,
+              title: currentMeso.title || currentMeso.id,
+              weekInMeso: mesoInfo.weekInMeso + 1,
+              totalWeeks: currentMeso.weeks?.length || 0,
+              phaseFocus: currentMeso.phaseFocus || '',
+            };
+            microcycleInfo = getMicrocycleDay(sessionIdToUse);
+          }
+        }
+      }
+    }
+    
     return {
       sessionId: sessionIdToUse,
       title: day.title || `Day ${parsed.dayNumber}`,
@@ -423,16 +597,41 @@ export default function HomeScreen({ navigation }: Props) {
       date: todayYMD,
       isSwapped: !!swap,
       originalSessionId: swap?.originalSessionId,
+      mesocycle: mesocycleInfo,
+      microcycle: microcycleInfo,
+      programWeek: programWeekForMeso,
     };
-  }, [startDateYMD, programData, currentProgram, swappedSessions, programOffset]);
+  }, [startDateYMD, programData, currentProgram, swappedSessions, programOffset, selectedProgramId, getMesocycleForWeek, getMesocycles, getMicrocycleDay]);
 
-  // Get completion percentage for a session
-  const getCompletionPercentage = (sessionId: string): number => {
-    const session = completedSessions.find(s => s.id === sessionId);
-    if (!session) return 0;
-    // For now, return 100% if completed. Can be enhanced to track partial completion
-    return 100;
-  };
+  // Check if program is complete
+  const isProgramComplete = useMemo(() => {
+    if (!startDateYMD) return false;
+    
+    const todayYMD = formatYMD(new Date());
+    const offsetDays = daysBetweenYMD(startDateYMD, todayYMD) - programOffset;
+    
+    if (offsetDays < 0) return false; // Before program start
+    
+    // Calculate program week
+    let programWeek: number;
+    if (selectedProgramId === 'hypertrophy') {
+      programWeek = Math.floor(offsetDays / 7) + 1;
+    } else {
+      programWeek = Math.floor(offsetDays / 7) + 1;
+    }
+    
+    // Get total weeks
+    const totalWeeks = currentProgram.weeks || programData.macrocycle?.lengthWeeks || (programData as any).macrocycle?.lengthWeeks || 4;
+    
+    return programWeek > totalWeeks;
+  }, [startDateYMD, programOffset, selectedProgramId, currentProgram, programData]);
+
+  // Show program completion modal when program is finished
+  useEffect(() => {
+    if (isProgramComplete && !programCompleteShown && startDateYMD) {
+      setShowProgramCompleteModal(true);
+    }
+  }, [isProgramComplete, programCompleteShown, startDateYMD]);
 
   // Handle day press → show preview instead of navigating immediately
   const handleDayPress = (day: { dateString: string }) => {
@@ -506,6 +705,11 @@ export default function HomeScreen({ navigation }: Props) {
   // Save the start date
   const saveStartDate = async (date: Date) => {
     const ymd = formatYMD(date);
+    
+    // Track start date set
+    analytics.startDateSet(selectedProgramId, ymd).catch(() => {
+      // Silently fail - analytics is optional
+    });
     setStartDateYMD(ymd);
     await AsyncStorage.setItem('startDateYMD', ymd);
     
@@ -514,10 +718,23 @@ export default function HomeScreen({ navigation }: Props) {
     if (programOffset !== 0) {
       setProgramOffset(0);
       await AsyncStorage.setItem('programOffset', '0');
-      console.log('📅 Reset programOffset to 0 when setting start date');
+      if (__DEV__) {
+        console.log('📅 Reset programOffset to 0 when setting start date');
+      }
     }
     
-    console.log('📅 Start date set (YMD):', ymd, 'programOffset:', programOffset);
+    // Success toast
+    Toast.show({
+      type: 'success',
+      text1: '✅ Start Date Set',
+      text2: `Program starts ${ymd}`,
+      position: 'top',
+      visibilityTime: 2000,
+    });
+    
+    if (__DEV__) {
+      console.log('📅 Start date set (YMD):', ymd, 'programOffset:', programOffset);
+    }
   };
 
   // Handle Done button (iOS)
@@ -672,11 +889,14 @@ export default function HomeScreen({ navigation }: Props) {
     setProgramOffset(newOffset);
     await AsyncStorage.setItem('programOffset', String(newOffset));
     
-    Alert.alert(
-      'Workouts Pushed!',
-      `${selected.length} missed workout(s) have been rescheduled. The program will continue from the new position.`,
-      [{ text: 'OK' }]
-    );
+    // Success toast
+    Toast.show({
+      type: 'success',
+      text1: '✅ Workouts Pushed!',
+      text2: `${selected.length} missed workout(s) rescheduled`,
+      position: 'top',
+      visibilityTime: 3000,
+    });
     
     setShowPushModal(false);
     setSelectedMissedSessions(new Set());
@@ -848,9 +1068,19 @@ export default function HomeScreen({ navigation }: Props) {
               setShowSwapModal(false);
               setSwapSearchQuery('');
               setSwapFilterType(null);
-              Alert.alert('Swapped!', `Session swapped successfully. Use "Undo Swap" to revert.`);
+              
+              // Success toast
+              Toast.show({
+                type: 'success',
+                text1: '✅ Session Swapped!',
+                text2: `Replaced with "${newSessionTitle}"`,
+                position: 'top',
+                visibilityTime: 2500,
+              });
             } catch (error) {
-              console.error('Error swapping session:', error);
+              if (__DEV__) {
+                console.error('Error swapping session:', error);
+              }
               Alert.alert('Error', 'Failed to swap session. Please try again.');
             }
           },
@@ -883,9 +1113,19 @@ export default function HomeScreen({ navigation }: Props) {
               delete updated[todayYMD];
               setSwappedSessions(updated);
               await AsyncStorage.setItem('swappedSessions', JSON.stringify(updated));
-              Alert.alert('Undone!', 'Session reverted to original.');
+              
+              // Success toast
+              Toast.show({
+                type: 'success',
+                text1: '↩️ Swap Undone',
+                text2: 'Reverted to original session',
+                position: 'top',
+                visibilityTime: 2000,
+              });
             } catch (error) {
-              console.error('Error undoing swap:', error);
+              if (__DEV__) {
+                console.error('Error undoing swap:', error);
+              }
               Alert.alert('Error', 'Failed to undo swap. Please try again.');
             }
           },
@@ -895,7 +1135,8 @@ export default function HomeScreen({ navigation }: Props) {
   };
 
   // Generate multiple weeks for scrollable calendar (12 weeks = 84 days)
-  const getMultiWeekDates = (viewDate?: Date): string[] => {
+  // Memoized to prevent recalculation on every render
+  const getMultiWeekDates = useCallback((viewDate?: Date): string[] => {
     const dates: string[] = [];
     const startDate = viewDate || calendarViewDate;
     
@@ -917,15 +1158,18 @@ export default function HomeScreen({ navigation }: Props) {
       dates.push(formatYMD(date));
     }
     return dates;
-  };
+  }, [calendarViewDate]);
 
-  const multiWeekDates = getMultiWeekDates();
+  // Memoize multiWeekDates to prevent recalculation
+  const multiWeekDates = useMemo(() => getMultiWeekDates(), [getMultiWeekDates]);
+  
+  // Memoize today's date to avoid recalculating on every render
+  const todayYMD = useMemo(() => formatYMD(new Date()), []);
   
   // Get the index of today in the multi-week dates for auto-scrolling
   const todayIndex = useMemo(() => {
-    const todayYMD = formatYMD(new Date());
     return multiWeekDates.findIndex(d => d === todayYMD);
-  }, [multiWeekDates]);
+  }, [multiWeekDates, todayYMD]);
 
   // Auto-scroll to today when calendar loads or when view date changes
   useEffect(() => {
@@ -942,7 +1186,8 @@ export default function HomeScreen({ navigation }: Props) {
   }, [todayIndex, calendarViewDate]);
 
   // Get session for a specific date (basic info for calendar)
-  const getSessionForDate = (dateYMD: string): { sessionId: string; title: string } | null => {
+  // Memoized with useCallback to prevent recreation on every render
+  const getSessionForDate = useCallback((dateYMD: string): { sessionId: string; title: string } | null => {
     if (!startDateYMD) return null;
     const offsetDays = daysBetweenYMD(startDateYMD, dateYMD) - programOffset;
     if (offsetDays < 0) return null;
@@ -994,7 +1239,7 @@ export default function HomeScreen({ navigation }: Props) {
       sessionId,
       title: day.title || `Day ${dayNumber}`,
     };
-  };
+  }, [startDateYMD, programOffset, selectedProgramId, currentProgram, programData]);
 
   // Get full session details for selected date (for preview)
   const selectedDateSession = useMemo(() => {
@@ -1041,14 +1286,26 @@ export default function HomeScreen({ navigation }: Props) {
     const day = trainingDays.find((d: any) => (d.day === dayNumber || d.dayNumber === dayNumber));
     if (!day) return null;
     
+    // Get mesocycle and microcycle info
+    const microcycleInfo = getMicrocycleDay(sessionId);
+    
     return {
       sessionId,
       title: day.title || `Day ${dayNumber}`,
       durationMinutes: day.durationMinutes || 60,
       blocks: day.blocks || [],
       date: selectedDate,
+      mesocycle: mesoInfo ? {
+        id: meso.id,
+        title: meso.title || meso.id,
+        weekInMeso: mesoInfo.weekInMeso + 1,
+        totalWeeks: meso.weeks?.length || 0,
+        phaseFocus: meso.phaseFocus || '',
+      } : null,
+      microcycle: microcycleInfo,
+      programWeek,
     };
-  }, [selectedDate, startDateYMD, programOffset, programData, currentProgram, selectedProgramId]);
+  }, [selectedDate, startDateYMD, programOffset, programData, currentProgram, selectedProgramId, getMesocycleForWeek, getMesocycles, getMicrocycleDay]);
 
   const styles = useThemedStyles((theme) => StyleSheet.create({
     container: { flex: 1, backgroundColor: theme.background },
@@ -1135,6 +1392,48 @@ export default function HomeScreen({ navigation }: Props) {
     fontWeight: '700',
     color: theme.primary,
     flexShrink: 1,
+  },
+  todayCardMesocycleInfo: {
+    marginBottom: 16,
+    gap: 8,
+  },
+  mesocycleBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    alignSelf: 'flex-start',
+  },
+  mesocycleBadgeText: {
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
+  microcycleIndicator: {
+    fontSize: 13,
+    color: theme.textSecondary,
+    fontWeight: '600',
+    marginTop: -4,
+  },
+  progressBarContainer: {
+    marginTop: 4,
+  },
+  progressBarBackground: {
+    height: 6,
+    backgroundColor: theme.borderLight,
+    borderRadius: 3,
+    overflow: 'hidden',
+    marginBottom: 4,
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  progressBarText: {
+    fontSize: 11,
+    color: theme.textMuted,
+    fontWeight: '600',
+    textAlign: 'right',
   },
   sessionTypeBadge: {
     paddingHorizontal: 10,
@@ -1393,15 +1692,23 @@ export default function HomeScreen({ navigation }: Props) {
     borderRadius: 8,
     borderWidth: 1,
     borderColor: theme.border,
+    minHeight: 70,
+    justifyContent: 'flex-start',
   },
   calendarDayToday: {
     backgroundColor: theme.primaryFaded,
     borderColor: theme.primary,
     borderWidth: 2,
+    shadowColor: theme.primary,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   calendarDaySelected: {
     backgroundColor: theme.secondaryFaded,
     borderColor: theme.secondary,
+    borderWidth: 2,
   },
   calendarDayName: {
     fontSize: 11,
@@ -1421,53 +1728,53 @@ export default function HomeScreen({ navigation }: Props) {
   calendarDayNumberToday: {
     color: theme.primary,
   },
+  calendarMesoLabel: {
+    fontSize: 9,
+    fontWeight: '700',
+    marginBottom: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
   sessionIndicator: {
     width: '80%',
     height: 3,
     borderRadius: 2,
     marginBottom: 4,
   },
-  completionOverlay: {
-    position: 'absolute',
-    top: 2,
-    right: 2,
-    backgroundColor: theme.primary,
-    borderRadius: 8,
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-  },
-  completionText: {
-    fontSize: 9,
-    color: theme.textOnPrimary,
-    fontWeight: '700',
-  },
   readinessBadge: {
     fontSize: 14,
     marginTop: 2,
   },
+  calendarDayCompleted: {
+    backgroundColor: theme.success + '15',
+  },
+  calendarDayCompletedBorder: {
+    borderColor: theme.success,
+    borderWidth: 2,
+  },
+  completionCheckmark: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    fontSize: 16,
+    color: '#FFFFFF',
+    fontWeight: '700',
+    backgroundColor: theme.success,
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    textAlign: 'center',
+    lineHeight: 24,
+    overflow: 'hidden',
+    zIndex: 10,
+    shadowColor: theme.shadow,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+    elevation: 3,
+  },
 
   // Full Calendar
-  fullCalendarSection: {
-    marginBottom: 20,
-  },
-  calendarToggleButton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: theme.card,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: theme.border,
-  },
-  calendarToggleIcon: {
-    fontSize: 16,
-    color: theme.secondary,
-    fontWeight: '700',
-  },
-
   // Modal Styles
   modalOverlay: {
     flex: 1,
@@ -1876,27 +2183,72 @@ export default function HomeScreen({ navigation }: Props) {
 
   // Other Actions
   otherActions: {
-    gap: 12,
     marginTop: 8,
+    marginBottom: 8,
+  },
+  otherActionsTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: theme.primary,
+    marginBottom: 12,
+    paddingHorizontal: 4,
+  },
+  actionButtonsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 8,
   },
   actionButton: {
+    flex: 1,
+    minWidth: '45%',
     backgroundColor: theme.secondary,
-    paddingVertical: 14,
-    borderRadius: 10,
+    paddingVertical: 12,
+    borderRadius: 12,
     alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: theme.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  actionButtonSet: {
+    backgroundColor: theme.backgroundLight,
+    borderWidth: 2,
+    borderColor: theme.border,
   },
   actionButtonSecondary: {
     backgroundColor: theme.card,
     borderWidth: 2,
     borderColor: theme.accentMuted,
   },
+  actionButtonIcon: {
+    fontSize: 20,
+    marginBottom: 4,
+    textAlign: 'center',
+  },
   actionButtonText: {
     color: theme.textOnSecondary,
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  actionButtonTextSet: {
+    color: theme.textSecondary,
+    fontSize: 13,
   },
   actionButtonTextSecondary: {
     color: theme.textSecondary,
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  devButton: {
+    marginTop: 8,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    borderWidth: 2,
   },
   disabledButton: {
     opacity: 0.6,
@@ -1957,18 +2309,78 @@ export default function HomeScreen({ navigation }: Props) {
     fontWeight: '600',
     color: theme.secondary,
   },
+  programCompleteOptions: {
+    gap: 12,
+    marginTop: 8,
+  },
+  programCompleteButton: {
+    borderRadius: 12,
+    padding: 20,
+    borderWidth: 2,
+    alignItems: 'center',
+  },
+  programCompleteButtonPrimary: {
+    backgroundColor: theme.primary,
+    borderColor: theme.primary,
+  },
+  programCompleteButtonSecondary: {
+    backgroundColor: 'transparent',
+    borderColor: theme.secondary,
+  },
+  programCompleteButtonTertiary: {
+    backgroundColor: 'transparent',
+    borderColor: theme.borderLight,
+  },
+  programCompleteButtonText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: theme.textOnPrimary,
+    marginBottom: 4,
+  },
+  programCompleteButtonTextSecondary: {
+    color: theme.secondary,
+  },
+  programCompleteButtonTextTertiary: {
+    color: theme.textSecondary,
+  },
+  programCompleteButtonSubtext: {
+    fontSize: 14,
+    color: theme.textOnPrimary + 'CC',
+    textAlign: 'center',
+  },
+  programCompleteButtonSubtextSecondary: {
+    color: theme.textSecondary,
+  },
+  programCompleteButtonSubtextTertiary: {
+    color: theme.textMuted,
+  },
+  programCompleteNote: {
+    marginTop: 20,
+    padding: 12,
+    backgroundColor: theme.secondary + '15',
+    borderRadius: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: theme.secondary,
+  },
+  programCompleteNoteText: {
+    fontSize: 13,
+    color: theme.textSecondary,
+    lineHeight: 18,
+  },
 
   // Start Date Banner Styles
   startDateBanner: {
     backgroundColor: theme.secondary,
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 16,
+    padding: 20,
     marginBottom: 16,
     shadowColor: theme.shadow,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 6,
+    borderWidth: 2,
+    borderColor: theme.secondaryDark,
   },
   startDateBannerContent: {
     flexDirection: 'row',
@@ -1996,6 +2408,51 @@ export default function HomeScreen({ navigation }: Props) {
   startDateBannerArrow: {
     fontSize: 20,
     color: theme.textOnSecondary,
+    fontWeight: '700',
+  },
+
+  // Empty State Card
+  emptyStateCard: {
+    backgroundColor: theme.card,
+    borderRadius: 16,
+    padding: 24,
+    marginBottom: 16,
+    alignItems: 'center',
+    shadowColor: theme.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: theme.borderLight,
+  },
+  emptyStateIcon: {
+    fontSize: 48,
+    marginBottom: 12,
+  },
+  emptyStateTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: theme.primary,
+    marginBottom: 8,
+  },
+  emptyStateSubtitle: {
+    fontSize: 14,
+    color: theme.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  emptyStateButton: {
+    backgroundColor: theme.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 10,
+    marginTop: 8,
+  },
+  emptyStateButtonText: {
+    color: theme.textOnPrimary,
+    fontSize: 15,
     fontWeight: '700',
   },
 
@@ -2039,6 +2496,16 @@ export default function HomeScreen({ navigation }: Props) {
     fontWeight: '700',
     color: theme.primary,
     flexShrink: 1,
+  },
+  previewCardMesocycleInfo: {
+    marginBottom: 16,
+    gap: 8,
+  },
+  phaseFocusText: {
+    fontSize: 12,
+    color: theme.textSecondary,
+    fontStyle: 'italic',
+    marginTop: 4,
   },
   previewCardDetails: {
     flexDirection: 'row',
@@ -2158,6 +2625,18 @@ export default function HomeScreen({ navigation }: Props) {
           </TouchableOpacity>
         )}
 
+        {/* Progress Dashboard */}
+        {startDateYMD && (
+          <ProgressDashboard
+            completedSessions={completedSessions}
+            startDateYMD={startDateYMD}
+            totalWeeks={currentProgram.weeks}
+            programOffset={programOffset}
+            selectedProgramId={selectedProgramId}
+            programData={programData}
+          />
+        )}
+
         {/* Today's Session Card */}
         {todaySession && (
           <View style={styles.todayCard}>
@@ -2170,12 +2649,43 @@ export default function HomeScreen({ navigation }: Props) {
               </View>
               <View style={[styles.sessionTypeBadge, { backgroundColor: getSessionTypeColor(todaySession.title) + '20' }]}>
                 <Text style={[styles.sessionTypeText, { color: getSessionTypeColor(todaySession.title) }]}>
-                  {todaySession.title.includes('Recovery') || todaySession.title.includes('Mobility') ? 'Recovery' :
-                   todaySession.title.includes('Conditioning') || todaySession.title.includes('Cardio') ? 'Conditioning' :
-                   'Strength'}
+                  {getSessionType(todaySession.title)}
                 </Text>
               </View>
             </View>
+
+            {/* Mesocycle and Microcycle Info */}
+            {todaySession.mesocycle && (
+              <View style={styles.todayCardMesocycleInfo}>
+                <View style={[styles.mesocycleBadge, { backgroundColor: getMesocycleColor(todaySession.mesocycle.id) + '20', borderColor: getMesocycleColor(todaySession.mesocycle.id) }]}>
+                  <Text style={[styles.mesocycleBadgeText, { color: getMesocycleColor(todaySession.mesocycle.id) }]}>
+                    {todaySession.mesocycle.title} • Week {todaySession.mesocycle.weekInMeso} of {todaySession.mesocycle.totalWeeks}
+                  </Text>
+                </View>
+                {todaySession.microcycle && (
+                  <Text style={styles.microcycleIndicator}>
+                    Day {todaySession.microcycle.day} of {todaySession.microcycle.totalDays} • {todaySession.durationMinutes} min
+                  </Text>
+                )}
+                {/* Progress Bar */}
+                <View style={styles.progressBarContainer}>
+                  <View style={styles.progressBarBackground}>
+                    <View 
+                      style={[
+                        styles.progressBarFill, 
+                        { 
+                          width: `${Math.round((todaySession.mesocycle.weekInMeso / todaySession.mesocycle.totalWeeks) * 100)}%`,
+                          backgroundColor: getMesocycleColor(todaySession.mesocycle.id),
+                        }
+                      ]} 
+                    />
+                  </View>
+                  <Text style={styles.progressBarText}>
+                    {Math.round((todaySession.mesocycle.weekInMeso / todaySession.mesocycle.totalWeeks) * 100)}% Complete
+                  </Text>
+                </View>
+              </View>
+            )}
 
             <View style={styles.todayCardDetails}>
               <View style={styles.todayCardDetailItem}>
@@ -2251,6 +2761,45 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         )}
 
+        {/* No Session Today - Enhanced Empty State */}
+        {!todaySession && startDateYMD && (
+          <View style={styles.emptyStateCard}>
+            <Text style={styles.emptyStateIcon}>💪</Text>
+            <Text style={styles.emptyStateTitle}>Rest Day</Text>
+            <Text style={styles.emptyStateSubtitle}>
+              No session scheduled for today. Take time to recover or choose a recovery workout.
+            </Text>
+            <TouchableOpacity
+              style={styles.emptyStateButton}
+              onPress={() => {
+                setRecoveryModalDate(formatYMD(new Date()));
+                setShowRecoveryModal(true);
+              }}
+            >
+              <Text style={styles.emptyStateButtonText}>Choose Recovery Workout</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Upcoming Sessions */}
+        {startDateYMD && (
+          <UpcomingSessions
+            startDateYMD={startDateYMD}
+            programOffset={programOffset}
+            totalWeeks={currentProgram.weeks}
+            getSessionForDate={getSessionForDate}
+            getSessionTypeColor={getSessionTypeColor}
+            onSessionPress={(sessionId, date) => {
+              setSelectedDate(date);
+              handleViewSession(sessionId);
+            }}
+            formatYMD={formatYMD}
+            addDaysYMD={addDaysYMD}
+            parseYMD={parseYMD}
+            selectedProgramId={selectedProgramId}
+          />
+        )}
+
         {/* Expanded Scrollable Calendar */}
         <View style={styles.calendarSection}>
           {/* Calendar Header with Navigation */}
@@ -2300,16 +2849,28 @@ export default function HomeScreen({ navigation }: Props) {
             snapToInterval={DAY_WIDTH * 7} // Snap to week boundaries
             snapToAlignment="start"
           >
-            {multiWeekDates.map((dateYMD) => {
+            {multiWeekDates.map((dateYMD, index) => {
               const session = getSessionForDate(dateYMD);
-              const isToday = dateYMD === formatYMD(new Date());
+              const isToday = dateYMD === todayYMD;
               const isSelected = dateYMD === selectedDate;
-              const completion = session ? getCompletionPercentage(session.sessionId) : 0;
+              const isCompleted = session && completedSessions.some(s => s.id === session.sessionId);
               const date = parseYMD(dateYMD);
               const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
               const dayNumber = date.getDate();
               const sessionColor = session ? getSessionTypeColor(session.title) : theme.textMuted;
               const badge = readinessScore !== null ? getReadinessBadge(readinessScore) : null;
+              
+              // Get mesocycle info for this date
+              const mesoInfo = getMesocycleForDate(dateYMD);
+              const mesoColor = mesoInfo ? getMesocycleColor(mesoInfo.meso.id) : null;
+              
+              // Check if this is the first day of a mesocycle week (show label)
+              const isFirstDayOfMesoWeek = mesoInfo && index > 0 && (() => {
+                const prevDate = parseYMD(multiWeekDates[index - 1]);
+                const prevMesoInfo = getMesocycleForDate(multiWeekDates[index - 1]);
+                return !prevMesoInfo || prevMesoInfo.meso.id !== mesoInfo.meso.id || 
+                       (date.getDay() === 0 || date.getDay() === 1); // Sunday or Monday
+              })();
 
               return (
                 <TouchableOpacity
@@ -2318,9 +2879,20 @@ export default function HomeScreen({ navigation }: Props) {
                     styles.calendarDay,
                     isToday && styles.calendarDayToday,
                     isSelected && styles.calendarDaySelected,
+                    isCompleted && styles.calendarDayCompleted,
+                    isCompleted && styles.calendarDayCompletedBorder,
+                    mesoColor && { borderColor: mesoColor + '40', borderWidth: 2 },
                   ]}
                   onPress={() => handleDayPress({ dateString: dateYMD })}
                 >
+                  {isCompleted && (
+                    <Text style={styles.completionCheckmark}>✓</Text>
+                  )}
+                  {isFirstDayOfMesoWeek && mesoInfo && mesoColor && (
+                    <Text style={[styles.calendarMesoLabel, { color: mesoColor as string }]}>
+                      {mesoInfo.meso.title.charAt(0).toUpperCase()}
+                    </Text>
+                  )}
                   <Text style={[styles.calendarDayName, isToday && styles.calendarDayNameToday]}>
                     {dayName}
                   </Text>
@@ -2330,11 +2902,6 @@ export default function HomeScreen({ navigation }: Props) {
                   {session && (
                     <>
                       <View style={[styles.sessionIndicator, { backgroundColor: sessionColor }]} />
-                      {completion > 0 && (
-                        <View style={styles.completionOverlay}>
-                          <Text style={styles.completionText}>{completion}%</Text>
-                        </View>
-                      )}
                       {badge && (
                         <Text style={[styles.readinessBadge, { color: badge.color }]}>
                           {badge.emoji}
@@ -2362,12 +2929,31 @@ export default function HomeScreen({ navigation }: Props) {
               </View>
               <View style={[styles.sessionTypeBadge, { backgroundColor: getSessionTypeColor(selectedDateSession.title) + '20' }]}>
                 <Text style={[styles.sessionTypeText, { color: getSessionTypeColor(selectedDateSession.title) }]}>
-                  {selectedDateSession.title.includes('Recovery') || selectedDateSession.title.includes('Mobility') ? 'Recovery' :
-                   selectedDateSession.title.includes('Conditioning') || selectedDateSession.title.includes('Cardio') ? 'Conditioning' :
-                   'Strength'}
+                  {getSessionType(selectedDateSession.title)}
                 </Text>
               </View>
             </View>
+
+            {/* Mesocycle Context */}
+            {selectedDateSession.mesocycle && (
+              <View style={styles.previewCardMesocycleInfo}>
+                <View style={[styles.mesocycleBadge, { backgroundColor: getMesocycleColor(selectedDateSession.mesocycle.id) + '20', borderColor: getMesocycleColor(selectedDateSession.mesocycle.id) }]}>
+                  <Text style={[styles.mesocycleBadgeText, { color: getMesocycleColor(selectedDateSession.mesocycle.id) }]}>
+                    {selectedDateSession.mesocycle.title} Phase • Week {selectedDateSession.mesocycle.weekInMeso} of {selectedDateSession.mesocycle.totalWeeks}
+                  </Text>
+                </View>
+                {selectedDateSession.microcycle && (
+                  <Text style={styles.microcycleIndicator}>
+                    Day {selectedDateSession.microcycle.day} of {selectedDateSession.microcycle.totalDays} in microcycle
+                  </Text>
+                )}
+                {selectedDateSession.mesocycle.phaseFocus && (
+                  <Text style={styles.phaseFocusText}>
+                    Focus: {selectedDateSession.mesocycle.phaseFocus}
+                  </Text>
+                )}
+              </View>
+            )}
 
             <View style={styles.previewCardDetails}>
               <View style={styles.previewCardDetailItem}>
@@ -2857,92 +3443,256 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
         </Modal>
 
-        {/* Other Actions */}
+        {/* Program Complete Modal */}
+        <Modal
+          visible={showProgramCompleteModal}
+          transparent
+          animationType="fade"
+          onRequestClose={() => {
+            // Don't allow closing without selecting an option
+          }}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>🎉 Program Complete!</Text>
+                <Text style={styles.modalSubtitle}>
+                  You've finished {currentProgram.title}. What would you like to do next?
+                </Text>
+              </View>
+
+              <View style={styles.programCompleteOptions}>
+                <TouchableOpacity
+                  style={[styles.programCompleteButton, styles.programCompleteButtonPrimary]}
+                  onPress={async () => {
+                    // Repeat Program: Reset start date, programOffset, completedSessions (keep 1RMs and logs)
+                    const todayYMD = formatYMD(new Date());
+                    await AsyncStorage.setItem('startDateYMD', todayYMD);
+                    await AsyncStorage.setItem('programOffset', '0');
+                    await AsyncStorage.removeItem('completedSessions');
+                    await AsyncStorage.removeItem('programCompleteShown');
+                    setStartDateYMD(todayYMD);
+                    setProgramOffset(0);
+                    setCompletedSessions([]);
+                    setProgramCompleteShown(false);
+                    setShowProgramCompleteModal(false);
+                    Toast.show({
+                      type: 'success',
+                      text1: '✅ Program Restarted',
+                      text2: `${currentProgram.title} will start from Week 1, Day 1.`,
+                      position: 'top',
+                      visibilityTime: 3000,
+                    });
+                  }}
+                >
+                  <Text style={styles.programCompleteButtonText}>🔄 Repeat Program</Text>
+                  <Text style={styles.programCompleteButtonSubtext}>
+                    Start {currentProgram.title} from the beginning
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.programCompleteButton, styles.programCompleteButtonSecondary]}
+                  onPress={async () => {
+                    // Choose New Program: Show program picker
+                    setShowProgramCompleteModal(false);
+                    await AsyncStorage.removeItem('programCompleteShown');
+                    setProgramCompleteShown(false);
+                    setShowProgramPicker(true);
+                  }}
+                >
+                  <Text style={[styles.programCompleteButtonText, styles.programCompleteButtonTextSecondary]}>
+                    📋 Choose New Program
+                  </Text>
+                  <Text style={[styles.programCompleteButtonSubtext, styles.programCompleteButtonSubtextSecondary]}>
+                    Select a different program to start
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.programCompleteButton, styles.programCompleteButtonTertiary]}
+                  onPress={async () => {
+                    // Continue Viewing: Dismiss modal, mark as shown
+                    await AsyncStorage.setItem('programCompleteShown', 'true');
+                    setProgramCompleteShown(true);
+                    setShowProgramCompleteModal(false);
+                  }}
+                >
+                  <Text style={[styles.programCompleteButtonText, styles.programCompleteButtonTextTertiary]}>
+                    👀 Continue Viewing
+                  </Text>
+                  <Text style={[styles.programCompleteButtonSubtext, styles.programCompleteButtonSubtextTertiary]}>
+                    Browse past sessions and data
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.programCompleteNote}>
+                <Text style={styles.programCompleteNoteText}>
+                  💡 Your 1RMs and workout logs are preserved and will carry over to your next program.
+                </Text>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Other Actions - Enhanced */}
         <View style={styles.otherActions}>
-          <TouchableOpacity 
-            style={styles.actionButton}
-            onPress={() => navigation.navigate('My1RMs')}
-          >
-            <Text style={styles.actionButtonText}>💪 Go to My 1RMs</Text>
-          </TouchableOpacity>
-
-          {/* Pick Start Date Button - Moved here since it's a one-time setup */}
-          <TouchableOpacity 
-            style={[
-              styles.startDateButton,
-              startDateYMD && styles.startDateButtonSet
-            ]}
-            onPress={handleOpenPicker}
-          >
-            <Text style={[
-              styles.startDateButtonText,
-              startDateYMD && styles.startDateButtonTextSet
-            ]}>
-              {startDateYMD 
-                ? `📅 Start Date: ${parseYMD(startDateYMD).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
-                : '📅 Select Start Date'}
-            </Text>
-          </TouchableOpacity>
+          <Text style={styles.otherActionsTitle}>Quick Actions</Text>
           
-          <TouchableOpacity 
-            style={[
-              styles.actionButton,
-              selectedProgramId !== 'test' && styles.actionButtonSecondary
-            ]}
-            onPress={() => navigation.navigate('TestValidation')}
-          >
-            <Text style={[
-              styles.actionButtonText,
-              selectedProgramId !== 'test' && styles.actionButtonTextSecondary
-            ]}>
-              🧪 {selectedProgramId === 'test' ? 'Open Progression Test Validation' : 'View Progression Test Tools'}
-            </Text>
-          </TouchableOpacity>
+          <View style={styles.actionButtonsGrid}>
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => navigation.navigate('My1RMs')}
+            >
+              <Text style={styles.actionButtonIcon}>💪</Text>
+              <Text style={styles.actionButtonText}>My 1RMs</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.actionButtonSecondary}
-            onPress={() => navigation.navigate('ThemeMockups')}
-          >
-            <Text style={styles.actionButtonTextSecondary}>
-              🎨 View Theme Mockups
-            </Text>
-          </TouchableOpacity>
+            {/* Pick Start Date Button */}
+            <TouchableOpacity 
+              style={[
+                styles.actionButton,
+                startDateYMD && styles.actionButtonSet
+              ]}
+              onPress={handleOpenPicker}
+            >
+              <Text style={styles.actionButtonIcon}>📅</Text>
+              <Text style={[
+                styles.actionButtonText,
+                startDateYMD && styles.actionButtonTextSet
+              ]}>
+                {startDateYMD ? 'Start Date' : 'Set Date'}
+              </Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={[
+                styles.actionButton,
+                selectedProgramId !== 'test' && styles.actionButtonSecondary
+              ]}
+              onPress={() => navigation.navigate('TestValidation')}
+            >
+              <Text style={styles.actionButtonIcon}>🧪</Text>
+              <Text style={[
+                styles.actionButtonText,
+                selectedProgramId !== 'test' && styles.actionButtonTextSecondary
+              ]}>
+                Tests
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={[styles.actionButtonSecondary, { borderColor: theme.error }]}
-            onPress={async () => {
-              Alert.alert(
-                'Reset Onboarding',
-                'This will reset your onboarding status. Would you like to go to the setup screen now?',
-                [
-                  { text: 'Cancel', style: 'cancel' },
-                  {
-                    text: 'Reset & Go to Setup',
-                    style: 'destructive',
-                    onPress: async () => {
-                      try {
-                        await AsyncStorage.removeItem('onboardingComplete');
-                        // Also reset program offset to avoid date calculation issues
-                        await AsyncStorage.removeItem('programOffset');
-                        // Clear start date
-                        await AsyncStorage.removeItem('startDateYMD');
-                        // Update state to reflect cleared start date
-                        setStartDateYMD(null);
-                        // Navigate directly to onboarding
-                        navigation.replace('Onboarding');
-                      } catch (error) {
-                        Alert.alert('Error', 'Failed to reset onboarding.');
-                      }
+            <TouchableOpacity 
+              style={styles.actionButtonSecondary}
+              onPress={() => navigation.navigate('ThemeMockups')}
+            >
+              <Text style={styles.actionButtonIcon}>🎨</Text>
+              <Text style={styles.actionButtonTextSecondary}>
+                Themes
+              </Text>
+            </TouchableOpacity>
+
+            {/* Clear Store Data */}
+            <TouchableOpacity 
+              style={styles.actionButtonSecondary}
+              onPress={async () => {
+                Alert.alert(
+                    'Clear Store Data',
+                    'This will clear all exercise data, session logs, progression states, completed sessions, 1RMs, and exercise history. This cannot be undone. Continue?',
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      {
+                        text: 'Clear All Data',
+                        style: 'destructive',
+                        onPress: async () => {
+                          try {
+                            // Get all keys from AsyncStorage
+                            const allKeys = await AsyncStorage.getAllKeys();
+                            
+                            // Filter out keys we want to keep (theme, analytics settings, etc.)
+                            const keysToKeep = [
+                              'theme',
+                              'analyticsDisabled',
+                              'soundAlertsEnabled',
+                            ];
+                            
+                            // Get keys to remove (all except the ones to keep)
+                            const keysToRemove = allKeys.filter(key => !keysToKeep.includes(key));
+                            
+                            // Remove all exercise and session data
+                            if (keysToRemove.length > 0) {
+                              await AsyncStorage.multiRemove(keysToRemove);
+                            }
+                            
+                            // Reset state
+                            setStartDateYMD(null);
+                            setProgramOffset(0);
+                            setCompletedSessions([]);
+                            setProgramCompleteShown(false);
+                            
+                            // Reset selected program to default
+                            const defaultProgram = PROGRAMS[0].id;
+                            setSelectedProgramId(defaultProgram);
+                            await AsyncStorage.setItem(STORAGE_KEY_PROGRAM, defaultProgram);
+                            
+                            Toast.show({
+                              type: 'success',
+                              text1: '✅ Store Data Cleared',
+                              text2: `Cleared ${keysToRemove.length} items. All exercise data, logs, and sessions reset.`,
+                              position: 'top',
+                              visibilityTime: 3000,
+                            });
+                          } catch (error) {
+                            console.error('Error clearing store data:', error);
+                            Alert.alert('Error', 'Failed to clear store data.');
+                          }
+                        },
+                      },
+                    ]
+                  );
+              }}
+            >
+              <Text style={styles.actionButtonIcon}>🗑️</Text>
+              <Text style={styles.actionButtonTextSecondary}>
+                Clear Data
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Developer Actions - Hidden but functionality preserved */}
+          {false && __DEV__ && (
+            <TouchableOpacity 
+              style={[styles.actionButtonSecondary, styles.devButton, { borderColor: theme.error }]}
+              onPress={async () => {
+                Alert.alert(
+                  'Reset Onboarding',
+                  'This will reset your onboarding status. Would you like to go to the setup screen now?',
+                  [
+                    { text: 'Cancel', style: 'cancel' },
+                    {
+                      text: 'Reset & Go to Setup',
+                      style: 'destructive',
+                      onPress: async () => {
+                        try {
+                          await AsyncStorage.removeItem('onboardingComplete');
+                          await AsyncStorage.removeItem('programOffset');
+                          await AsyncStorage.removeItem('startDateYMD');
+                          setStartDateYMD(null);
+                          navigation.replace('Onboarding');
+                        } catch (error) {
+                          Alert.alert('Error', 'Failed to reset onboarding.');
+                        }
+                      },
                     },
-                  },
-                ]
-              );
-            }}
-          >
-            <Text style={[styles.actionButtonTextSecondary, { color: theme.error }]}>
-              🔄 Reset Onboarding (Dev)
-            </Text>
-          </TouchableOpacity>
+                  ]
+                );
+              }}
+            >
+              <Text style={[styles.actionButtonTextSecondary, { color: theme.error }]}>
+                🔄 Reset Onboarding (Dev)
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
         
         {/* Bottom spacing for scroll */}

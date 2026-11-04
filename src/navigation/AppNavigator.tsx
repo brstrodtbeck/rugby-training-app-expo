@@ -7,12 +7,15 @@ import BaselineSetupScreen from '../screens/BaselineSetupScreen';
 import My1RMs from '../screens/My1RMs';
 import OneRMHistory from '../screens/OneRMHistory';   // <-- file is 1RMHistory.tsx
 import SessionScreen from '../screens/SessionScreen';
+import SessionBlockViewScreen from '../screens/SessionBlockViewScreen';
 import SessionSummaryScreen from '../screens/SessionSummary';
 import TestValidationScreen from '../screens/TestValidationScreen';
 import ThemeMockups from '../screens/ThemeMockups';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import HelpScreen from '../screens/HelpScreen';
+import AccountScreen from '../screens/AccountScreen';
 import { useTheme } from '../theme/ThemeContext';
+import { typography, FONTS } from '../theme/colors';
 
 export type RootStackParamList = {
   Onboarding: undefined;
@@ -25,10 +28,12 @@ export type RootStackParamList = {
   } | undefined;
   '1RMHistory': { exerciseName: string };
   Session: { sessionId: string };
+  SessionBlockView: { sessionId: string };
   SessionSummary: { sessionId: string; completed: number[] };
   TestValidation: undefined;
   ThemeMockups: undefined;
   Help: undefined;
+  Account: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -72,7 +77,8 @@ export default function AppNavigator() {
         },
         headerTintColor: theme.textPrimary,
         headerTitleStyle: {
-          fontWeight: '700',
+          fontSize: typography.fontSize.lg,
+          fontWeight: FONTS.bold,
         },
       }}
     >
@@ -112,6 +118,11 @@ export default function AppNavigator() {
         }}
       />
       <Stack.Screen
+        name="SessionBlockView"
+        component={SessionBlockViewScreen}
+        options={{ title: 'Block View' }}
+      />
+      <Stack.Screen
         name="SessionSummary"
         component={SessionSummaryScreen}
         options={{ title: 'Session Summary' }}
@@ -130,6 +141,11 @@ export default function AppNavigator() {
         name="Help"
         component={HelpScreen}
         options={{ title: 'Help & Instructions' }}
+      />
+      <Stack.Screen
+        name="Account"
+        component={AccountScreen}
+        options={{ title: 'Account' }}
       />
     </Stack.Navigator>
   );

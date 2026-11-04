@@ -415,17 +415,21 @@ const ThemeMockups: React.FC<Props> = ({ navigation }) => {
   const { themeKey, setTheme, theme } = useTheme();
 
   React.useEffect(() => {
-    console.log('[ThemeMockups] Screen mounted');
-    console.log('[ThemeMockups] Current theme key:', themeKey);
-    console.log('[ThemeMockups] Current theme colors:', {
-      primary: theme.primary,
-      background: theme.background,
-      card: theme.card,
-    });
+    if (__DEV__) {
+      console.log('[ThemeMockups] Screen mounted');
+      console.log('[ThemeMockups] Current theme key:', themeKey);
+      console.log('[ThemeMockups] Current theme colors:', {
+        primary: theme.primary,
+        background: theme.background,
+        card: theme.card,
+      });
+    }
   }, [themeKey, theme]);
 
   const handleSelectTheme = async (key: PaletteKey) => {
-    console.log('[ThemeMockups] User selected theme:', key);
+    if (__DEV__) {
+      console.log('[ThemeMockups] User selected theme:', key);
+    }
     // Show confirmation dialog first
     Alert.alert(
       'Select Theme',
@@ -434,15 +438,23 @@ const ThemeMockups: React.FC<Props> = ({ navigation }) => {
         {
           text: 'Cancel',
           style: 'cancel',
-          onPress: () => console.log('[ThemeMockups] User cancelled theme selection'),
+          onPress: () => {
+            if (__DEV__) {
+              console.log('[ThemeMockups] User cancelled theme selection');
+            }
+          },
         },
         {
           text: 'Select & Restart',
           onPress: async () => {
             try {
-              console.log('[ThemeMockups] Calling setTheme with key:', key);
+              if (__DEV__) {
+                console.log('[ThemeMockups] Calling setTheme with key:', key);
+              }
               await setTheme(key);
-              console.log('[ThemeMockups] Theme set successfully');
+              if (__DEV__) {
+                console.log('[ThemeMockups] Theme set successfully');
+              }
               Alert.alert(
                 'Theme Saved',
                 `The "${PALETTES[key].name}" theme has been saved.\n\nTo see the changes, please restart the app.\n\nYou can continue using the app now and restart later, or restart now.`,
@@ -470,7 +482,9 @@ const ThemeMockups: React.FC<Props> = ({ navigation }) => {
                 ]
               );
             } catch (error) {
-              console.error('[ThemeMockups] Error setting theme:', error);
+              if (__DEV__) {
+                console.error('[ThemeMockups] Error setting theme:', error);
+              }
               Alert.alert('Error', 'Failed to apply theme. Please try again.');
             }
           },
@@ -494,7 +508,7 @@ const ThemeMockups: React.FC<Props> = ({ navigation }) => {
           </View>
           <Text style={styles.headerTitle}>🎨 Theme Mockups</Text>
           <Text style={styles.headerSubtitle}>
-            Compare color palettes for RepMaster
+            Compare color palettes for RepDrive
           </Text>
         </View>
 

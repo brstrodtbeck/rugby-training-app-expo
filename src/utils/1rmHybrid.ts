@@ -8,95 +8,106 @@ export interface WarmupSet {
   weight: number;
   /** Number of reps for this warm-up set */
   reps: number;
-  /** Percentage of training max used */
+  /** Percentage of working weight used */
   percentage: number;
   /** Indicates this is a warm-up set (non-loggable) */
   isWarmup: true;
 }
 
-/** Configuration for warm-up set percentages and rep scaling */
+/** Configuration for warm-up set percentages and fixed reps */
 interface WarmupConfig {
   percentage: number;
-  repMultiplier: number; // multiplier of target reps
+  reps: number; // fixed number of reps for this percentage
 }
 
-/** Default warm-up progression percentages */
-const WARMUP_PERCENTAGES: WarmupConfig[] = [
-  { percentage: 0.40, repMultiplier: 1.0 },   // 40% - full target reps
-  { percentage: 0.55, repMultiplier: 0.75 },  // 55% - 75% of target reps
-  { percentage: 0.70, repMultiplier: 0.5 },   // 70% - 50% of target reps
-];
+/** Warm-up configurations by rep range - work backwards from 90% (closest to working weight) */
+const WARMUP_CONFIGS = {
+  /** Low rep exercises (1-3 reps) - need more gradual progression, 4-5 warm-up sets */
+  low: [
+    { percentage: 0.90, reps: 2 },   // 90% - 1-2 reps (close to working weight)
+    { percentage: 0.75, reps: 4 },   // 75% - 4 reps
+    { percentage: 0.60, reps: 6 },   // 60% - 6 reps
+    { percentage: 0.50, reps: 8 },   // 50% - 8 reps
+    { percentage: 0.40, reps: 10 },  // 40% - 10 reps (light weight, more reps)
+  ],
+  /** Medium rep exercises (4-7 reps) - moderate preparation, 2-3 warm-up sets */
+  medium: [
+    { percentage: 0.90, reps: 6 },   // 90% - 6 reps (close to working weight)
+    { percentage: 0.75, reps: 6 },   // 75% - 6 reps
+    { percentage: 0.50, reps: 8 },   // 50% - 8 reps
+  ],
+  /** High rep exercises (8+ reps) - lighter loads, less preparation, 1-2 warm-up sets */
+  high: [
+    { percentage: 0.90, reps: 2 },   // 90% - 1-2 reps (close to working weight)
+    { percentage: 0.60, reps: 8 },   // 60% - 8-10 reps (moderate weight, more reps)
+  ],
+} as const;
 
-/** Minimum reps for any warm-up set */
-const MIN_WARMUP_REPS = 2;
-
-/** Maximum reps for any warm-up set */
-const MAX_WARMUP_REPS = 10;
-
-/** Maximum warm-up volume as a fraction of working set volume (increased to allow all 3 warm-up sets) */
-const MAX_WARMUP_VOLUME_RATIO = 1.5;
+/** Minimum weight for warm-up sets (20 lbs or bar weight) */
+const MIN_WARMUP_WEIGHT = 20;
 
 /**
- * Generates warm-up sets for a given target rep scheme and training max.
+ * Generates warm-up sets for a given target rep scheme and working weight.
  * 
  * Logic:
- * - Uses percentages of training max (40%, 55%, 70%)
- * - Scales reps based on target reps (higher % = fewer reps)
- * - Caps total warm-up volume to ~50% of a single working set volume
+ * - Uses percentages of WORKING WEIGHT (not training max) to ensure warm-ups never exceed working sets
+ * - Adapts warm-up volume based on target rep range:
+ *   - High reps (8+): 1-2 warm-up sets (lighter loads, less preparation)
+ *   - Medium reps (4-7): 2-3 warm-up sets (moderate preparation)
+ *   - Low reps (1-3): 4-5 warm-up sets (heavier loads, more gradual progression)
+ * - Works backwards from 90% (closest to working weight) to lighter percentages
+ * - Lighter warm-up sets use more reps to properly warm up joints and body
+ * - Heavier warm-up sets use fewer reps (closer to working weight)
  * 
  * @param targetReps - The number of reps planned for working sets
- * @param trainingMax - The training max weight (typically 90% of 1RM)
- * @returns Array of warm-up sets with weight, reps, and percentage
+ * @param workingWeight - The actual working set weight (not training max)
+ * @returns Array of warm-up sets with weight, reps, and percentage of working weight
  */
 export function getWarmupSetsForTargetReps(
   targetReps: number,
-  trainingMax: number
+  workingWeight: number
 ): WarmupSet[] {
   // Validate inputs
-  if (!trainingMax || trainingMax <= 0 || !targetReps || targetReps <= 0) {
+  if (!workingWeight || workingWeight <= 0 || !targetReps || targetReps <= 0) {
     return [];
   }
 
-  // Calculate working set volume for a single set (at ~80% of training max)
-  const workingWeight = Math.round(trainingMax * 0.80);
-  const workingSetVolume = workingWeight * targetReps;
-  const maxWarmupVolume = workingSetVolume * MAX_WARMUP_VOLUME_RATIO;
+  // Determine rep range category
+  let configs: readonly WarmupConfig[];
+  if (targetReps >= 8) {
+    // High rep exercises: 1-2 warm-up sets
+    configs = WARMUP_CONFIGS.high;
+  } else if (targetReps >= 4) {
+    // Medium rep exercises: 2-3 warm-up sets
+    configs = WARMUP_CONFIGS.medium;
+  } else {
+    // Low rep exercises (1-3): 4-5 warm-up sets
+    configs = WARMUP_CONFIGS.low;
+  }
 
   const warmupSets: WarmupSet[] = [];
-  let accumulatedVolume = 0;
 
-  for (const config of WARMUP_PERCENTAGES) {
-    // Round to nearest 5 lbs for practical gym use
-    const weight = Math.round((trainingMax * config.percentage) / 5) * 5;
+  // Process configs in order (already sorted from 90% backwards)
+  for (const config of configs) {
+    // Calculate weight as percentage of WORKING WEIGHT (not training max)
+    // This ensures warm-ups never exceed the working set weight
+    const weight = Math.round((workingWeight * config.percentage) / 5) * 5;
     
     // Skip if weight is too light (less than 20 lbs or bar weight)
-    if (weight < 20) {
+    if (weight < MIN_WARMUP_WEIGHT) {
       continue;
     }
 
-    // Calculate reps: scale by multiplier, clamp to min/max
-    let reps = Math.round(targetReps * config.repMultiplier);
-    reps = Math.max(MIN_WARMUP_REPS, Math.min(MAX_WARMUP_REPS, reps));
+    // Ensure warm-up weight never exceeds working weight
+    if (weight >= workingWeight) {
+      continue;
+    }
 
-    // Calculate volume for this set
-    const setVolume = weight * reps;
-
-    // Check if adding this set would exceed volume cap
-    if (accumulatedVolume + setVolume > maxWarmupVolume) {
-      // Try reducing reps to fit within volume cap
-      const availableVolume = maxWarmupVolume - accumulatedVolume;
-      const adjustedReps = Math.floor(availableVolume / weight);
-      
-      if (adjustedReps >= MIN_WARMUP_REPS) {
-        warmupSets.push({
-          weight,
-          reps: adjustedReps,
-          percentage: config.percentage,
-          isWarmup: true,
-        });
-        accumulatedVolume += weight * adjustedReps;
-      }
-      break; // Stop adding more warm-up sets
+    // For high rep exercises, adjust 60% reps to be 8-10 reps
+    let reps = config.reps;
+    if (targetReps >= 8 && config.percentage === 0.60) {
+      // For high rep exercises, use 8-10 reps at 60% (clamp to range)
+      reps = Math.min(10, Math.max(8, targetReps));
     }
 
     warmupSets.push({
@@ -105,7 +116,6 @@ export function getWarmupSetsForTargetReps(
       percentage: config.percentage,
       isWarmup: true,
     });
-    accumulatedVolume += setVolume;
   }
 
   return warmupSets;

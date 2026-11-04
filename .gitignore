@@ -35,3 +35,7 @@ Thumbs.db
 
 # Misc
 *.lock
+
+# Local program backups (not part of the app)
+*.backup
+*.backup.*

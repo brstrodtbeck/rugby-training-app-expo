@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { estimate1RM } from '../utils/1rm';
+import { useThemedStyles } from '../theme/useThemedStyles';
+import { spacing, typography, FONTS } from '../theme/colors';
+import { estimate1RM, getRepBasedPercent } from '../utils/1rm';
 import {
   getExercise1RM,
   saveExercise1RM,
@@ -135,17 +137,7 @@ const ExerciseCard: React.FC<Props> = ({
     // Fallback to rep-based percentage
     const numericReps = parseNumericReps(exercise.reps);
     if (numericReps) {
-      const repPercentMap: Record<number, number> = {
-        2: 0.95,
-        3: 0.9,
-        4: 0.85,
-        5: 0.8,
-        6: 0.75,
-        8: 0.7,
-        10: 0.65,
-        12: 0.6,
-      };
-      const percent = repPercentMap[numericReps] ?? 0.7;
+      const percent = getRepBasedPercent(numericReps);
       const weight = Math.round(avg1RM * percent);
       return `${weight} lbs (${Math.round(percent * 100)}% 1RM)`;
     }
@@ -169,6 +161,88 @@ const ExerciseCard: React.FC<Props> = ({
 
   // Should we show set logging inputs?
   const showSetLogging = isTrackableFor1RM(exercise) || (hasSetReps(exercise) && exercise.trackingMode === 'volume');
+
+  const styles = useThemedStyles((theme) =>
+    StyleSheet.create({
+      card: {
+        marginBottom: spacing.base,
+        padding: spacing.md,
+        borderWidth: 1,
+        borderColor: theme.border,
+        borderRadius: spacing.sm,
+        backgroundColor: theme.card,
+      },
+      title: {
+        fontSize: typography.fontSize.base,
+        fontWeight: FONTS.semibold,
+        marginBottom: spacing.xxs,
+        color: theme.textPrimary,
+      },
+      details: {
+        fontSize: typography.fontSize.body,
+        color: theme.textPrimary,
+        marginBottom: spacing.xxs,
+      },
+      intensity: {
+        fontSize: typography.fontSize.sm,
+        color: theme.textSecondary,
+        marginBottom: 2,
+      },
+      tempo: {
+        fontSize: typography.fontSize.sm,
+        color: theme.textSecondary,
+        marginBottom: 2,
+      },
+      notes: {
+        fontSize: typography.fontSize.sm,
+        fontStyle: 'italic',
+        color: theme.textMuted,
+        marginBottom: spacing.xs,
+      },
+      suggestion: {
+        fontSize: typography.fontSize.body,
+        fontStyle: 'italic',
+        marginBottom: spacing.xs,
+        color: theme.info,
+      },
+      setsContainer: {
+        marginTop: spacing.sm,
+        paddingTop: spacing.sm,
+        borderTopWidth: 1,
+        borderTopColor: theme.borderLight,
+      },
+      setRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: spacing.xs,
+      },
+      setLabel: {
+        width: 60,
+        fontSize: typography.fontSize.body,
+        color: theme.textPrimary,
+      },
+      input: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: theme.border,
+        borderRadius: spacing.xs,
+        padding: spacing.xs,
+        marginHorizontal: spacing.xxs,
+        color: theme.textPrimary,
+      },
+      restRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: spacing.sm,
+      },
+      restText: {
+        marginLeft: spacing.md,
+        fontSize: typography.fontSize.body,
+        fontWeight: FONTS.medium,
+        color: theme.textPrimary,
+      },
+    })
+  );
 
   return (
     <View style={styles.card}>
@@ -254,81 +328,5 @@ const ExerciseCard: React.FC<Props> = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    marginBottom: 16,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  details: {
-    fontSize: 14,
-    color: '#333',
-    marginBottom: 4,
-  },
-  intensity: {
-    fontSize: 13,
-    color: '#555',
-    marginBottom: 2,
-  },
-  tempo: {
-    fontSize: 13,
-    color: '#555',
-    marginBottom: 2,
-  },
-  notes: {
-    fontSize: 13,
-    fontStyle: 'italic',
-    color: '#666',
-    marginBottom: 6,
-  },
-  suggestion: {
-    fontSize: 14,
-    fontStyle: 'italic',
-    marginBottom: 6,
-    color: '#0a84ff',
-  },
-  setsContainer: {
-    marginTop: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
-  },
-  setRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  setLabel: {
-    width: 60,
-    fontSize: 14,
-  },
-  input: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
-    padding: 6,
-    marginHorizontal: 4,
-  },
-  restRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  restText: {
-    marginLeft: 12,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-});
 
 export default ExerciseCard;

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,22 @@ import {
   TouchableOpacity,
   SafeAreaView,
   TextInput,
+  Share,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { THEME } from '../theme/colors';
+import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
+import { exportUserData, importUserData } from '../utils/exportUserData';
+import {
+  backupToCloudNow,
+  restoreFromCloud,
+  getLastBackupTime,
+} from '../storage/cloudBackup';
+import { isFirebaseConfigured } from '../config/firebase';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Help'>;
 
@@ -25,10 +37,132 @@ interface HelpSection {
 export default function HelpScreen({ navigation }: Props) {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [exportLoading, setExportLoading] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [importLoading, setImportLoading] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importSuccess, setImportSuccess] = useState<string | null>(null);
+  const [backupLoading, setBackupLoading] = useState(false);
+  const [backupError, setBackupError] = useState<string | null>(null);
+  const [restoreLoading, setRestoreLoading] = useState(false);
+  const [restoreError, setRestoreError] = useState<string | null>(null);
+  const [lastBackupTime, setLastBackupTime] = useState<string | null>(null);
 
   const toggleSection = (sectionId: string) => {
     setExpandedSection(expandedSection === sectionId ? null : sectionId);
   };
+
+  const handleExportData = useCallback(async () => {
+    setExportLoading(true);
+    setExportError(null);
+    try {
+      const json = await exportUserData({ includeSuggestionSnapshot: true });
+      const date = new Date().toISOString().slice(0, 10);
+      await Share.share({
+        message: json,
+        title: `RepDrive-export-${date}.json`,
+      });
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Export failed';
+      setExportError(message);
+      Alert.alert('Export failed', message + '\n\nTry again or check storage permissions.');
+    } finally {
+      setExportLoading(false);
+    }
+  }, []);
+
+  const handleImportData = useCallback(async () => {
+    setImportLoading(true);
+    setImportError(null);
+    setImportSuccess(null);
+    try {
+      const pickerResult = await DocumentPicker.getDocumentAsync({
+        type: ['application/json', 'text/plain'],
+        copyToCacheDirectory: true,
+      });
+      if (pickerResult.canceled || !pickerResult.assets?.[0]?.uri) {
+        setImportLoading(false);
+        return;
+      }
+      const uri = pickerResult.assets[0].uri;
+      const jsonString = await FileSystem.readAsStringAsync(uri, { encoding: 'utf8' });
+      const result = await importUserData(jsonString);
+      if (!result.success) {
+        setImportError(result.error ?? 'Import failed');
+        return;
+      }
+      setImportSuccess(
+        result.restoredKeys > 0
+          ? `Restored ${result.restoredKeys} items. Close and reopen the app to see your data.`
+          : 'File had no data to restore.'
+      );
+    } catch (e) {
+      const message = e instanceof Error ? e.message : 'Import failed';
+      setImportError(message);
+    } finally {
+      setImportLoading(false);
+    }
+  }, []);
+
+  const refreshLastBackupTime = useCallback(async () => {
+    const t = await getLastBackupTime();
+    setLastBackupTime(t);
+  }, []);
+
+  const handleBackupNow = useCallback(async () => {
+    setBackupLoading(true);
+    setBackupError(null);
+    try {
+      const result = await backupToCloudNow();
+      if (result.ok) {
+        setLastBackupTime(new Date().toISOString());
+      } else {
+        setBackupError(result.error ?? 'Backup failed');
+      }
+    } catch (e) {
+      setBackupError(e instanceof Error ? e.message : 'Backup failed');
+    } finally {
+      setBackupLoading(false);
+    }
+  }, []);
+
+  const handleRestoreFromCloud = useCallback(async () => {
+    Alert.alert(
+      'Restore from cloud',
+      'This will overwrite your current app data with the last cloud backup. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Restore',
+          onPress: async () => {
+            setRestoreLoading(true);
+            setRestoreError(null);
+            try {
+              const result = await restoreFromCloud();
+              if (result.ok) {
+                Alert.alert(
+                  'Restored',
+                  `Data restored from backup (${result.backedUpAt ? new Date(result.backedUpAt).toLocaleString() : 'unknown'}). Restart the app to see your data.`
+                );
+              } else {
+                setRestoreError(result.error ?? 'Restore failed');
+              }
+            } catch (e) {
+              setRestoreError(e instanceof Error ? e.message : 'Restore failed');
+            } finally {
+              setRestoreLoading(false);
+            }
+          },
+        },
+      ]
+    );
+  }, []);
+
+  useEffect(() => {
+    if (expandedSection === 'backup-restore') {
+      refreshLastBackupTime();
+    }
+  }, [expandedSection, refreshLastBackupTime]);
 
   // Auto-expand sections when searching (moved after sections definition)
 
@@ -41,7 +175,7 @@ export default function HelpScreen({ navigation }: Props) {
       content: (
         <View style={styles.sectionContent}>
           <Text style={styles.paragraph}>
-            Welcome to RepMaster! This app helps you track your workouts and automatically progress your weights using intelligent algorithms.
+            Welcome to RepDrive! This app helps you track your workouts and automatically progress your weights using intelligent algorithms.
           </Text>
           
           <Text style={styles.subheading}>First Steps:</Text>
@@ -65,7 +199,7 @@ export default function HelpScreen({ navigation }: Props) {
       content: (
         <View style={styles.sectionContent}>
           <Text style={styles.paragraph}>
-            RepMaster uses two intelligent progression systems:
+            RepDrive uses two intelligent progression systems:
           </Text>
 
           <Text style={styles.subheading}>Main Lifts (Hybrid 1RM System):</Text>
@@ -297,6 +431,129 @@ export default function HelpScreen({ navigation }: Props) {
         </View>
       ),
     },
+    {
+      id: 'export-data',
+      title: 'Export my data',
+      icon: '📤',
+      searchableText: 'export data debugging suggestions weight progression pull data',
+      content: (
+        <View style={styles.sectionContent}>
+          <Text style={styles.paragraph}>
+            Export your stored data and suggestion details to debug weight suggestions and progression. Use Share to save the file (e.g. to Files or email yourself).
+          </Text>
+          {exportError != null && (
+            <Text style={styles.exportError}>{exportError}</Text>
+          )}
+          <TouchableOpacity
+            style={[styles.exportButton, exportLoading && styles.exportButtonDisabled]}
+            onPress={handleExportData}
+            disabled={exportLoading}
+          >
+            {exportLoading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.exportButtonText}>Export my data</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      ),
+    },
+    {
+      id: 'import-data',
+      title: 'Import from backup',
+      icon: '📥',
+      searchableText: 'import backup restore data Expo Go reinstalled app transfer',
+      content: (
+        <View style={styles.sectionContent}>
+          <Text style={styles.paragraph}>
+            If you reinstalled the app or switched from Expo Go to the full app, your data lives in a different place. Export your data from the app that has it (e.g. Expo Go), save the file, then open the app where you want the data and use Import here.
+          </Text>
+          <Text style={styles.paragraph}>
+            If you get a new phone, export your data on the old device and save the file to iCloud or email. On your new device, install the app and use Import from backup file here.
+          </Text>
+          <Text style={styles.paragraph}>
+            Choose a RepDrive export file (JSON) you saved earlier.
+          </Text>
+          {importError != null && (
+            <Text style={styles.exportError}>{importError}</Text>
+          )}
+          {importSuccess != null && (
+            <Text style={styles.importSuccess}>{importSuccess}</Text>
+          )}
+          <TouchableOpacity
+            style={[styles.exportButton, importLoading && styles.exportButtonDisabled]}
+            onPress={handleImportData}
+            disabled={importLoading}
+          >
+            {importLoading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.exportButtonText}>Import from backup file</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      ),
+    },
+    {
+      id: 'backup-restore',
+      title: 'Backup & restore (cloud)',
+      icon: '☁️',
+      searchableText: 'backup restore cloud sync data safe lost reinstall',
+      content: (
+        <View style={styles.sectionContent}>
+          <Text style={styles.paragraph}>
+            Back up your progress to the cloud so you don't lose data if you reinstall or switch devices. Restore from the last backup when needed.
+          </Text>
+          <Text style={styles.paragraph}>
+            Sign in with your account (Account screen) to have backups tied to you. On a new device, sign in and tap Restore from backup below.
+          </Text>
+          <TouchableOpacity
+            style={[styles.exportButton, { marginBottom: 12 }]}
+            onPress={() => navigation.navigate('Account')}
+          >
+            <Text style={styles.exportButtonText}>Account / Sign in</Text>
+          </TouchableOpacity>
+          {!isFirebaseConfigured() && (
+            <Text style={styles.paragraph}>
+              Cloud backup is not configured. Add Firebase web config to app.json extra.firebase to enable.
+            </Text>
+          )}
+          {lastBackupTime != null && (
+            <Text style={styles.paragraph}>
+              Last backup: {new Date(lastBackupTime).toLocaleString()}
+            </Text>
+          )}
+          {backupError != null && (
+            <Text style={styles.exportError}>{backupError}</Text>
+          )}
+          {restoreError != null && (
+            <Text style={styles.exportError}>{restoreError}</Text>
+          )}
+          <TouchableOpacity
+            style={[styles.exportButton, (backupLoading || !isFirebaseConfigured()) && styles.exportButtonDisabled]}
+            onPress={handleBackupNow}
+            disabled={backupLoading || !isFirebaseConfigured()}
+          >
+            {backupLoading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.exportButtonText}>Back up now</Text>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.exportButton, { marginTop: 8 }, (restoreLoading || !isFirebaseConfigured()) && styles.exportButtonDisabled]}
+            onPress={handleRestoreFromCloud}
+            disabled={restoreLoading || !isFirebaseConfigured()}
+          >
+            {restoreLoading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.exportButtonText}>Restore from backup</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      ),
+    },
   ];
 
   // Filter sections based on search query
@@ -332,7 +589,7 @@ export default function HelpScreen({ navigation }: Props) {
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Help & Instructions</Text>
           <Text style={styles.headerSubtitle}>
-            Learn how to get the most out of RepMaster
+            Learn how to get the most out of RepDrive
           </Text>
         </View>
 
@@ -606,6 +863,33 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: THEME.textSecondary,
     lineHeight: 20,
+  },
+  exportError: {
+    fontSize: 14,
+    color: THEME.error ?? '#d32f2f',
+    marginBottom: 12,
+  },
+  importSuccess: {
+    fontSize: 14,
+    color: THEME.success ?? '#2e7d32',
+    marginBottom: 12,
+  },
+  exportButton: {
+    backgroundColor: THEME.primary,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 48,
+  },
+  exportButtonDisabled: {
+    opacity: 0.7,
+  },
+  exportButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
   },
   footer: {
     marginTop: 24,

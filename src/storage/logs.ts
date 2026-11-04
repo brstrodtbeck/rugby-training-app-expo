@@ -1,12 +1,46 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const getExercise1RM = async (exerciseName: string): Promise<number | null> => {
-  const saved = await AsyncStorage.getItem(`${exerciseName}-1RM`);
-  return saved ? Number(saved) : null;
+  // Try new format first: "1RM:ExerciseName" → {value: number, date: string}
+  const newFormatKey = `1RM:${exerciseName}`;
+  const newFormatRaw = await AsyncStorage.getItem(newFormatKey);
+  if (newFormatRaw) {
+    try {
+      const parsed = JSON.parse(newFormatRaw);
+      if (typeof parsed?.value === 'number') {
+        return parsed.value;
+      }
+    } catch {
+      // Not JSON, might be a plain number string (fallback)
+      const num = parseFloat(newFormatRaw);
+      if (!isNaN(num)) return num;
+    }
+  }
+  
+  // Fallback to old format: "ExerciseName-1RM" → "number"
+  const oldFormatKey = `${exerciseName}-1RM`;
+  const oldFormatRaw = await AsyncStorage.getItem(oldFormatKey);
+  if (oldFormatRaw) {
+    const num = parseFloat(oldFormatRaw);
+    if (!isNaN(num)) {
+      // Migrate to new format for future consistency
+      await AsyncStorage.setItem(
+        newFormatKey,
+        JSON.stringify({ value: num, date: new Date().toISOString(), migrated: true })
+      );
+      return num;
+    }
+  }
+  
+  return null;
 };
 
 export const saveExercise1RM = async (exerciseName: string, oneRM: number): Promise<void> => {
-  await AsyncStorage.setItem(`${exerciseName}-1RM`, String(oneRM));
+  const newFormatKey = `1RM:${exerciseName}`;
+  const legacyKey = `${exerciseName}-1RM`;
+  const payload = { value: oneRM, date: new Date().toISOString() };
+  await AsyncStorage.setItem(newFormatKey, JSON.stringify(payload));
+  await AsyncStorage.setItem(legacyKey, String(oneRM)); // Legacy format for backward compatibility
 };
 
 export const getSetLog = async (

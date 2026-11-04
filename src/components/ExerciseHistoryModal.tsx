@@ -29,7 +29,7 @@ export default function ExerciseHistoryModal({
   visible,
   exerciseName,
   onClose,
-}: ExerciseHistoryModalProps): JSX.Element {
+}: ExerciseHistoryModalProps): React.ReactElement {
   const [history, setHistory] = useState<ExerciseLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 

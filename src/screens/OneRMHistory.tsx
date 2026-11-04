@@ -14,6 +14,53 @@ interface HistoryEntry {
   date: string;
 }
 
+// Helper to safely parse dates (handles both ISO and toLocaleString formats)
+const parseDate = (dateString: string): Date => {
+  // Try ISO format first (new format) - e.g., "2024-01-15T20:30:00.000Z"
+  const isoDate = new Date(dateString);
+  if (!isNaN(isoDate.getTime()) && dateString.includes('T')) {
+    return isoDate;
+  }
+  
+  // Try parsing toLocaleString() format: "M/D/YYYY, H:MM:SS AM/PM"
+  // Example: "12/19/2025, 2:21:01 PM"
+  // Note: The space after comma might be a regular space or non-breaking space
+  const localeStringPattern = /^(\d{1,2})\/(\d{1,2})\/(\d{4}),\s*(\d{1,2}):(\d{2}):(\d{2})\s+(AM|PM)$/i;
+  const localeMatch = dateString.match(localeStringPattern);
+  
+  if (localeMatch) {
+    const [, month, day, year, hour12, minute, second, ampm] = localeMatch;
+    const monthNum = parseInt(month, 10) - 1; // 0-indexed
+    const dayNum = parseInt(day, 10);
+    const yearNum = parseInt(year, 10);
+    let hour24 = parseInt(hour12, 10);
+    
+    // Convert 12-hour to 24-hour format
+    if (ampm.toUpperCase() === 'PM' && hour24 !== 12) {
+      hour24 += 12;
+    } else if (ampm.toUpperCase() === 'AM' && hour24 === 12) {
+      hour24 = 0;
+    }
+    
+    const date = new Date(yearNum, monthNum, dayNum, hour24, parseInt(minute, 10), parseInt(second, 10));
+    if (!isNaN(date.getTime())) {
+      return date;
+    }
+  }
+  
+  // Try other common formats as fallback
+  const fallbackDate = new Date(dateString);
+  if (!isNaN(fallbackDate.getTime())) {
+    return fallbackDate;
+  }
+  
+  // Last resort: return current date if parsing fails
+  if (__DEV__) {
+    console.warn('Failed to parse date:', dateString, 'using current date as fallback');
+  }
+  return new Date();
+};
+
 export default function OneRMHistory(_: Props) {
   const route = useRoute<HistoryRouteProp>();
   const { exerciseName } = route.params;
@@ -24,8 +71,27 @@ export default function OneRMHistory(_: Props) {
       try {
         const raw = await AsyncStorage.getItem(`1RMHistory:${exerciseName}`);
         const data: HistoryEntry[] = raw ? JSON.parse(raw) : [];
-        const sorted = data.sort(
-          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        
+        // Filter out invalid dates and migrate old format to ISO
+        const processed = data.map((entry) => {
+          const parsedDate = parseDate(entry.date);
+          const isValid = !isNaN(parsedDate.getTime());
+          
+          // If date is invalid or in old format, convert to ISO
+          if (!isValid || !entry.date.includes('T')) {
+            return { ...entry, date: parsedDate.toISOString() };
+          }
+          return entry;
+        });
+        
+        // Save migrated data back if any were updated
+        const needsMigration = processed.some((entry, idx) => entry.date !== data[idx].date);
+        if (needsMigration) {
+          await AsyncStorage.setItem(`1RMHistory:${exerciseName}`, JSON.stringify(processed));
+        }
+        
+        const sorted = processed.sort(
+          (a, b) => parseDate(a.date).getTime() - parseDate(b.date).getTime()
         );
         setHistory(sorted);
       } catch (error) {
@@ -37,7 +103,7 @@ export default function OneRMHistory(_: Props) {
 
   const chartData = history.map((entry) => ({
     value: entry.value,
-    label: new Date(entry.date).toLocaleDateString(),
+    label: parseDate(entry.date).toLocaleDateString(),
   }));
 
   return (
@@ -72,12 +138,19 @@ export default function OneRMHistory(_: Props) {
       <FlatList
         data={[...history].reverse()} // latest first
         keyExtractor={(_, i) => i.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.row}>
-            <Text style={styles.date}>{new Date(item.date).toLocaleDateString()}</Text>
-            <Text style={styles.value}>{item.value} lbs</Text>
-          </View>
-        )}
+        renderItem={({ item }) => {
+          const date = parseDate(item.date);
+          const dateString = !isNaN(date.getTime()) 
+            ? date.toLocaleDateString() 
+            : 'Invalid Date';
+          
+          return (
+            <View style={styles.row}>
+              <Text style={styles.date}>{dateString}</Text>
+              <Text style={styles.value}>{item.value} lbs</Text>
+            </View>
+          );
+        }}
       />
     </View>
   );

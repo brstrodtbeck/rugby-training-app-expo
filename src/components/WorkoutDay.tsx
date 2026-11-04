@@ -1,11 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import ExerciseCard from './ExerciseCard';
-import {
-  Block,
-  FlattenedExercise,
-  flattenExercises,
-} from '../types/program';
+import { useThemedStyles } from '../theme/useThemedStyles';
+import { spacing, typography, FONTS } from '../theme/colors';
+import { Block } from '../types/program';
 
 interface Props {
   blocks: Block[];
@@ -16,6 +14,33 @@ interface Props {
 }
 
 const WorkoutDay: React.FC<Props> = ({ blocks, mesoId, weekNum, dayNum, oneRMMap = {} }) => {
+  const styles = useThemedStyles((theme) =>
+    StyleSheet.create({
+      blockContainer: {
+        marginBottom: spacing.base,
+      },
+      blockHeader: {
+        backgroundColor: theme.backgroundLight,
+        paddingVertical: spacing.sm,
+        paddingHorizontal: spacing.md,
+        borderRadius: spacing.xs,
+        marginBottom: spacing.md,
+      },
+      blockTitle: {
+        fontSize: typography.fontSize.body,
+        fontWeight: FONTS.semibold,
+        color: theme.textPrimary,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+      },
+      blockMeta: {
+        fontSize: typography.fontSize.xs,
+        color: theme.textSecondary,
+        marginTop: 2,
+      },
+    })
+  );
+
   return (
     <View>
       {blocks.map((block, blockIndex) => (
@@ -49,30 +74,5 @@ const WorkoutDay: React.FC<Props> = ({ blocks, mesoId, weekNum, dayNum, oneRMMap
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  blockContainer: {
-    marginBottom: 16,
-  },
-  blockHeader: {
-    backgroundColor: '#f0f4f8',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 6,
-    marginBottom: 12,
-  },
-  blockTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#4a5568',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  blockMeta: {
-    fontSize: 12,
-    color: '#718096',
-    marginTop: 2,
-  },
-});
 
 export default WorkoutDay;

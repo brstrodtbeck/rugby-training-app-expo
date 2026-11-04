@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { getExercise1RM } from '../storage/logs';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -18,6 +19,10 @@ import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemedStyles } from '../theme/useThemedStyles';
 import { useTheme } from '../theme/ThemeContext';
+import { triggerHaptic } from '../utils/haptics';
+import { analytics } from '../utils/analytics';
+import Toast from 'react-native-toast-message';
+import { validateWeightInput, validateRepsInput, validate1RMInput, isValidWeight, isValidReps, isValid1RM } from '../utils/inputValidation';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'My1RMs'>;
 type RouteProp = NativeStackScreenProps<RootStackParamList, 'My1RMs'>['route'];
@@ -279,46 +284,89 @@ const My1RMs: React.FC = () => {
   }));
 
   const handleSave = async (value: number) => {
-    if (!value || value <= 0) return;
-
-    // Save latest 1RM
-    await AsyncStorage.setItem(
-      `1RM:${selectedExercise}`,
-      JSON.stringify({ value, date: new Date().toISOString() })
-    );
-
-    // Append to history
-    const rawHistory = await AsyncStorage.getItem(`1RMHistory:${selectedExercise}`);
-    const history = rawHistory ? JSON.parse(rawHistory) : [];
-    const newEntry = { value, date: new Date().toLocaleString() };
-    const updatedHistory = [newEntry, ...history];
-    await AsyncStorage.setItem(`1RMHistory:${selectedExercise}`, JSON.stringify(updatedHistory));
-
-    // Update local state so FlatList refreshes
-    setOneRMs((prev) => {
-      const updated = prev.filter((entry) => entry.name !== selectedExercise);
-      return [...updated, { name: selectedExercise, value }];
-    });
-
-    // Session-aware callback
-    if (route.params?.onUpdate1RM) {
-      route.params.onUpdate1RM(selectedExercise, value);
+    if (!value || value <= 0) {
+      Alert.alert('Invalid Value', 'Please enter a valid 1RM value greater than 0.');
+      return;
     }
 
-    // Reset form
-    setManual1RM('');
-    setWeight('');
-    setReps('');
-    setCalculated1RM(null);
+    // Haptic feedback for saving 1RM
+    triggerHaptic.success();
+
+    try {
+      // Save latest 1RM
+      await AsyncStorage.setItem(
+        `1RM:${selectedExercise}`,
+        JSON.stringify({ value, date: new Date().toISOString() })
+      );
+
+      // Append to history
+      const rawHistory = await AsyncStorage.getItem(`1RMHistory:${selectedExercise}`);
+      const history = rawHistory ? JSON.parse(rawHistory) : [];
+      // Use ISO string for reliable date parsing across platforms
+      const newEntry = { value, date: new Date().toISOString() };
+      const updatedHistory = [newEntry, ...history];
+      await AsyncStorage.setItem(`1RMHistory:${selectedExercise}`, JSON.stringify(updatedHistory));
+
+      // Update local state so FlatList refreshes
+      setOneRMs((prev) => {
+        const updated = prev.filter((entry) => entry.name !== selectedExercise);
+        return [...updated, { name: selectedExercise, value }];
+      });
+
+      // Track 1RM entry
+      const method = manual1RM && Number(manual1RM) > 0 ? 'manual' : 'calculated';
+      analytics.oneRMEntered(selectedExercise, value, method).catch(() => {
+        // Silently fail - analytics is optional
+      });
+
+      // Session-aware callback
+      if (route.params?.onUpdate1RM) {
+        route.params.onUpdate1RM(selectedExercise, value);
+      }
+
+      // Reset form
+      setManual1RM('');
+      setWeight('');
+      setReps('');
+      setCalculated1RM(null);
+
+      // Success toast
+      Toast.show({
+        type: 'success',
+        text1: '✅ 1RM Saved',
+        text2: `${selectedExercise}: ${value} lbs`,
+        position: 'top',
+        visibilityTime: 2000,
+      });
+    } catch (error) {
+      if (__DEV__) {
+        console.error('Error saving 1RM:', error);
+      }
+      Alert.alert('Error', 'Failed to save 1RM. Please try again.');
+    }
   };
 
   const handleCalculate = () => {
+    // Validate inputs before calculation
+    if (!isValidWeight(weight) || !isValidReps(reps)) {
+      Alert.alert(
+        'Invalid Input',
+        'Please enter valid numbers:\n• Weight must be greater than 0\n• Reps must be a positive whole number',
+        [{ text: 'OK' }]
+      );
+      setCalculated1RM(null);
+      return;
+    }
+
     const w = parseFloat(weight);
     const r = parseInt(reps, 10);
     if (!w || !r || w <= 0 || r <= 0) {
       setCalculated1RM(null);
       return;
     }
+
+    // Haptic feedback for calculation
+    triggerHaptic.selection();
 
     const oneRM = estimate1RM(w, r);
     setCalculated1RM(oneRM);
@@ -350,6 +398,25 @@ const My1RMs: React.FC = () => {
     };
     load1RMs();
   }, [exerciseNames]);
+
+  // Reload 1RMs when screen comes into focus (in case user saved from another screen)
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      const load1RMs = async () => {
+        const results: OneRMEntry[] = [];
+        for (const name of exerciseNames) {
+          const value = await getExercise1RM(name);
+          if (value) {
+            results.push({ name, value });
+          }
+        }
+        setOneRMs(results);
+      };
+      load1RMs();
+    });
+
+    return unsubscribe;
+  }, [navigation, exerciseNames]);
 
   // Epley formula
   function estimate1RM(weight: number, reps: number): number {
@@ -403,9 +470,10 @@ const My1RMs: React.FC = () => {
               keyboardType="numeric"
               value={manual1RM}
               onChangeText={(text) => {
-                setManual1RM(text);
+                const validated = validate1RMInput(text);
+                setManual1RM(validated);
                 // Clear calculated if manual entry is used
-                if (text) {
+                if (validated) {
                   setCalculated1RM(null);
                 }
               }}
@@ -429,10 +497,11 @@ const My1RMs: React.FC = () => {
               keyboardType="numeric"
               value={weight}
               onChangeText={(text) => {
-                setWeight(text);
+                const validated = validateWeightInput(text);
+                setWeight(validated);
                 setCalculated1RM(null);
                 // Clear manual if calculator is used
-                if (text) {
+                if (validated) {
                   setManual1RM('');
                 }
               }}
@@ -444,10 +513,11 @@ const My1RMs: React.FC = () => {
               keyboardType="numeric"
               value={reps}
               onChangeText={(text) => {
-                setReps(text);
+                const validated = validateRepsInput(text);
+                setReps(validated);
                 setCalculated1RM(null);
                 // Clear manual if calculator is used
-                if (text) {
+                if (validated) {
                   setManual1RM('');
                 }
               }}
@@ -473,6 +543,9 @@ const My1RMs: React.FC = () => {
             <TouchableOpacity 
               style={styles.saveButton} 
               onPress={() => handleSave(valueToSave)}
+              accessibilityLabel={`Save ${valueToSave} pounds for ${selectedExercise}`}
+              accessibilityRole="button"
+              accessibilityHint="Saves the one rep max value for this exercise"
             >
               <Text style={styles.saveButtonText}>
                 Save {valueToSave} lbs for {selectedExercise}

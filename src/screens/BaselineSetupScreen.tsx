@@ -5,12 +5,12 @@ import { RootStackParamList } from '../navigation/AppNavigator';
 import { saveExercise1RM } from '../storage/logs';
 import { estimate1RM } from '../utils/1rm';
 import { THEME } from '../theme/colors';
+import { validateWeightInput, validateRepsInput, validate1RMInput, isValidWeight, isValidReps, isValid1RM } from '../utils/inputValidation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BaselineSetup'>;
 
 const BaselineSetup: React.FC<Props> = ({ route, navigation }) => {
-  const defaultExercise = route.params?.exerciseName ?? '';
-  const [exerciseName, setExerciseName] = useState(defaultExercise);
+  const [exerciseName, setExerciseName] = useState('');
   const [mode, setMode] = useState<'enter' | 'calculate' | null>(null);
   const [oneRM, setOneRM] = useState('');
   const [weight, setWeight] = useState('');
@@ -20,6 +20,10 @@ const BaselineSetup: React.FC<Props> = ({ route, navigation }) => {
   const handleSave = async (value: number) => {
     if (!exerciseName) {
       Alert.alert('Missing exercise name', 'Please enter the exercise name.');
+      return;
+    }
+    if (!isValid1RM(String(value)) || value <= 0) {
+      Alert.alert('Invalid Value', 'Please enter a valid 1RM value greater than 0.');
       return;
     }
     await saveExercise1RM(exerciseName, value);
@@ -33,6 +37,17 @@ const BaselineSetup: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const handleCalculate = () => {
+    // Validate inputs before calculation
+    if (!isValidWeight(weight) || !isValidReps(reps)) {
+      Alert.alert(
+        'Invalid Input',
+        'Please enter valid numbers:\n• Weight must be greater than 0\n• Reps must be a positive whole number',
+        [{ text: 'OK' }]
+      );
+      setResult(null);
+      return;
+    }
+
     const w = Number(weight);
     const r = Number(reps);
     const est = estimate1RM(w, r);
@@ -74,7 +89,10 @@ const BaselineSetup: React.FC<Props> = ({ route, navigation }) => {
             placeholderTextColor={THEME.textMuted}
             keyboardType="numeric"
             value={oneRM}
-            onChangeText={setOneRM}
+            onChangeText={(text) => {
+              const validated = validate1RMInput(text);
+              setOneRM(validated);
+            }}
           />
           <TouchableOpacity style={styles.button} onPress={() => handleSave(Number(oneRM))}>
             <Text style={styles.buttonText}>Save 1RM</Text>
@@ -90,7 +108,10 @@ const BaselineSetup: React.FC<Props> = ({ route, navigation }) => {
             placeholderTextColor={THEME.textMuted}
             keyboardType="numeric"
             value={weight}
-            onChangeText={setWeight}
+            onChangeText={(text) => {
+              const validated = validateWeightInput(text);
+              setWeight(validated);
+            }}
           />
           <TextInput
             style={styles.input}
@@ -98,7 +119,10 @@ const BaselineSetup: React.FC<Props> = ({ route, navigation }) => {
             placeholderTextColor={THEME.textMuted}
             keyboardType="numeric"
             value={reps}
-            onChangeText={setReps}
+            onChangeText={(text) => {
+              const validated = validateRepsInput(text);
+              setReps(validated);
+            }}
           />
           <TouchableOpacity style={styles.button} onPress={handleCalculate}>
             <Text style={styles.buttonText}>Estimate 1RM</Text>

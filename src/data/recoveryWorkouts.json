@@ -17,7 +17,19 @@
               "trackingMode": "time",
               "intensity": "Conversational pace",
               "instruction": "Very easy movement to warm up. Should feel effortless and restorative.",
-              "notes": "Keep heart rate below 120 bpm"
+              "definition": "Gentle cardiovascular warm-up to elevate heart rate and body temperature without stress",
+              "notes": "Keep heart rate below 120 bpm",
+              "formCues": [
+                "Start at very easy pace",
+                "Should feel effortless, not challenging",
+                "Maintain conversational pace",
+                "Keep heart rate below 120 bpm",
+                "Focus on smooth, relaxed movement",
+                "Feel restorative, not fatiguing",
+                "Gradually warm up tissues",
+                "Should feel like active recovery"
+              ],
+              "lockStructure": true
             }
           ]
         },
@@ -31,7 +43,19 @@
               "trackingMode": "time",
               "intensity": "60-70% max HR",
               "instruction": "Maintain a pace where you can hold a conversation easily. This promotes blood flow without adding stress.",
-              "notes": "Zone 2 pace - should feel comfortable"
+              "definition": "Zone 2 cardiovascular work that promotes recovery through increased blood flow and metabolic clearance",
+              "notes": "Zone 2 pace - should feel comfortable",
+              "formCues": [
+                "Choose bike, walk, or swim",
+                "Maintain conversational pace",
+                "Should feel comfortable, not challenging",
+                "Keep heart rate at 60-70% max",
+                "Focus on steady, rhythmic movement",
+                "Promote blood flow without stress",
+                "Feel energized, not fatigued",
+                "This is recovery work, not training"
+              ],
+              "lockStructure": true
             }
           ]
         },
@@ -39,15 +63,70 @@
           "name": "Mobility & Stretching",
           "exercises": [
             {
-              "name": "Full Body Mobility Flow",
-              "sets": 1,
-              "duration": "10-15 min",
+              "name": "Hip Circles",
               "trackingMode": "time",
-              "intensity": "Low",
-              "instruction": "Gentle mobility work focusing on areas of tightness. Use slow, controlled movements with deep breathing.",
-              "notes": "Focus on hips, shoulders, and thoracic spine",
-              "isFlowGroup": true,
-              "flowGroupType": "mobility"
+              "sets": 1,
+              "substitutions": [],
+              "duration": "2 min",
+              "reps": "10 each direction",
+              "notes": "Stand tall, draw large circles with knee",
+              "instruction": "Stand tall, hold support if needed\nLift one knee, keep it bent\nDraw large circles with the knee\n10 circles clockwise\n10 circles counterclockwise\nFeel hip joint moving through full range\nSwitch legs and repeat",
+              "definition": "Comprehensive mobility sequence targeting major joints and movement patterns to restore range of motion and reduce stiffness"
+            },
+            {
+              "name": "Leg Swings (Front-to-Back)",
+              "trackingMode": "time",
+              "sets": 1,
+              "substitutions": [],
+              "duration": "2 min",
+              "reps": "10 each direction",
+              "notes": "Hold support, swing leg forward and back, then side to side",
+              "instruction": "Hold onto wall or support\nSwing leg forward and back\n10 swings forward/back\nThen swing leg side to side\n10 swings side to side\nFeel hip opening in both planes\nSwitch legs and repeat",
+              "definition": "Comprehensive mobility sequence targeting major joints and movement patterns to restore range of motion and reduce stiffness"
+            },
+            {
+              "name": "Arm Circles",
+              "trackingMode": "time",
+              "sets": 1,
+              "substitutions": [],
+              "duration": "2 min",
+              "reps": "10 each direction",
+              "notes": "Large circles, forward and backward",
+              "instruction": "Stand tall, arms extended to sides\nMake large circles forward\n10 circles forward\nThen reverse direction\n10 circles backward\nFeel shoulders moving freely\nKeep circles large and controlled",
+              "definition": "Comprehensive mobility sequence targeting major joints and movement patterns to restore range of motion and reduce stiffness"
+            },
+            {
+              "name": "Thoracic Rotations (Quadruped)",
+              "trackingMode": "time",
+              "sets": 1,
+              "substitutions": [],
+              "duration": "2 min",
+              "reps": "10 each side",
+              "notes": "Quadruped position, hand behind head, rotate to ceiling",
+              "instruction": "Start on hands and knees\nPlace one hand behind head\nRotate elbow toward ceiling\nFeel thoracic spine rotating\n10 rotations on one side\nSwitch hands and repeat\nKeep hips stable",
+              "definition": "Comprehensive mobility sequence targeting major joints and movement patterns to restore range of motion and reduce stiffness"
+            },
+            {
+              "name": "Cat-Cow",
+              "trackingMode": "time",
+              "sets": 1,
+              "substitutions": [],
+              "duration": "2 min",
+              "reps": "10 cycles",
+              "notes": "Sync breath with movement, articulate through spine",
+              "instruction": "Start on hands and knees\nCOW (Inhale): Drop belly, lift chest, look up\nCAT (Exhale): Round spine, tuck chin\nMove slowly, feel each vertebra\nSync breath with movement\n10 complete cycles\nFeel spine mobilizing",
+              "definition": "Comprehensive mobility sequence targeting major joints and movement patterns to restore range of motion and reduce stiffness"
+            },
+            {
+              "name": "Hip Flexor Stretch",
+              "trackingMode": "time",
+              "sets": 1,
+              "substitutions": [],
+              "duration": "2 min",
+              "reps": "60s each side",
+              "notes": "Half-kneeling, squeeze glute, lean forward",
+              "instruction": "Half-kneeling position\nBack leg extended, front leg bent\nSqueeze glute of back leg\nLean forward slightly\nFeel hip flexor stretch\nHold 60 seconds\nSwitch sides and repeat",
+              "definition": "Comprehensive mobility sequence targeting major joints and movement patterns to restore range of motion and reduce stiffness"
             }
           ]
         }
@@ -64,47 +143,58 @@
           "name": "Yoga Flow",
           "exercises": [
             {
-              "name": "Restorative Yoga Flow",
-              "sets": 1,
-              "duration": "30-35 min",
+              "name": "Sun Salutations",
               "trackingMode": "time",
-              "intensity": "Very Low",
-              "instruction": "Move through sun salutations, downward dog, pigeon pose, and warrior sequences with controlled breathing. Focus on breath-to-movement synchronization.",
-              "goal": "Improve flexibility, promote recovery, and enhance mind-body connection",
-              "trainerNotes": "Focus on breath-to-movement synchronization. Never force a stretch—find your edge and breathe into it. This is recovery work, not a competition.",
-              "isFlowGroup": true,
-              "flowGroupType": "yoga",
-              "flowSteps": [
-                {
-                  "name": "Sun Salutations",
-                  "duration": "5 min",
-                  "reps": "5 rounds",
-                  "instruction": "Flow through 5 rounds of sun salutations to warm up the body"
-                },
-                {
-                  "name": "Downward Dog → Pigeon Pose",
-                  "duration": "2 min",
-                  "reps": "1 min each side",
-                  "instruction": "Hold downward dog for 1 min, then transition to pigeon pose on each side for 1 min"
-                },
-                {
-                  "name": "Warrior Sequence",
-                  "duration": "3 min",
-                  "reps": "30s each pose",
-                  "instruction": "Warrior I → Warrior II → Reverse Warrior, hold each for 30 seconds"
-                },
-                {
-                  "name": "Cat-Cow",
-                  "duration": "2 min",
-                  "reps": "10 reps",
-                  "instruction": "Slow, controlled cat-cow movements for spinal mobility"
-                },
-                {
-                  "name": "Child's Pose",
-                  "duration": "2 min",
-                  "instruction": "Rest in child's pose, focusing on deep breathing and relaxation"
-                }
-              ]
+              "sets": 1,
+              "substitutions": [],
+              "duration": "5 min",
+              "reps": "5 rounds",
+              "notes": "Match breath to movement throughout",
+              "instruction": "Begin in Mountain Pose (Tadasana): Stand tall, feet together, arms at sides\nINHALE: Sweep arms overhead, slight backbend, gaze up\nEXHALE: Hinge at hips, fold forward, hands to floor or shins\nINHALE: Lift chest halfway, flat back, fingertips on shins or floor\nEXHALE: Step or jump back to Plank, lower through Chaturanga\nINHALE: Press through hands, lift chest into Upward Dog\nEXHALE: Lift hips, press back into Downward Dog - hold 5 breaths\nStep or jump feet to hands, INHALE lift halfway, EXHALE fold\nINHALE: Rise to standing, arms overhead, EXHALE: hands to heart center\nRepeat sequence 5 times, finding a smooth rhythm",
+              "definition": "Restorative yoga sequence combining dynamic movement with static holds to improve flexibility, reduce tension, and promote recovery through breath-work and mindful movement"
+            },
+            {
+              "name": "Downward Dog → Pigeon Pose",
+              "trackingMode": "time",
+              "sets": 1,
+              "substitutions": [],
+              "duration": "2 min",
+              "reps": "1 min each side",
+              "notes": "Square hips, fold forward, breathe into hip stretch",
+              "instruction": "Start in Downward Dog: hands and feet on floor, hips high\nHold Downward Dog for 1 minute, breathe deeply\nFrom Downward Dog, lift right leg high\nBring right knee forward behind right wrist\nRight shin can be parallel to front of mat or angled back (modification)\nExtend left leg straight back, top of foot on floor\nSquare hips toward front of mat—use block under right hip if needed\nWalk hands forward, fold chest toward floor\nHold Pigeon Pose for 1 minute, breathing deeply into the hip\nPress back to Downward Dog, repeat on left side",
+              "definition": "Restorative yoga sequence combining dynamic movement with static holds to improve flexibility, reduce tension, and promote recovery through breath-work and mindful movement"
+            },
+            {
+              "name": "Warrior Sequence",
+              "trackingMode": "time",
+              "sets": 1,
+              "substitutions": [],
+              "duration": "3 min",
+              "reps": "30s each pose",
+              "notes": "Strong legs, open hips, flow with breath",
+              "instruction": "WARRIOR I: Step right foot forward into lunge, back foot angled 45°, hips squared forward, arms overhead, gaze up. Hold 30s.\nWARRIOR II: Open hips and arms to side, back foot turns to 90°, front knee over ankle, arms parallel to floor, gaze over front fingers. Hold 30s.\nREVERSE WARRIOR: Keep legs as is, flip front palm up, reach back and up, back hand slides down back leg, side body opens. Hold 30s.\nFlow back through Warrior II to Warrior I\nStep back to Mountain Pose, repeat entire sequence on left side\nMaintain steady breath throughout",
+              "definition": "Restorative yoga sequence combining dynamic movement with static holds to improve flexibility, reduce tension, and promote recovery through breath-work and mindful movement"
+            },
+            {
+              "name": "Cat-Cow",
+              "trackingMode": "time",
+              "sets": 1,
+              "substitutions": [],
+              "duration": "2 min",
+              "reps": "10 cycles",
+              "notes": "Initiate movement from pelvis, articulate through entire spine",
+              "instruction": "Start on hands and knees: wrists under shoulders, knees under hips\nCOW (Inhale): Tilt pelvis forward, drop belly, lift chest and gaze, shoulder blades draw together\nCAT (Exhale): Tilt pelvis back, round spine toward ceiling, tuck chin, push floor away\nMove slowly—feel each vertebra articulate\nLet the breath initiate the movement\nContinue for 10 complete cycles\nFeel spine mobilizing through full range",
+              "definition": "Restorative yoga sequence combining dynamic movement with static holds to improve flexibility, reduce tension, and promote recovery through breath-work and mindful movement"
+            },
+            {
+              "name": "Child's Pose",
+              "trackingMode": "time",
+              "sets": 1,
+              "substitutions": [],
+              "duration": "2 min",
+              "notes": "Full surrender, deep belly breaths",
+              "instruction": "From hands and knees, sit hips back toward heels\nKnees can be together (more back stretch) or wide apart (more hip stretch)\nWalk arms forward, forehead rests on floor (or on stacked hands)\nLet shoulders melt down away from ears\nBreathe into lower back and sides of ribcage\nThis is complete rest—let go of all tension\nHold for 2 minutes, focusing on deep breathing",
+              "definition": "Restorative yoga sequence combining dynamic movement with static holds to improve flexibility, reduce tension, and promote recovery through breath-work and mindful movement"
             }
           ]
         },
@@ -112,12 +202,13 @@
           "name": "Cool-Down",
           "exercises": [
             {
-              "name": "Breathing Reset",
-              "sets": 1,
-              "duration": "5 min",
+              "name": "Box Breathing",
               "trackingMode": "time",
-              "instruction": "Lie on back, 4-count inhale through nose, 6-count exhale through mouth. Focus on complete relaxation.",
-              "notes": "Deep breathing for recovery"
+              "sets": 1,
+              "instruction": "Inhale 4, hold 4, exhale 4, hold 4.",
+              "definition": "Final downshift after yoga flow",
+              "substitutions": [],
+              "duration": "2 min"
             }
           ]
         }
@@ -139,7 +230,19 @@
               "duration": "5 min",
               "trackingMode": "time",
               "instruction": "Easy walk or light movement to warm up tissues",
-              "notes": "Very easy pace"
+              "definition": "Gentle movement to increase blood flow and prepare tissues for mobility work",
+              "notes": "Very easy pace",
+              "formCues": [
+                "Start with easy walk or light movement",
+                "Very easy pace, no effort",
+                "Feel blood flow increasing",
+                "Warm up tissues gently",
+                "Prepare body for mobility work",
+                "Should feel effortless",
+                "Focus on smooth movement",
+                "Gradually increase circulation"
+              ],
+              "lockStructure": true
             }
           ]
         },
@@ -147,28 +250,85 @@
           "name": "Mobility Drills",
           "exercises": [
             {
-              "name": "Hip Mobility Circuit",
+              "name": "Hip Circles",
+              "trackingMode": "volume",
               "sets": 1,
-              "duration": "10 min",
-              "trackingMode": "time",
-              "instruction": "Hip circles (10 each direction), 90/90 hip switches (10 reps), leg swings (10 each), hip flexor stretches (60s each)",
-              "notes": "Focus on hip mobility"
+              "instruction": "Large controlled knee circles.",
+              "definition": "Hip mobility",
+              "substitutions": [],
+              "reps": "10 each direction per leg"
             },
             {
-              "name": "Thoracic & Shoulder Mobility",
+              "name": "90/90 Hip Switches",
+              "trackingMode": "volume",
               "sets": 1,
-              "duration": "10 min",
-              "trackingMode": "time",
-              "instruction": "Thoracic rotations (10 each side), shoulder dislocates (10 reps), arm circles (10 each direction), doorway chest stretch (60s)",
-              "notes": "Improve upper body mobility"
+              "instruction": "Switch between 90/90 positions with tall posture.",
+              "definition": "Hip internal/external rotation",
+              "substitutions": [],
+              "reps": "6 each side"
             },
             {
-              "name": "Full Body Stretch",
+              "name": "World's Greatest Stretch",
+              "trackingMode": "volume",
               "sets": 1,
-              "duration": "10 min",
+              "instruction": "Lunge with rotation.",
+              "definition": "Hip and T-spine mobility",
+              "substitutions": [],
+              "reps": "4 each side"
+            },
+            {
+              "name": "Thoracic Rotations (Quadruped)",
+              "trackingMode": "volume",
+              "sets": 1,
+              "instruction": "Rotate through upper back; hips still.",
+              "definition": "T-spine mobility",
+              "substitutions": [],
+              "reps": "8 each side"
+            },
+            {
+              "name": "Scapular Wall Slides",
+              "trackingMode": "volume",
+              "sets": 1,
+              "instruction": "Keep elbows/wrists on wall; slide up/down.",
+              "definition": "Scapular mobility",
+              "substitutions": [],
+              "reps": 10
+            },
+            {
+              "name": "Doorway Chest Stretch",
               "trackingMode": "time",
-              "instruction": "Hamstring stretch (60s each), quad stretch (60s each), piriformis/glute stretch (60s each), lat/shoulder stretch (60s)",
-              "notes": "Static stretching for flexibility"
+              "sets": 1,
+              "instruction": "Gentle chest opener.",
+              "definition": "Anterior shoulder length",
+              "substitutions": [],
+              "duration": "30 sec each side"
+            },
+            {
+              "name": "Hip Flexor Stretch",
+              "trackingMode": "time",
+              "sets": 1,
+              "instruction": "Half-kneeling stretch.",
+              "definition": "Hip flexor restoration",
+              "substitutions": [],
+              "duration": "45 sec each side"
+            },
+            {
+              "name": "Hamstring Stretch",
+              "trackingMode": "time",
+              "sets": 1,
+              "instruction": "Long-spine hinge.",
+              "definition": "Hamstring restoration",
+              "substitutions": [],
+              "duration": "45 sec each side"
+            },
+            {
+              "name": "Child Pose Breathing",
+              "trackingMode": "time",
+              "sets": 1,
+              "instruction": "Long nasal exhales.",
+              "definition": "Downshift",
+              "substitutions": [],
+              "duration": "90 sec"
             }
           ]
         }
@@ -185,14 +345,57 @@
           "name": "Foam Rolling",
           "exercises": [
             {
-              "name": "Foam Rolling Sequence",
-              "sets": 1,
-              "duration": "15 min",
+              "name": "Quad Roll",
               "trackingMode": "time",
-              "instruction": "Roll quads (1 min each side), IT band (1 min each side), glutes (1 min), lats (1 min), thoracic spine (1 min). Focus on areas of tightness.",
-              "notes": "Self-myofascial release",
-              "isFlowGroup": true,
-              "flowGroupType": "foam_rolling"
+              "sets": 1,
+              "substitutions": [],
+              "duration": "2 min",
+              "reps": "1 min each side",
+              "notes": "Face down, roll from hip to knee, pause on tender spots",
+              "instruction": "Lie face down, place foam roller under thighs\nSupport body weight on forearms and toes\nRoll from hip to just above knee\nMove slowly, 1-2 inches per second\nPause on tender spots, breathe deeply\nRoll for 1 minute on each leg\nFeel quad muscles releasing",
+              "definition": "Self-myofascial release sequence using foam roller to reduce muscle tension, improve tissue quality, and promote recovery"
+            },
+            {
+              "name": "IT Band Roll",
+              "trackingMode": "time",
+              "sets": 1,
+              "substitutions": [],
+              "duration": "2 min",
+              "reps": "1 min each side",
+              "notes": "Side-lying, roll from hip to knee, support with hands",
+              "instruction": "Lie on side, place roller under IT band\nSupport upper body with forearm and bottom hand\nRoll from hip to just above knee\nMove slowly, this area can be sensitive\nPause on tender spots, breathe through it\nRoll for 1 minute on each side\nFeel IT band releasing",
+              "definition": "Self-myofascial release sequence using foam roller to reduce muscle tension, improve tissue quality, and promote recovery"
+            },
+            {
+              "name": "Glute Roll",
+              "trackingMode": "time",
+              "sets": 1,
+              "substitutions": [],
+              "duration": "1 min",
+              "notes": "Sit on roller, cross ankle over knee, lean into tight side",
+              "instruction": "Sit on foam roller\nCross one ankle over opposite knee\nLean into the side being rolled\nRoll back and forth over glute\nFocus on areas of tightness\nSwitch sides after 30 seconds\nFeel glute muscles releasing",
+              "definition": "Self-myofascial release sequence using foam roller to reduce muscle tension, improve tissue quality, and promote recovery"
+            },
+            {
+              "name": "Lat Roll",
+              "trackingMode": "time",
+              "sets": 1,
+              "substitutions": [],
+              "duration": "1 min",
+              "reps": "30s each side",
+              "notes": "Side-lying, roll from armpit to mid-rib",
+              "instruction": "Lie on side, place roller under armpit area\nSupport with bottom arm and legs\nRoll from armpit down to mid-rib\nMove slowly, breathe deeply\nRoll for 30 seconds on each side\nFeel lat muscles releasing",
+              "definition": "Self-myofascial release sequence using foam roller to reduce muscle tension, improve tissue quality, and promote recovery"
+            },
+            {
+              "name": "Thoracic Spine Roll",
+              "trackingMode": "time",
+              "sets": 1,
+              "substitutions": [],
+              "duration": "1 min",
+              "notes": "Hands behind head, extend over roller at tight spots",
+              "instruction": "Lie on back, place roller under upper back\nHands behind head, support neck\nLift hips off ground\nRoll slowly over thoracic spine\nPause on tight spots, extend over roller\nFeel thoracic spine opening\nRoll for 1 minute total",
+              "definition": "Self-myofascial release sequence using foam roller to reduce muscle tension, improve tissue quality, and promote recovery"
             }
           ]
         },
@@ -205,7 +408,19 @@
               "duration": "10 min",
               "trackingMode": "time",
               "instruction": "Light walk to promote blood flow after rolling",
-              "notes": "Very easy pace"
+              "definition": "Gentle walking to promote circulation and flush metabolic byproducts after myofascial release",
+              "notes": "Very easy pace",
+              "formCues": [
+                "Light walk at very easy pace",
+                "Promote blood flow after rolling",
+                "Flush metabolic byproducts",
+                "Feel circulation increasing",
+                "Should feel effortless",
+                "Maintain relaxed movement",
+                "Allow body to integrate rolling work",
+                "Focus on smooth, easy walking"
+              ],
+              "lockStructure": true
             }
           ]
         }
@@ -227,7 +442,19 @@
               "duration": "5 min",
               "trackingMode": "time",
               "instruction": "4-count inhale, 4-count hold, 4-count exhale, 4-count hold. Repeat for 5 minutes.",
-              "notes": "Calming breathing pattern"
+              "definition": "Structured breathing pattern that regulates nervous system and promotes calm through equal-duration breath phases",
+              "notes": "Calming breathing pattern",
+              "formCues": [
+                "Inhale for 4 counts",
+                "Hold breath for 4 counts",
+                "Exhale for 4 counts",
+                "Hold empty for 4 counts",
+                "Repeat cycle for 5 minutes",
+                "Maintain steady rhythm",
+                "Feel nervous system calming",
+                "Focus on breath control"
+              ],
+              "lockStructure": true
             },
             {
               "name": "Deep Breathing Reset",
@@ -235,7 +462,19 @@
               "duration": "10 min",
               "trackingMode": "time",
               "instruction": "Lie on back, 4-count inhale through nose, 6-count exhale through mouth. Focus on complete relaxation and letting go of tension.",
-              "notes": "Deep relaxation breathing"
+              "definition": "Extended breathing practice with longer exhalation to activate parasympathetic nervous system and promote deep recovery",
+              "notes": "Deep relaxation breathing",
+              "formCues": [
+                "Lie on back, comfortable position",
+                "Inhale through nose for 4 counts",
+                "Exhale through mouth for 6 counts",
+                "Longer exhale activates recovery",
+                "Focus on complete relaxation",
+                "Let go of tension with each exhale",
+                "Feel body settling deeper",
+                "Allow mind to quiet completely"
+              ],
+              "lockStructure": true
             },
             {
               "name": "Guided Meditation",
@@ -243,7 +482,42 @@
               "duration": "5 min",
               "trackingMode": "time",
               "instruction": "Body scan meditation: focus attention on each body part, releasing tension as you go. Start from toes and work up to head.",
-              "notes": "Mental recovery and stress reduction"
+              "definition": "Mindfulness practice using body scan technique to reduce stress, improve body awareness, and promote mental recovery",
+              "notes": "Mental recovery and stress reduction",
+              "formCues": [
+                "Start from toes, scan upward",
+                "Focus attention on each body part",
+                "Notice sensations without judgment",
+                "Release tension as you scan",
+                "Move slowly through body",
+                "Feel each area relaxing",
+                "End at head, feel complete relaxation",
+                "Allow mind to rest and recover"
+              ],
+              "lockStructure": true
+            }
+          ]
+        },
+        {
+          "name": "Gentle Openers",
+          "exercises": [
+            {
+              "name": "Cat-Cow",
+              "trackingMode": "volume",
+              "sets": 1,
+              "instruction": "Slow spinal flexion/extension with breath.",
+              "definition": "Gentle spinal mobility",
+              "substitutions": [],
+              "reps": 10
+            },
+            {
+              "name": "Child Pose Breathing",
+              "trackingMode": "time",
+              "sets": 1,
+              "instruction": "Rest forehead down; long exhales.",
+              "definition": "Restorative downshift",
+              "substitutions": [],
+              "duration": "2 min"
             }
           ]
         }
@@ -265,7 +539,25 @@
               "duration": "20 min",
               "trackingMode": "time",
               "instruction": "If pool available: light swimming, water walking, or gentle pool exercises. Great for joint decompression and low-impact movement.",
-              "notes": "Water-based recovery if available"
+              "definition": "Low-impact water-based movement that promotes recovery through joint decompression and active movement without gravity stress",
+              "notes": "Water-based recovery if available",
+              "substitutions": [
+                "Light Walk",
+                "Easy Bike",
+                "Elliptical",
+                "Rower"
+              ],
+              "formCues": [
+                "If pool available: light swimming or water walking",
+                "Gentle pool exercises for recovery",
+                "Feel joint decompression in water",
+                "Low-impact movement without gravity",
+                "Maintain easy, relaxed pace",
+                "Focus on smooth movement",
+                "Feel body supported by water",
+                "Promote recovery through active movement"
+              ],
+              "lockStructure": true
             },
             {
               "name": "Light Land Movement",
@@ -273,7 +565,51 @@
               "duration": "10 min",
               "trackingMode": "time",
               "instruction": "If no pool: light walk or easy bike at conversational pace",
-              "notes": "Alternative if pool unavailable"
+              "definition": "Gentle land-based movement alternative that promotes blood flow and recovery when pool access is unavailable",
+              "notes": "Alternative if pool unavailable",
+              "formCues": [
+                "If no pool: light walk or easy bike",
+                "Maintain conversational pace",
+                "Should feel comfortable, not challenging",
+                "Promote blood flow and recovery",
+                "Focus on gentle movement",
+                "Feel body moving easily",
+                "Allow recovery to continue",
+                "Alternative when pool unavailable"
+              ],
+              "lockStructure": true
+            }
+          ]
+        },
+        {
+          "name": "Mobility & Stretching",
+          "exercises": [
+            {
+              "name": "Hip Flexor Stretch",
+              "trackingMode": "time",
+              "sets": 1,
+              "instruction": "Gentle half-kneeling stretch.",
+              "definition": "Hip restoration after pool work",
+              "substitutions": [],
+              "duration": "30 sec each side"
+            },
+            {
+              "name": "Doorway Chest Stretch",
+              "trackingMode": "time",
+              "sets": 1,
+              "instruction": "Open chest gently.",
+              "definition": "Anterior shoulder restoration",
+              "substitutions": [],
+              "duration": "30 sec each side"
+            },
+            {
+              "name": "Child Pose Breathing",
+              "trackingMode": "time",
+              "sets": 1,
+              "instruction": "Long nasal exhales.",
+              "definition": "Downshift",
+              "substitutions": [],
+              "duration": "60 sec"
             }
           ]
         }
@@ -281,4 +617,3 @@
     }
   ]
 }
-

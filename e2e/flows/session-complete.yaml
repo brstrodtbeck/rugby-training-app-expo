@@ -1,0 +1,36 @@
+# Complete a representative session (Foundation W1 Day 1)
+# Prerequisites: Enable fast timers (run enable-fast-timers.yaml first)
+# Select 20-Week program and set start date on Home
+# This flow taps through exercises and finishes the session
+appId: com.progressiveoverlord.app
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: 
+        contains: "Week"
+    timeout: 10000
+- tapOn:
+    text: "Lower Body"
+    optional: true
+- tapOn:
+    text: "Lower Body Strength"
+    optional: true
+- scroll:
+    direction: DOWN
+    duration: 500
+- tapOn:
+    text: "Light Cardio"
+    optional: true
+- tapOn:
+    text: "Start"
+    optional: true
+- extendedWaitUntil:
+    visible:
+      text: "Finish Session"
+    timeout: 60000
+- tapOn:
+    text: "Finish Session"
+- assertVisible:
+    text: "Session Complete"
+    optional: true

@@ -388,7 +388,7 @@ export default function OnboardingScreen({ navigation }: Props) {
       >
         {step === '1rm' ? (
           <View style={styles.stepContainer}>
-            <Text style={styles.title}>Welcome to RepMaster</Text>
+            <Text style={styles.title}>Welcome to RepDrive</Text>
             <Text style={styles.subtitle}>
               Let's get you set up for success
             </Text>

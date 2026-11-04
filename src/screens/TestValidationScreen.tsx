@@ -21,8 +21,11 @@ import {
   getEnhancedAnalysisReport,
   TEST_EXERCISES,
 } from '../utils/testProgressionData';
+import { seed4MonthTestData } from '../utils/testProgressionData4Months';
+import { seed20WeekTestData, clear20WeekTestData } from '../utils/testProgressionData20Week';
 import { getRecentHistory } from '../utils/progressionLogic';
 import ExerciseHistoryModal from '../components/ExerciseHistoryModal';
+import { isFastTimersEnabled, setFastTimersEnabled, loadFastTimersFromStorage } from '../utils/e2eFastTimers';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'TestValidation'>;
 
@@ -32,7 +35,7 @@ interface ValidationResult {
   details: string;
 }
 
-export default function TestValidationScreen({ navigation }: Props): JSX.Element {
+export default function TestValidationScreen({ navigation }: Props): React.ReactElement {
   const [isLoading, setIsLoading] = useState(false);
   const [isSeeded, setIsSeeded] = useState(false);
   const [validationResults, setValidationResults] = useState<ValidationResult[] | null>(null);
@@ -41,8 +44,25 @@ export default function TestValidationScreen({ navigation }: Props): JSX.Element
   const [selectedExercise, setSelectedExercise] = useState('');
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [breakdownText, setBreakdownText] = useState('');
+  const [fastTimersEnabled, setFastTimersState] = useState(isFastTimersEnabled());
 
   const scenarios = getTestScenarioSummary();
+
+  useEffect(() => {
+    loadFastTimersFromStorage().then(() => setFastTimersState(isFastTimersEnabled()));
+  }, []);
+
+  const handleToggleFastTimers = async () => {
+    const next = !fastTimersEnabled;
+    await setFastTimersEnabled(next);
+    setFastTimersState(next);
+    Alert.alert(
+      next ? 'E2E Fast Timers ON' : 'E2E Fast Timers OFF',
+      next
+        ? 'Timers run at 10x speed. Use for Maestro E2E flows.'
+        : 'Timers run at normal speed.'
+    );
+  };
 
   const handleSeedData = async () => {
     setIsLoading(true);
@@ -59,6 +79,35 @@ export default function TestValidationScreen({ navigation }: Props): JSX.Element
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSeed4MonthData = async () => {
+    Alert.alert(
+      'Seed 4-Month Test Data',
+      'This will generate 64 sessions (16 weeks) of comprehensive test data. This may take a moment. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Seed',
+          onPress: async () => {
+            setIsLoading(true);
+            try {
+              const result = await seed4MonthTestData();
+              if (result.success) {
+                setIsSeeded(true);
+                Alert.alert('Success', result.message);
+              } else {
+                Alert.alert('Error', result.message);
+              }
+            } catch (error) {
+              Alert.alert('Error', 'Failed to seed 4-month test data');
+            } finally {
+              setIsLoading(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleClearData = async () => {
@@ -90,16 +139,71 @@ export default function TestValidationScreen({ navigation }: Props): JSX.Element
     );
   };
 
-  const handleValidate = async () => {
+  const handleSeed20WeekData = async () => {
     setIsLoading(true);
     try {
-      const result = await validateProgressionLogic();
-      setValidationResults(result.results);
-      setAllPassed(result.passed);
+      const result = await seed20WeekTestData();
+      if (result.success) {
+        Alert.alert('Success', result.message);
+      } else {
+        Alert.alert('Error', result.message);
+      }
     } catch (error) {
-      Alert.alert('Error', 'Validation failed');
+      Alert.alert('Error', 'Failed to seed 20-week test data');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleClear20WeekData = async () => {
+    Alert.alert(
+      'Clear 20-Week Test Data',
+      'This will remove only 20-Week Foundation to Peak seed data. Test program seed (if any) will remain. Continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear',
+          style: 'destructive',
+          onPress: async () => {
+            setIsLoading(true);
+            try {
+              const result = await clear20WeekTestData();
+              if (result.success) {
+                setValidationResults(null);
+                Alert.alert('Cleared', result.message);
+              } else {
+                Alert.alert('Error', result.message);
+              }
+            } catch (error) {
+              Alert.alert('Error', 'Failed to clear 20-week test data');
+            } finally {
+              setIsLoading(false);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleValidate = async () => {
+    setIsLoading(true);
+    console.log('🔍 Validation button pressed');
+    try {
+      console.log('📞 Calling validateProgressionLogic()...');
+      const result = await validateProgressionLogic();
+      console.log('✅ Validation returned:', {
+        passed: result.passed,
+        resultCount: result.results.length,
+      });
+      setValidationResults(result.results);
+      setAllPassed(result.passed);
+      console.log('📊 Validation results set in state');
+    } catch (error) {
+      console.error('❌ Validation error:', error);
+      Alert.alert('Error', `Validation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setIsLoading(false);
+      console.log('🏁 Validation handler complete');
     }
   };
 
@@ -244,6 +348,42 @@ export default function TestValidationScreen({ navigation }: Props): JSX.Element
           </TouchableOpacity>
 
           <TouchableOpacity
+            style={[styles.button, styles.seed4MonthButton]}
+            onPress={handleSeed4MonthData}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.buttonText}>
+                📅 Seed 4-Month Test Data (64 Sessions)
+              </Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.seed4MonthButton]}
+            onPress={handleSeed20WeekData}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.buttonText}>
+                🏋️ Seed 20-Week Test Data
+              </Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, styles.breakdownButton]}
+            onPress={handleClear20WeekData}
+            disabled={isLoading}
+          >
+            <Text style={styles.buttonText}>🗑️ Clear 20-Week Test Data</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             style={[styles.button, styles.validateButton]}
             onPress={handleValidate}
             disabled={isLoading}
@@ -272,6 +412,15 @@ export default function TestValidationScreen({ navigation }: Props): JSX.Element
           >
             <Text style={[styles.buttonText, { color: '#f44336' }]}>
               🗑️ Clear Test Data
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.button, fastTimersEnabled ? styles.validateButton : styles.breakdownButton]}
+            onPress={handleToggleFastTimers}
+          >
+            <Text style={styles.buttonText}>
+              {fastTimersEnabled ? '⚡ E2E Fast Timers ON (10x)' : '⏱ E2E Fast Timers OFF'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -494,6 +643,9 @@ const styles = StyleSheet.create({
   },
   seedButton: {
     backgroundColor: '#1976d2',
+  },
+  seed4MonthButton: {
+    backgroundColor: '#388e3c',
   },
   validateButton: {
     backgroundColor: '#7b1fa2',
