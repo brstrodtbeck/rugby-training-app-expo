@@ -92,6 +92,10 @@ export default function IntervalTimer({
     isRunning: false,
     isPaused: false,
   });
+  const onCompleteRef = useRef(onComplete);
+  const onSetCompleteRef = useRef(onSetComplete);
+  onCompleteRef.current = onComplete;
+  onSetCompleteRef.current = onSetComplete;
 
   const { theme } = useTheme();
   const styles = useThemedStyles((t) => ({
@@ -376,11 +380,11 @@ export default function IntervalTimer({
         // Phase ended while away - run same logic as interval tick (advance phase/round or complete)
         setState(prev => {
           if (prev.phase === 'work') {
-            onSetComplete?.(prev.currentRound);
+            onSetCompleteRef.current?.(prev.currentRound);
             if (prev.currentRound >= totalSets) {
               triggerAlert('complete');
               analytics.timerCompleted('interval', workDuration).catch(() => {});
-              onComplete?.();
+              onCompleteRef.current?.();
               phaseEndTimeRef.current = null;
               return { ...prev, phase: 'complete', timeRemaining: 0, isRunning: false };
             }
@@ -408,7 +412,7 @@ export default function IntervalTimer({
       }
     });
     return () => subscription.remove();
-  }, [totalSets, workDuration, restDuration, triggerAlert, onComplete, onSetComplete]);
+  }, [totalSets, workDuration, restDuration, triggerAlert]);
 
   // Timer logic
   useEffect(() => {
@@ -421,7 +425,7 @@ export default function IntervalTimer({
             // Time's up for current phase
             if (prev.phase === 'work') {
               // Work phase complete
-              onSetComplete?.(prev.currentRound);
+              onSetCompleteRef.current?.(prev.currentRound);
               
               if (prev.currentRound >= totalSets) {
                 // All rounds complete
@@ -430,7 +434,7 @@ export default function IntervalTimer({
                 analytics.timerCompleted('interval', workDuration).catch(() => {
                   // Silently fail - analytics is optional
                 });
-                onComplete?.();
+                onCompleteRef.current?.();
                 return {
                   ...prev,
                   phase: 'complete',
@@ -495,7 +499,7 @@ export default function IntervalTimer({
         clearInterval(intervalRef.current);
       }
     };
-  }, [state.isRunning, state.isPaused, state.phase, totalSets, workDuration, restDuration, alertsEnabled, triggerAlert, onComplete, onSetComplete]);
+  }, [state.isRunning, state.isPaused, state.phase, totalSets, workDuration, restDuration, alertsEnabled, triggerAlert]);
 
   // Start the timer with countdown
   const handleStart = async () => {
@@ -569,10 +573,10 @@ export default function IntervalTimer({
     
     setState(prev => {
       if (prev.phase === 'work') {
-        onSetComplete?.(prev.currentRound);
+        onSetCompleteRef.current?.(prev.currentRound);
         if (prev.currentRound >= totalSets) {
           triggerAlert('complete');
-          onComplete?.();
+          onCompleteRef.current?.();
           return {
             ...prev,
             phase: 'complete',

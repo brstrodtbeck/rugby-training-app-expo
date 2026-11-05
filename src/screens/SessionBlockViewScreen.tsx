@@ -42,7 +42,6 @@ import {
   playTimerStart,
   playTimerStop,
   playRestComplete,
-  playCountdownSequence,
   playCountdownBeep,
 } from '../utils/sounds';
 import { speakRestComplete } from '../utils/voice';
@@ -68,6 +67,9 @@ export default function SessionBlockViewScreen({ route, navigation }: Props) {
   const [restTimers, setRestTimers] = useState<Record<number, { remaining: number; isRunning: boolean; isPaused: boolean; notificationShown?: boolean }>>({});
   const [timeBasedTimers, setTimeBasedTimers] = useState<Record<number, { remaining: number; isRunning: boolean; isPaused: boolean; notificationShown?: boolean; beepedAt?: number[] }>>({});
   const flatListRef = useRef<FlatList>(null);
+  const editGenRef = useRef(0);
+  const [hydratedSessionId, setHydratedSessionId] = useState<string | null>(null);
+  const hydrated = hydratedSessionId === sessionId;
   const intervalsRef = useRef<Map<number, ReturnType<typeof setInterval>>>(new Map());
   const restEndTimeRef = useRef<Map<number, number>>(new Map());
   const timeBasedEndTimeRef = useRef<Map<number, number>>(new Map());
@@ -81,19 +83,29 @@ export default function SessionBlockViewScreen({ route, navigation }: Props) {
 
   // Load completed, setLogs, setNotes from same keys as SessionScreen; load 1RMs for session exercises
   useEffect(() => {
+    let cancelled = false;
+    const genAtStart = editGenRef.current;
     const load = async () => {
       try {
         const stored = await AsyncStorage.getItem(`completed:${sessionId}`);
-        if (stored) setCompleted(JSON.parse(stored));
         const logs = await AsyncStorage.getItem(`setLogs:${sessionId}`);
-        if (logs) setSetLogs(JSON.parse(logs));
         const notes = await AsyncStorage.getItem(`setNotes:${sessionId}`);
-        if (notes) setSetNotes(JSON.parse(notes));
+        if (cancelled) return;
+        if (editGenRef.current === genAtStart) {
+          if (stored) setCompleted(JSON.parse(stored));
+          if (logs) setSetLogs(JSON.parse(logs));
+          if (notes) setSetNotes(JSON.parse(notes));
+        }
       } catch (e) {
         if (__DEV__) console.error('SessionBlockView load error', e);
+      } finally {
+        if (!cancelled) setHydratedSessionId(sessionId);
       }
     };
     load();
+    return () => {
+      cancelled = true;
+    };
   }, [sessionId]);
 
   // Load 1RMs for exercises in this session
@@ -112,6 +124,7 @@ export default function SessionBlockViewScreen({ route, navigation }: Props) {
 
   // Persist when completed, setLogs, or setNotes change
   useEffect(() => {
+    if (!hydrated) return;
     const save = async () => {
       try {
         await AsyncStorage.setItem(`completed:${sessionId}`, JSON.stringify(completed));
@@ -122,7 +135,7 @@ export default function SessionBlockViewScreen({ route, navigation }: Props) {
       }
     };
     save();
-  }, [sessionId, completed, setLogs, setNotes]);
+  }, [sessionId, completed, setLogs, setNotes, hydrated]);
 
   // Cleanup timers on unmount
   useEffect(() => {
@@ -193,34 +206,38 @@ export default function SessionBlockViewScreen({ route, navigation }: Props) {
   };
 
   const updateSetLog = useCallback(
-    async (exerciseIndex: number, setIndex: number, field: 'weight' | 'reps' | 'rpe' | 'rir', value: string) => {
+    (exerciseIndex: number, setIndex: number, field: 'weight' | 'reps' | 'rpe' | 'rir', value: string) => {
+      editGenRef.current += 1;
       let validated = value;
       if (field === 'weight') validated = validateWeightInput(value);
       else if (field === 'reps') validated = validateRepsInput(value);
       else validated = value.replace(/[^\d.]/g, '').slice(0, 4);
 
-      const existing = setLogs[exerciseIndex] || [];
-      const updated = [...existing];
-      const prev: SetLogEntry = { weight: '', reps: '', ...updated[setIndex] };
-      updated[setIndex] = { ...prev, [field]: validated };
+      setSetLogs((prevLogs) => {
+        const existing = prevLogs[exerciseIndex] || [];
+        const updated = [...existing];
+        const prev: SetLogEntry = { weight: '', reps: '', ...updated[setIndex] };
+        updated[setIndex] = { ...prev, [field]: validated };
 
-      if (field === 'rpe' && validated) {
-        const rpeNum = parseFloat(validated);
-        if (!isNaN(rpeNum)) updated[setIndex].rir = String(Math.max(0, Math.min(10, 10 - rpeNum)));
-      } else if (field === 'rir' && validated) {
-        const rirNum = parseFloat(validated);
-        if (!isNaN(rirNum)) updated[setIndex].rpe = String(Math.max(1, Math.min(10, 10 - rirNum)));
-      }
+        if (field === 'rpe' && validated) {
+          const rpeNum = parseFloat(validated);
+          if (!isNaN(rpeNum)) updated[setIndex].rir = String(Math.max(0, Math.min(10, 10 - rpeNum)));
+        } else if (field === 'rir' && validated) {
+          const rirNum = parseFloat(validated);
+          if (!isNaN(rirNum)) updated[setIndex].rpe = String(Math.max(1, Math.min(10, 10 - rirNum)));
+        }
 
-      const next = { ...setLogs, [exerciseIndex]: updated };
-      setSetLogs(next);
-      await AsyncStorage.setItem(`setLogs:${sessionId}`, JSON.stringify(next));
+        const next = { ...prevLogs, [exerciseIndex]: updated };
+        AsyncStorage.setItem(`setLogs:${sessionId}`, JSON.stringify(next)).catch(() => {});
+        return next;
+      });
     },
-    [sessionId, setLogs]
+    [sessionId]
   );
 
   const toggleSetCompletion = useCallback(
     (exerciseIndex: number, setIndex: number) => {
+      editGenRef.current += 1;
       triggerHaptic.light();
       setSetCompletions((prev) => {
         const current = prev[exerciseIndex] || new Set<number>();
@@ -240,7 +257,7 @@ export default function SessionBlockViewScreen({ route, navigation }: Props) {
   const startRest = useCallback(
     async (index: number, duration: number | undefined) => {
       triggerHaptic.light();
-      await playTimerStart();
+      void playTimerStart();
       const initial = duration != null && Number.isFinite(duration) ? duration : 60;
       const existing = intervalsRef.current.get(index);
       if (existing) {
@@ -306,14 +323,13 @@ export default function SessionBlockViewScreen({ route, navigation }: Props) {
         clearInterval(existing);
         intervalsRef.current.delete(index);
       }
-      await playCountdownSequence(() => {
-        triggerHaptic.light();
-        setTimeBasedTimers((prev) => ({
-          ...prev,
-          [index]: { remaining: durationSeconds, isRunning: true, isPaused: false, notificationShown: false, beepedAt: [] },
-        }));
-        timeBasedEndTimeRef.current.set(index, Date.now() + durationSeconds * 1000);
-      });
+      triggerHaptic.light();
+      setTimeBasedTimers((prev) => ({
+        ...prev,
+        [index]: { remaining: durationSeconds, isRunning: true, isPaused: false, notificationShown: false, beepedAt: [] },
+      }));
+      timeBasedEndTimeRef.current.set(index, Date.now() + durationSeconds * 1000);
+      void playTimerStart();
       const tickMs = getTickIntervalMs();
       const tickDec = getTickDecrement();
       const id = setInterval(() => {
@@ -483,6 +499,9 @@ export default function SessionBlockViewScreen({ route, navigation }: Props) {
           style={styles.scrollPage}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="none"
+          nestedScrollEnabled
         >
           <Text style={styles.blockTitle}>{block.name}</Text>
           {items.map((ri) => (
@@ -504,6 +523,9 @@ export default function SessionBlockViewScreen({ route, navigation }: Props) {
         keyExtractor={(item) => `block-${item.index}`}
         horizontal
         pagingEnabled
+        keyboardShouldPersistTaps="handled"
+        removeClippedSubviews={false}
+        nestedScrollEnabled
         onMomentumScrollEnd={onScroll}
         showsHorizontalScrollIndicator={false}
         getItemLayout={(_, index) => ({ length: SCREEN_WIDTH, offset: SCREEN_WIDTH * index, index })}

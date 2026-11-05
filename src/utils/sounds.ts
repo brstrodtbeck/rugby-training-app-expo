@@ -45,18 +45,21 @@ export const saveSoundSettings = async (enabled: boolean): Promise<void> => {
 // Get current sound settings
 export const getSoundEnabled = (): boolean => soundsEnabled;
 
-// Initialize audio mode
+// Initialize audio mode. Never block timers if the native audio call hangs.
 let audioInitialized = false;
 const initializeAudio = async (): Promise<void> => {
   if (audioInitialized) return;
-  
+  audioInitialized = true;
+
   try {
-    await Audio.setAudioModeAsync({
-      playsInSilentModeIOS: false, // Respect silent mode
-      staysActiveInBackground: false,
-      shouldDuckAndroid: true, // Lower other audio on Android
-    });
-    audioInitialized = true;
+    await Promise.race([
+      Audio.setAudioModeAsync({
+        playsInSilentModeIOS: false, // Respect silent mode
+        staysActiveInBackground: false,
+        shouldDuckAndroid: true, // Lower other audio on Android
+      }),
+      new Promise<void>((resolve) => setTimeout(resolve, 400)),
+    ]);
   } catch (error) {
     if (__DEV__) {
       console.log('Audio initialization error:', error);
@@ -153,11 +156,21 @@ export const playCountdownBeep = async (): Promise<void> => {
  * Returns a promise that resolves when countdown completes
  */
 export const playCountdownSequence = async (onComplete?: () => void): Promise<void> => {
-  if (!soundsEnabled) {
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
     onComplete?.();
+  };
+  // Always release the timer even if audio initialization never returns.
+  const timeout = setTimeout(finish, 2800);
+
+  if (!soundsEnabled) {
+    clearTimeout(timeout);
+    finish();
     return;
   }
-  
+
   try {
     // Play 3 beeps with delays
     for (let i = 0; i < 3; i++) {
@@ -166,9 +179,11 @@ export const playCountdownSequence = async (onComplete?: () => void): Promise<vo
     }
     // Final "go" beep (slightly longer)
     await playBeep(800, 0.15, 0.7);
-    onComplete?.();
+    finish();
   } catch (error) {
     // If audio fails, still call onComplete
-    onComplete?.();
+    finish();
+  } finally {
+    clearTimeout(timeout);
   }
 };

@@ -47,12 +47,15 @@ const speak = async (text: string, options?: { rate?: number; pitch?: number }):
   try {
     // Stop any currently speaking text
     Speech.stop();
-    
-    await Speech.speak(text, {
-      language: 'en-US',
-      pitch: options?.pitch || 1.0,
-      rate: options?.rate || 0.9, // Slightly slower for clarity
-    });
+
+    await Promise.race([
+      Promise.resolve(Speech.speak(text, {
+        language: 'en-US',
+        pitch: options?.pitch || 1.0,
+        rate: options?.rate || 0.9, // Slightly slower for clarity
+      })),
+      new Promise<void>((resolve) => setTimeout(resolve, 700)),
+    ]);
   } catch (error) {
     // Silently fail if TTS unavailable
     if (__DEV__) {
@@ -96,11 +99,21 @@ export const speakRestComplete = async (): Promise<void> => {
  * Speak countdown (3-2-1-workLabel)
  */
 export const speakCountdown = async (workLabel: string = 'Go', onComplete?: () => void): Promise<void> => {
-  if (!voiceEnabled) {
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
     onComplete?.();
+  };
+  // Start the workout timer even if speech never resolves in a release build.
+  const timeout = setTimeout(finish, 4000);
+
+  if (!voiceEnabled) {
+    clearTimeout(timeout);
+    finish();
     return;
   }
-  
+
   try {
     // Speak countdown with delays
     await speak('3', { rate: 0.8, pitch: 1.0 });
@@ -114,10 +127,12 @@ export const speakCountdown = async (workLabel: string = 'Go', onComplete?: () =
     
     const label = workLabel.trim() || 'Go';
     await speak(label, { rate: 0.85, pitch: 1.2 }); // Higher pitch for work label
-    onComplete?.();
+    finish();
   } catch (error) {
     // If TTS fails, still call onComplete
-    onComplete?.();
+    finish();
+  } finally {
+    clearTimeout(timeout);
   }
 };
 

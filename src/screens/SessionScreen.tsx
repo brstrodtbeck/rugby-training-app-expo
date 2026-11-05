@@ -33,7 +33,6 @@ import {
   playTimerPause,
   playTimerComplete,
   playRestComplete,
-  playCountdownSequence,
   playCountdownBeep,
 } from '../utils/sounds';
 import {
@@ -175,6 +174,10 @@ export default function SessionScreen({ route, navigation }: Props) {
 
   // Track if initial data load has completed to avoid saving during load
   const isInitialLoad = useRef(true);
+  // Bumped on user edits so a late storage reload cannot overwrite in-progress input
+  const editGenRef = useRef(0);
+  // False until the first storage read finishes, so leaving early cannot wipe saved work
+  const persistReadyRef = useRef(false);
   // Track if we're intentionally navigating away (e.g., finishing session)
   const isNavigatingAway = useRef(false);
   
@@ -343,16 +346,18 @@ export default function SessionScreen({ route, navigation }: Props) {
   useEffect(() => {
     // Reset initial load flag when session changes
     isInitialLoad.current = true;
+    persistReadyRef.current = false;
+    const genAtStart = editGenRef.current;
     
     const loadCompleted = async () => {
       try {
         const stored = await AsyncStorage.getItem(`completed:${sessionId}`);
-        if (stored) setCompleted(JSON.parse(stored));
-
         const logs = await AsyncStorage.getItem(`setLogs:${sessionId}`);
-        if (logs) setSetLogs(JSON.parse(logs));
-
         const notes = await AsyncStorage.getItem(`setNotes:${sessionId}`);
+        // A check or keystroke that landed while storage was reading must win.
+        if (editGenRef.current !== genAtStart) return;
+        if (stored) setCompleted(JSON.parse(stored));
+        if (logs) setSetLogs(JSON.parse(logs));
         if (notes) setSetNotes(JSON.parse(notes));
 
         // Load readiness score if saved
@@ -370,32 +375,50 @@ export default function SessionScreen({ route, navigation }: Props) {
           console.error('Error loading data:', error);
         }
         // Non-critical error, don't show alert to user
+      } finally {
+        persistReadyRef.current = true;
       }
     };
     loadCompleted();
   }, [sessionId]);
 
+  // Latest values for saves. The callback stays stable so focus/blur
+  // does not reload storage on every checkbox or keystroke.
+  const completedRef = useRef(completed);
+  const setLogsRef = useRef(setLogs);
+  const setNotesRef = useRef(setNotes);
+  const readinessScoreRef = useRef(readinessScore);
+  completedRef.current = completed;
+  setLogsRef.current = setLogs;
+  setNotesRef.current = setNotes;
+  readinessScoreRef.current = readinessScore;
+
   // Save progress function
   const saveProgress = useCallback(async (silent = false) => {
+    const completedNow = completedRef.current;
+    const logsNow = setLogsRef.current;
+    const notesNow = setNotesRef.current;
+    const readinessNow = readinessScoreRef.current;
     try {
       // Save completed exercises
-      await AsyncStorage.setItem(`completed:${sessionId}`, JSON.stringify(completed));
+      await AsyncStorage.setItem(`completed:${sessionId}`, JSON.stringify(completedNow));
       
       // Save set logs
-      await AsyncStorage.setItem(`setLogs:${sessionId}`, JSON.stringify(setLogs));
+      await AsyncStorage.setItem(`setLogs:${sessionId}`, JSON.stringify(logsNow));
+      await AsyncStorage.setItem(`setNotes:${sessionId}`, JSON.stringify(notesNow));
       
       // Save readiness score
-      if (readinessScore !== null) {
+      if (readinessNow !== null) {
         const readinessKey = `readiness:${sessionId}`;
         await AsyncStorage.setItem(readinessKey, JSON.stringify({
-          score: readinessScore,
+          score: readinessNow,
           timestamp: new Date().toISOString(),
         }));
       }
 
       if (!silent) {
         // Show subtle success toast for auto-save (only if significant progress)
-        if (completed.length > 0 || Object.keys(setLogs).length > 0) {
+        if (completedNow.length > 0 || Object.keys(logsNow).length > 0) {
           Toast.show({
             type: 'success',
             text1: '💾 Progress saved',
@@ -418,7 +441,10 @@ export default function SessionScreen({ route, navigation }: Props) {
         [{ text: 'OK' }]
       );
     }
-  }, [sessionId, completed, setLogs, readinessScore]);
+  }, [sessionId]);
+
+  const saveProgressRef = useRef(saveProgress);
+  saveProgressRef.current = saveProgress;
 
   // Auto-save on app background/close; recalc timer remaining when app returns to foreground
   useEffect(() => {
@@ -511,18 +537,23 @@ export default function SessionScreen({ route, navigation }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completed]);
 
-  // Rehydrate from storage when screen gains focus (e.g. returning from Block view) and auto-save on blur
+  // Rehydrate from storage only when the screen gains focus (e.g. returning from Block view).
+  // Do not depend on saveProgress: that callback used to change on every edit and
+  // immediately wrote stale data back over the check or keystroke.
   useFocusEffect(
     useCallback(() => {
       isNavigatingAway.current = false;
+      const genAtStart = editGenRef.current;
+      let cancelled = false;
 
       const rehydrate = async () => {
         try {
           const stored = await AsyncStorage.getItem(`completed:${sessionId}`);
-          if (stored) setCompleted(JSON.parse(stored));
           const logs = await AsyncStorage.getItem(`setLogs:${sessionId}`);
-          if (logs) setSetLogs(JSON.parse(logs));
           const notes = await AsyncStorage.getItem(`setNotes:${sessionId}`);
+          if (cancelled || editGenRef.current !== genAtStart) return;
+          if (stored) setCompleted(JSON.parse(stored));
+          if (logs) setSetLogs(JSON.parse(logs));
           if (notes) setSetNotes(JSON.parse(notes));
         } catch (e) {
           if (__DEV__) console.error('Session rehydrate error', e);
@@ -531,12 +562,13 @@ export default function SessionScreen({ route, navigation }: Props) {
       rehydrate();
 
       return () => {
-        if (!isNavigatingAway.current) {
-          saveProgress(true);
+        cancelled = true;
+        if (persistReadyRef.current && !isNavigatingAway.current) {
+          saveProgressRef.current(true);
         }
         isNavigatingAway.current = false;
       };
-    }, [sessionId, saveProgress])
+    }, [sessionId])
   );
 
   // Preload existing 1RMs for this session's exercises
@@ -772,9 +804,13 @@ export default function SessionScreen({ route, navigation }: Props) {
       }
     };
     
-    if (session) {
+    if (!session) return;
+    // Debounce so each keystroke does not reload every exercise suggestion
+    // and freeze checks, typing, and timer ticks.
+    const timeoutId = setTimeout(() => {
       loadProgressionSuggestions();
-    }
+    }, 700);
+    return () => clearTimeout(timeoutId);
   }, [session, readinessScore, setLogs]);
 
   // Debug logs
@@ -883,7 +919,10 @@ export default function SessionScreen({ route, navigation }: Props) {
       });
     } else {
       triggerHaptic.medium(); // Marking complete
+      // Keep the card open so the row does not collapse under the tap.
+      setExpandedExercises((prev) => ({ ...prev, [index]: true }));
     }
+    editGenRef.current += 1;
     
     // Calculate the updated completion state BEFORE updating state
     // This ensures auto-expand logic uses the correct completion state
@@ -1011,8 +1050,8 @@ export default function SessionScreen({ route, navigation }: Props) {
   const startRest = async (index: number, duration: number | undefined) => {
     // Haptic feedback for starting rest timer
     triggerHaptic.light();
-    // Sound feedback
-    await playTimerStart();
+    // Sound feedback must not block the countdown if audio init hangs.
+    void playTimerStart();
     
     const initial = duration && Number.isFinite(duration) ? duration : 60;
     
@@ -1128,13 +1167,10 @@ export default function SessionScreen({ route, navigation }: Props) {
       intervalsRef.current.delete(index);
     }
 
-    // Play 3-second countdown beep sequence before starting timer
-    await playCountdownSequence(() => {
-      // After countdown completes, start the timer
-      triggerHaptic.light();
-      setTimeBasedTimers((prev) => ({ ...prev, [index]: { remaining: durationSeconds, isRunning: true, isPaused: false, notificationShown: false, countdownShown: false, beepedAt: [] } }));
-      timeBasedEndTimeRef.current.set(index, Date.now() + durationSeconds * 1000);
-    });
+    triggerHaptic.light();
+    setTimeBasedTimers((prev) => ({ ...prev, [index]: { remaining: durationSeconds, isRunning: true, isPaused: false, notificationShown: false, countdownShown: false, beepedAt: [] } }));
+    timeBasedEndTimeRef.current.set(index, Date.now() + durationSeconds * 1000);
+    void playTimerStart();
 
     const tickMs = getTickIntervalMs();
     const tickDec = getTickDecrement();
@@ -1205,8 +1241,8 @@ export default function SessionScreen({ route, navigation }: Props) {
   const toggleTimeBasedTimer = async (index: number) => {
     // Haptic feedback for pausing/resuming timer
     triggerHaptic.light();
-    // Sound feedback
-    await playTimerPause();
+    // Sound feedback must not block pause/resume.
+    void playTimerPause();
     
     // Track timer pause
     setTimeBasedTimers((prev) => {
@@ -1234,12 +1270,13 @@ export default function SessionScreen({ route, navigation }: Props) {
     return `${secs}s`;
   };
 
-  const updateSetLog = async (
+  const updateSetLog = (
     exerciseIndex: number,
     setIndex: number,
     field: 'weight' | 'reps' | 'rpe' | 'rir',
     value: string
   ) => {
+    editGenRef.current += 1;
     // Validate input based on field type
     let validated = value;
     if (field === 'weight') {
@@ -1251,38 +1288,46 @@ export default function SessionScreen({ route, navigation }: Props) {
       validated = value.replace(/[^\d.]/g, '').slice(0, 4);
     }
 
-    const existingLogs = setLogs[exerciseIndex] || [];
-    const updatedLogs = [...existingLogs];
-    const prev: SetLogEntry = { weight: '', reps: '', ...updatedLogs[setIndex] };
-    updatedLogs[setIndex] = { ...prev, [field]: validated };
+    setSetLogs((prevLogs) => {
+      const existingLogs = prevLogs[exerciseIndex] || [];
+      const updatedLogs = [...existingLogs];
+      const prev: SetLogEntry = { weight: '', reps: '', ...updatedLogs[setIndex] };
+      updatedLogs[setIndex] = { ...prev, [field]: validated };
 
-    // Keep RPE/RIR loosely linked when one is set
-    if (field === 'rpe' && validated) {
-      const rpeNum = parseOptionalRpe(validated);
-      if (rpeNum != null) {
-        updatedLogs[setIndex].rir = String(Math.max(0, Math.min(10, 10 - rpeNum)));
+      // Keep RPE/RIR loosely linked when one is set
+      if (field === 'rpe' && validated) {
+        const rpeNum = parseOptionalRpe(validated);
+        if (rpeNum != null) {
+          updatedLogs[setIndex].rir = String(Math.max(0, Math.min(10, 10 - rpeNum)));
+        }
+      } else if (field === 'rir' && validated) {
+        const rirNum = parseFloat(validated);
+        if (!isNaN(rirNum)) {
+          updatedLogs[setIndex].rpe = String(Math.max(1, Math.min(10, 10 - rirNum)));
+        }
       }
-    } else if (field === 'rir' && validated) {
-      const rirNum = parseFloat(validated);
-      if (!isNaN(rirNum)) {
-        updatedLogs[setIndex].rpe = String(Math.max(1, Math.min(10, 10 - rirNum)));
+
+      const next = { ...prevLogs, [exerciseIndex]: updatedLogs };
+      AsyncStorage.setItem(`setLogs:${sessionId}`, JSON.stringify(next)).catch(() => {});
+
+      const weight = updatedLogs[setIndex]?.weight || '';
+      const reps = updatedLogs[setIndex]?.reps || '';
+      if (weight && reps && validateWeightInput(weight) && validateRepsInput(reps)) {
+        setTimeout(() => {
+          setShowSetCompletePrompt({ exerciseIndex, setIndex });
+        }, 500);
       }
-    }
+      return next;
+    });
+  };
 
-    const next = { ...setLogs, [exerciseIndex]: updatedLogs };
-    setSetLogs(next);
-    // Auto-save set logs immediately
-    await AsyncStorage.setItem(`setLogs:${sessionId}`, JSON.stringify(next));
-
-    // Check if both weight and reps are filled, show set complete prompt
-    const weight = updatedLogs[setIndex]?.weight || '';
-    const reps = updatedLogs[setIndex]?.reps || '';
-    if (weight && reps && validateWeightInput(weight) && validateRepsInput(reps)) {
-      // Both fields valid, show prompt after a brief delay
-      setTimeout(() => {
-        setShowSetCompletePrompt({ exerciseIndex, setIndex });
-      }, 500);
-    }
+  const updateSetNote = (key: string, text: string) => {
+    editGenRef.current += 1;
+    setSetNotes((prev) => {
+      const updated = { ...prev, [key]: text };
+      AsyncStorage.setItem(`setNotes:${sessionId}`, JSON.stringify(updated)).catch(() => {});
+      return updated;
+    });
   };
 
   // Helper: Quick adjust weight/reps
@@ -1468,19 +1513,7 @@ export default function SessionScreen({ route, navigation }: Props) {
             style={styles.quickNoteInput}
             placeholder="Quick note (e.g., 'felt heavy', 'form good')"
             value={setNotes[`${exerciseIndex}-${setIndex}`] || ''}
-            onChangeText={(text) => {
-              const updatedNotes = {
-                ...setNotes,
-                [`${exerciseIndex}-${setIndex}`]: text,
-              };
-              setSetNotes(updatedNotes);
-              // Auto-save notes with updated state
-              AsyncStorage.setItem(`setNotes:${sessionId}`, JSON.stringify(updatedNotes)).catch(() => {});
-            }}
-            onBlur={() => {
-              // Ensure notes are saved when input loses focus
-              AsyncStorage.setItem(`setNotes:${sessionId}`, JSON.stringify(setNotes)).catch(() => {});
-            }}
+            onChangeText={(text) => updateSetNote(`${exerciseIndex}-${setIndex}`, text)}
             multiline
             maxLength={100}
           />
@@ -1706,17 +1739,7 @@ export default function SessionScreen({ route, navigation }: Props) {
               style={styles.quickNoteInput}
               placeholder="Quick note (e.g., 'felt heavy', 'form good')"
               value={setNotes[setKey] || ''}
-              onChangeText={(text) => {
-                const updatedNotes = {
-                  ...setNotes,
-                  [setKey]: text,
-                };
-                setSetNotes(updatedNotes);
-                AsyncStorage.setItem(`setNotes:${sessionId}`, JSON.stringify(updatedNotes)).catch(() => {});
-              }}
-              onBlur={() => {
-                AsyncStorage.setItem(`setNotes:${sessionId}`, JSON.stringify(setNotes)).catch(() => {});
-              }}
+              onChangeText={(text) => updateSetNote(setKey, text)}
               multiline
               maxLength={100}
             />
@@ -1923,9 +1946,9 @@ export default function SessionScreen({ route, navigation }: Props) {
   const handleSetComplete = async (exerciseIndex: number, setIndex: number) => {
     // Mark set as complete
     setSetCompletions(prev => {
-      const exerciseCompletions = prev[exerciseIndex] || new Set<number>();
+      const exerciseCompletions = new Set(prev[exerciseIndex] || []);
       exerciseCompletions.add(setIndex);
-      return { ...prev, [exerciseIndex]: new Set(exerciseCompletions) };
+      return { ...prev, [exerciseIndex]: exerciseCompletions };
     });
     
     setShowSetCompletePrompt(null);
@@ -3406,6 +3429,7 @@ export default function SessionScreen({ route, navigation }: Props) {
   const toggleSetCompletion = async (exerciseIndex: number, setIndex: number) => {
     // Haptic feedback for set completion
     triggerHaptic.light();
+    editGenRef.current += 1;
     
     let exerciseWasJustCompleted = false;
     let wasCompletedBefore = false;
@@ -3437,6 +3461,7 @@ export default function SessionScreen({ route, navigation }: Props) {
         if (!completed.includes(exerciseIndex)) {
           exerciseWasJustCompleted = true;
           setCompleted((comp) => [...comp, exerciseIndex]);
+          setExpandedExercises((prevExp) => ({ ...prevExp, [exerciseIndex]: true }));
         }
       } else {
         // If not all sets complete, remove from completed if it was there
@@ -4299,6 +4324,9 @@ export default function SessionScreen({ route, navigation }: Props) {
       <FlatList
         ref={flatListRef}
         data={groupedData}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="none"
+        removeClippedSubviews={false}
         keyExtractor={(item, index) => {
           if ('type' in item && item.type === 'block-header') {
             return `block-header-${item.blockName}`;
@@ -4612,12 +4640,11 @@ export default function SessionScreen({ route, navigation }: Props) {
                   
                   return (
                     <View key={`grouped-header-${exIdx}`} style={styles.groupedExerciseContainer}>
-                      <TouchableOpacity
+                      <View
                         style={[
                           styles.groupedExercise,
                           isExerciseCompleted && styles.groupedExerciseCompleted,
                         ]}
-                        onPress={() => toggleComplete(globalIndex)}
                       >
                         <View style={styles.groupedExerciseHeader}>
                           <Text style={styles.groupedExerciseNumber}>{exIdx + 1}</Text>
@@ -4658,7 +4685,12 @@ export default function SessionScreen({ route, navigation }: Props) {
                                     </TouchableOpacity>
                                     
                                     {/* Exercise name */}
-                                    <Text style={[styles.exercise, styles.exerciseWithCheckbox]}>{exercise.name}</Text>
+                                    <TouchableOpacity
+                                      onPress={() => toggleComplete(globalIndex)}
+                                      style={{ flex: 1 }}
+                                    >
+                                      <Text style={[styles.exercise, styles.exerciseWithCheckbox]}>{exercise.name}</Text>
+                                    </TouchableOpacity>
                                     
                                     {/* Icons on same row (if not moving to separate row) */}
                                     {!showIconsOnSeparateRow && (
@@ -4851,7 +4883,7 @@ export default function SessionScreen({ route, navigation }: Props) {
                             })()}
                           </View>
                         </View>
-                      </TouchableOpacity>
+                      </View>
                       
                       {/* Warm-up sets for grouped exercises - always shown when available */}
                       {(() => {
@@ -5300,17 +5332,7 @@ export default function SessionScreen({ route, navigation }: Props) {
                                         style={styles.quickNoteInput}
                                         placeholder="Quick note (e.g., 'felt heavy', 'form good')"
                                         value={setNotes[setKeySuperset] || ''}
-                                        onChangeText={(text) => {
-                                          const updatedNotes = {
-                                            ...setNotes,
-                                            [setKeySuperset]: text,
-                                          };
-                                          setSetNotes(updatedNotes);
-                                          AsyncStorage.setItem(`setNotes:${sessionId}`, JSON.stringify(updatedNotes)).catch(() => {});
-                                        }}
-                                        onBlur={() => {
-                                          AsyncStorage.setItem(`setNotes:${sessionId}`, JSON.stringify(setNotes)).catch(() => {});
-                                        }}
+                                        onChangeText={(text) => updateSetNote(setKeySuperset, text)}
                                         multiline
                                         maxLength={100}
                                       />
@@ -5783,19 +5805,7 @@ export default function SessionScreen({ route, navigation }: Props) {
                                       style={styles.quickNoteInput}
                                       placeholder="Quick note (e.g., 'felt heavy', 'form good')"
                                       value={setNotes[setKeySuperset] || ''}
-                                      onChangeText={(text) => {
-                                        const updatedNotes = {
-                                          ...setNotes,
-                                          [setKeySuperset]: text,
-                                        };
-                                        setSetNotes(updatedNotes);
-                                        // Auto-save notes with updated state
-                                        AsyncStorage.setItem(`setNotes:${sessionId}`, JSON.stringify(updatedNotes)).catch(() => {});
-                                      }}
-                                      onBlur={() => {
-                                        // Ensure notes are saved when input loses focus
-                                        AsyncStorage.setItem(`setNotes:${sessionId}`, JSON.stringify(setNotes)).catch(() => {});
-                                      }}
+                                      onChangeText={(text) => updateSetNote(setKeySuperset, text)}
                                       multiline
                                       maxLength={100}
                                     />
@@ -5953,15 +5963,11 @@ export default function SessionScreen({ route, navigation }: Props) {
           
           return (
             <View style={styles.card}>
-              <TouchableOpacity
+              <View
                 style={[
                   styles.exerciseBlock,
                   completed.includes(exerciseIndex) && styles.completedCard,
                 ]}
-                onPress={() => toggleComplete(exerciseIndex)}
-                accessibilityLabel={completed.includes(exerciseIndex) ? `Mark ${exercise.name} as incomplete` : `Mark ${exercise.name} as complete`}
-                accessibilityRole="button"
-                accessibilityState={{ checked: completed.includes(exerciseIndex) }}
               >
                 {/* Exercise name row with checkbox and icons */}
                 {(() => {
@@ -5998,7 +6004,14 @@ export default function SessionScreen({ route, navigation }: Props) {
                   </TouchableOpacity>
                         
                         {/* Exercise name */}
-                        <Text style={[styles.exercise, styles.exerciseWithCheckbox]}>{exercise.name}</Text>
+                        <TouchableOpacity
+                          onPress={() => toggleComplete(exerciseIndex)}
+                          style={{ flex: 1 }}
+                          accessibilityLabel={isCompleted ? `Mark ${exercise.name} as incomplete` : `Mark ${exercise.name} as complete`}
+                          accessibilityRole="button"
+                        >
+                          <Text style={[styles.exercise, styles.exerciseWithCheckbox]}>{exercise.name}</Text>
+                        </TouchableOpacity>
                         
                         {/* Collapse button for expanded completed exercises */}
                         {isCompleted && isExpanded && (
@@ -6339,7 +6352,7 @@ export default function SessionScreen({ route, navigation }: Props) {
                   );
                 })()}
 
-              </TouchableOpacity>
+              </View>
               
 
               {/* Warm-up sets section - always shown when available */}
@@ -6704,19 +6717,7 @@ export default function SessionScreen({ route, navigation }: Props) {
                             style={styles.quickNoteInput}
                             placeholder="Quick note (e.g., 'felt heavy', 'form good')"
                             value={setNotes[`${exerciseIndex}-${setIndex}`] || ''}
-                            onChangeText={(text) => {
-                              const updatedNotes = {
-                                ...setNotes,
-                                [`${exerciseIndex}-${setIndex}`]: text,
-                              };
-                              setSetNotes(updatedNotes);
-                              // Auto-save notes with updated state
-                              AsyncStorage.setItem(`setNotes:${sessionId}`, JSON.stringify(updatedNotes)).catch(() => {});
-                            }}
-                            onBlur={() => {
-                              // Ensure notes are saved when input loses focus
-                              AsyncStorage.setItem(`setNotes:${sessionId}`, JSON.stringify(setNotes)).catch(() => {});
-                            }}
+                            onChangeText={(text) => updateSetNote(`${exerciseIndex}-${setIndex}`, text)}
                             multiline
                             maxLength={100}
                           />
